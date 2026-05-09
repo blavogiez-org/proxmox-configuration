@@ -1,4 +1,5 @@
-#!/bin/bash (to run as root)
+#!/bin/bash
+# to run as root
 
 IMAGEURL=https://cloud.debian.org/images/cloud/trixie/latest/debian-13-genericcloud-amd64.qcow2
 

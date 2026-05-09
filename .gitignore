@@ -1,0 +1,5 @@
+*.tfstate*
+*.tfvars
+*lock*
+.terraform
+config.yml

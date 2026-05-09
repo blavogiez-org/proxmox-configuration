@@ -1,0 +1,32 @@
+#!/bin/bash
+set -euo pipefail
+
+useradd -m -s /bin/bash -G sudo admin
+echo "admin ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/admin
+
+mkdir -p /home/admin/.ssh
+echo "${ssh_public_key}" >> /home/admin/.ssh/authorized_keys
+chown -R admin:admin /home/admin/.ssh
+chmod 700 /home/admin/.ssh
+chmod 600 /home/admin/.ssh/authorized_keys
+
+apt-get update -qq
+apt-get install -y curl gpg
+
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list
+apt-get update -qq && apt-get install -y caddy
+
+echo '@reboot root caddy start --config /etc/caddy/Caddyfile' > /etc/cron.d/caddy
+
+mkdir -p /etc/systemd/system/caddy.service.d/
+cat > /etc/systemd/system/caddy.service.d/override.conf << 'EOF'
+[Service]
+PrivateTmp=false
+PrivateDevices=false
+ProtectSystem=false
+ProtectHome=false
+NoNewPrivileges=false
+EOF
+systemctl daemon-reload
+systemctl enable --now caddy
