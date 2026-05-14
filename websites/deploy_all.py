@@ -28,6 +28,7 @@ for website in websites:
     source_path = website.get("path")
     site_type = website.get("type")
     domains = website.get("domains")
+    referenced = website.get("referenced", True)
 
     if site_type not in {"html", "vite"}:
         sys.exit(f"type invalide pour {source_path}: {site_type}")
@@ -35,6 +36,8 @@ for website in websites:
         sys.exit("path doit etre defini")
     if not isinstance(domains, list) or not domains:
         sys.exit(f"domains doit etre une liste non vide pour {source_path}")
+    if not isinstance(referenced, bool):
+        sys.exit(f"referenced doit etre true ou false pour {source_path}")
 
     domains = [domain.strip() for domain in domains if isinstance(domain, str) and domain.strip()]
     if not domains:
@@ -48,8 +51,10 @@ for website in websites:
     env["WEBSITE_SOURCE_DIR"] = str(source_dir)
     env["WEBSITE_PRIMARY_DOMAIN"] = domains[0]
     env["WEBSITE_DOMAINS"] = ",".join(domains)
+    env["WEBSITE_REFERENCED"] = "true" if referenced else "false"
 
-    print(f"déploiement de {domains[0]} ({site_type})", flush=True)
+    portal_status = "avec portail" if referenced else "sans portail"
+    print(f"déploiement de {domains[0]} ({site_type}, {portal_status})", flush=True)
     subprocess.run(
         [
             "ansible-playbook",

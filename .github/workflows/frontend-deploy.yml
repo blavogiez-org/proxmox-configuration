@@ -1,4 +1,4 @@
-name: Appel d'un déploiement front (pour lexemple)
+name: Appel d'un déploiement front (pour exemple)
 
 on:
   push:

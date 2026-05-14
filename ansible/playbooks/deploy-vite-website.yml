@@ -5,6 +5,7 @@
     website_primary_domain: "{{ lookup('env', 'WEBSITE_PRIMARY_DOMAIN') }}"
     website_domains: "{{ lookup('env', 'WEBSITE_DOMAINS').split(',') }}"
     website_source_dir: "{{ lookup('env', 'WEBSITE_SOURCE_DIR') }}"
+    website_referenced: "{{ lookup('env', 'WEBSITE_REFERENCED') | default('true', true) | bool }}"
   tasks:
     - name: Cleanup de packages qui polluent avant de copier
       ansible.builtin.file:
@@ -102,6 +103,15 @@
           <p><a href="https://{{ domain }}">{{ domain }}</a></p>
           {% endfor %}
       become: true
+      when: website_referenced | bool
+
+    - name: Retirer le site du portail si non reference
+      ansible.builtin.blockinfile:
+        path: /var/www/portal.blavogiez.fr/index.html
+        marker: "<!--{mark} ANSIBLE MANAGED BLOCK {{ website_primary_domain }}-->"
+        state: absent
+      become: true
+      when: not (website_referenced | bool)
 
     - name: Redemarrer Caddy
       ansible.builtin.service:

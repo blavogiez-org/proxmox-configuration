@@ -1,0 +1,17 @@
+#!/bin/bash
+set -euo pipefail
+
+apt-get update -qq
+apt-get install -y curl gpg sudo
+
+useradd -m -s /bin/bash -G sudo admin
+
+mkdir -p /etc/sudoers.d
+echo "admin ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/admin
+chmod 0440 /etc/sudoers.d/admin
+
+mkdir -p /home/admin/.ssh
+echo "${ssh_public_key}" > /home/admin/.ssh/authorized_keys
+chown -R admin:admin /home/admin/.ssh
+chmod 700 /home/admin/.ssh
+chmod 600 /home/admin/.ssh/authorized_keys
