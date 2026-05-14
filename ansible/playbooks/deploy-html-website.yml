@@ -1,0 +1,73 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    website_domain: "{{ lookup('env', 'WEBSITE_DOMAIN') }}"
+  tasks:
+    - name: Creer le repertoire web
+      ansible.builtin.file:
+        path: /var/www/{{ website_domain }}
+        state: directory
+        mode: "0755"
+      become: true
+
+    - name: Copier le html vers var/www
+      ansible.builtin.copy:
+        src: ../../websites/deploy/{{ website_domain }}/
+        dest: /var/www/{{ website_domain }}/
+        mode: "0644"
+        directory_mode: "0755"
+      become: true
+
+    - name: Fixer les permissions sur /var/www/{{ website_domain }}
+      ansible.builtin.file:
+        path: /var/www/{{ website_domain }}
+        state: directory
+        mode: "0755"
+        recurse: true
+      become: true
+
+    - name: Ajouter le repo Caddy (si c'est le premier sur la CT front)
+      ansible.builtin.shell:
+        cmd: curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/setup.deb.sh' | bash
+      become: true
+      args:
+        creates: /etc/apt/sources.list.d/caddy-stable.list
+
+    - name: Installer Caddy
+      ansible.builtin.apt:
+        name: caddy
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Update la config caddy du CT front
+      ansible.builtin.blockinfile:
+        path: /etc/caddy/Caddyfile
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ website_domain }}"
+        append_newline: true
+        prepend_newline: true
+        block: |
+          http://{{ website_domain }} {
+              root * /var/www/{{ website_domain }}
+              try_files {path} /index.html
+              file_server
+          }
+      become: true
+
+    # - name: Update le portail (portal.blavogiez.fr)
+    #   ansible.builtin.blockinfile:
+    #     path: /var/www/portal.blavogiez.fr
+    #     marker: "# {mark} ANSIBLE MANAGED BLOCK {{ website_domain }}"
+    #     append_newline: true
+    #     prepend_newline: true
+    #     block: |
+    #       <a href="https://{{ website_domain }}">{{ website_domain }}></a>
+    #   become: true
+
+    - name: Redemarrer Caddy
+      ansible.builtin.service:
+        name: caddy
+        state: restarted
+        enabled: true
+      become: true

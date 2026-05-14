@@ -1,0 +1,97 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    website_domain: "{{ lookup('env', 'WEBSITE_DOMAIN') }}"
+  tasks:
+    - name: Cleanup de packages qui polluent avant de copier
+      ansible.builtin.file:  
+        path: "../../websites/deploy/{{ website_domain }}/node_modules"
+        state: absent   
+      delegate_to: localhost
+
+    - name: Creer le repertoire web
+      ansible.builtin.file:
+        path: /var/www/{{ website_domain }}
+        state: directory
+        mode: "0755"
+      become: true
+
+    - name: Copier le site à build vers /var/www
+      ansible.builtin.copy:
+        src: ../../websites/deploy/{{ website_domain }}/
+        dest: /var/www/build/{{ website_domain }}
+        mode: "0644"
+        directory_mode: "0755"
+      become: true
+
+    - name: Installer nodejs et npm
+      ansible.builtin.apt:
+        name:
+          - nodejs
+          - npm
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Installer les dépendances npm
+      ansible.builtin.command:
+        cmd: npm ci
+        chdir: /var/www/build/{{ website_domain }}
+
+    - name: Build le frontend
+      ansible.builtin.command:
+        cmd: npm run build
+        chdir: /var/www/build/{{ website_domain }}
+
+    - name: Copier le build vers /var/www/
+      ansible.builtin.copy:
+        src: /var/www/build/{{ website_domain }}/dist/
+        dest: /var/www/{{ website_domain }}/
+        remote_src: true
+        mode: "0644"
+        directory_mode: "0755"
+      become: true
+
+    - name: Fixer les permissions sur /var/www/
+      ansible.builtin.file:
+        path: /var/www/{{ website_domain }}
+        state: directory
+        mode: "0755"
+        recurse: true
+      become: true
+
+    - name: Ajouter le repo Caddy
+      ansible.builtin.shell:
+        cmd: curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/setup.deb.sh' | bash
+      become: true
+      args:
+        creates: /etc/apt/sources.list.d/caddy-stable.list
+
+    - name: Installer Caddy
+      ansible.builtin.apt:
+        name: caddy
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Update la config caddy du CT front
+      ansible.builtin.blockinfile:
+        path: /etc/caddy/Caddyfile
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ website_domain }}"
+        append_newline: true
+        prepend_newline: true
+        block: |
+          http://{{ website_domain }} {
+              root * /var/www/{{ website_domain }}
+              try_files {path} /index.html
+              file_server
+          }
+      become: true
+
+    - name: Redemarrer Caddy
+      ansible.builtin.service:
+        name: caddy
+        state: restarted
+        enabled: true
+      become: true
