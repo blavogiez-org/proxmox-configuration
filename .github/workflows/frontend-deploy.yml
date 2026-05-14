@@ -1,0 +1,11 @@
+name: Appel d'un déploiement front (pour lexemple)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    uses: blavogiez/proxmox-configuration/.github/workflows/frontend-deploy-website.yml@main
+    secrets: inherit

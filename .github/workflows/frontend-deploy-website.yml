@@ -1,48 +1,49 @@
-name: (FRONTEND) - Deploiement de tous les sites décrits
+name: Déploiement frontend sur une VM ayant Caddy
 
 on:
-  push:
-    branches: [main, frontend/*]
-  workflow_dispatch:
+  workflow_call:
+    secrets:
+      FRONT_SSH_KEY:
+        required: true
+      FRONT_HOST:
+        required: true
+      FRONT_USER:
+        required: true
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
-  deploy:
+  frontend-deployment:
     runs-on: self-hosted
     steps:
-      - name: Config SSH
-        uses: webfactory/ssh-agent@v0.7.0
+      - uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.FRONT_SSH_KEY }}
+          log-public-key: false
 
-      - name: Config SSH no strict host checking
-        run: |
+      - run: |
           mkdir -p ~/.ssh
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
       - uses: actions/checkout@v4
+        with:
+          path: blavogiez/action/frontend-deployment/caller
 
-      - name: Installer ansible
-        run: |
+      - uses: actions/checkout@v4
+        with:
+          repository: blavogiez/proxmox-configuration
+          path: blavogiez/action/frontend-deployment/infra
+
+      - run: |
           pipx install ansible-core
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          export PATH="$HOME/.local/bin:$PATH"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Appeler les playbooks pour les sites
-        env:
+      - env:
+          CALLER_DIR: ${{ github.workspace }}/blavogiez/action/frontend-deployment/caller
           FRONT_HOST: ${{ secrets.FRONT_HOST }}
           FRONT_USER: ${{ secrets.FRONT_USER }}
         run: |
-          ./websites/deploy_all.sh
-
-# job test après ?
-          
+          cd "$GITHUB_WORKSPACE/blavogiez/action/frontend-deployment/infra" 2>/dev/null
+          python3 websites/deploy_all.py

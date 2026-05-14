@@ -2,25 +2,27 @@
 - hosts: all
   gather_facts: false
   vars:
-    website_domain: "{{ lookup('env', 'WEBSITE_DOMAIN') }}"
+    website_primary_domain: "{{ lookup('env', 'WEBSITE_PRIMARY_DOMAIN') }}"
+    website_domains: "{{ lookup('env', 'WEBSITE_DOMAINS').split(',') }}"
+    website_source_dir: "{{ lookup('env', 'WEBSITE_SOURCE_DIR') }}"
   tasks:
     - name: Cleanup de packages qui polluent avant de copier
-      ansible.builtin.file:  
-        path: "../../websites/deploy/{{ website_domain }}/node_modules"
-        state: absent   
+      ansible.builtin.file:
+        path: "{{ website_source_dir }}/node_modules"
+        state: absent
       delegate_to: localhost
 
     - name: Creer le repertoire web
       ansible.builtin.file:
-        path: /var/www/{{ website_domain }}
+        path: /var/www/{{ website_primary_domain }}
         state: directory
         mode: "0755"
       become: true
 
     - name: Copier le site à build vers /var/www
       ansible.builtin.copy:
-        src: ../../websites/deploy/{{ website_domain }}/
-        dest: /var/www/build/{{ website_domain }}
+        src: "{{ website_source_dir }}/"
+        dest: /var/www/build/{{ website_primary_domain }}
         mode: "0644"
         directory_mode: "0755"
       become: true
@@ -37,17 +39,17 @@
     - name: Installer les dépendances npm
       ansible.builtin.command:
         cmd: npm ci
-        chdir: /var/www/build/{{ website_domain }}
+        chdir: /var/www/build/{{ website_primary_domain }}
 
     - name: Build le frontend
       ansible.builtin.command:
         cmd: npm run build
-        chdir: /var/www/build/{{ website_domain }}
+        chdir: /var/www/build/{{ website_primary_domain }}
 
     - name: Copier le build vers /var/www/
       ansible.builtin.copy:
-        src: /var/www/build/{{ website_domain }}/dist/
-        dest: /var/www/{{ website_domain }}/
+        src: /var/www/build/{{ website_primary_domain }}/dist/
+        dest: /var/www/{{ website_primary_domain }}/
         remote_src: true
         mode: "0644"
         directory_mode: "0755"
@@ -55,7 +57,7 @@
 
     - name: Fixer les permissions sur /var/www/
       ansible.builtin.file:
-        path: /var/www/{{ website_domain }}
+        path: /var/www/{{ website_primary_domain }}
         state: directory
         mode: "0755"
         recurse: true
@@ -78,25 +80,27 @@
     - name: Update la config caddy du CT front
       ansible.builtin.blockinfile:
         path: /etc/caddy/Caddyfile
-        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ website_domain }}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ website_primary_domain }}"
         append_newline: true
         prepend_newline: true
         block: |
-          http://{{ website_domain }} {
-              root * /var/www/{{ website_domain }}
+          {% for domain in website_domains %}http://{{ domain }}{% if not loop.last %}, {% endif %}{% endfor %} {
+              root * /var/www/{{ website_primary_domain }}
               try_files {path} /index.html
               file_server
           }
       become: true
-      
+
     - name: Update le portail (portal.blavogiez.fr)
       ansible.builtin.blockinfile:
         path: /var/www/portal.blavogiez.fr/index.html
-        marker: "<!--{mark} ANSIBLE MANAGED BLOCK {{ website_domain }}-->"
+        marker: "<!--{mark} ANSIBLE MANAGED BLOCK {{ website_primary_domain }}-->"
         append_newline: true
         prepend_newline: true
         block: |
-          <p><a href="https://{{ website_domain }}">{{ website_domain }}</a></p>
+          {% for domain in website_domains %}
+          <p><a href="https://{{ domain }}">{{ domain }}</a></p>
+          {% endfor %}
       become: true
 
     - name: Redemarrer Caddy
