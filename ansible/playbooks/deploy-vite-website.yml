@@ -88,6 +88,16 @@
               file_server
           }
       become: true
+      
+    - name: Update le portail (portal.blavogiez.fr)
+      ansible.builtin.blockinfile:
+        path: /var/www/portal.blavogiez.fr/index.html
+        marker: "<!--{mark} ANSIBLE MANAGED BLOCK {{ website_domain }}-->"
+        append_newline: true
+        prepend_newline: true
+        block: |
+          <p><a href="https://{{ website_domain }}">{{ website_domain }}</a></p>
+      become: true
 
     - name: Redemarrer Caddy
       ansible.builtin.service:
