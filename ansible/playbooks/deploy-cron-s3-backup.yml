@@ -1,0 +1,19 @@
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/cron_module.html
+- hosts: all
+  gather_facts: false
+  vars: 
+    backup_path: "{{ lookup('env', 'BACKUP_PATH') }}"
+  tasks:
+    - name: Copier le script de sauvegarde
+      ansible.builtin.copy:
+        src: ../../backups/cron-rclone.sh
+        dest: "{{ backup_path }}"
+        mode: 744
+        directory_mode: 755
+        
+    - name: Setup cron "Sauvegarde + exportation s3 + clean local"
+      ansible.builtin.cron:
+        name: "Sauvegarde + exportation s3 + clean local"
+        minute: "0"
+        hour: "2"
+        job: "/bin/sh -c '{{ backup_path }}/cron-rclone.sh' >> {{ backup_path }}/whole-script.log "
