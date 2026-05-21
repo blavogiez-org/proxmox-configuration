@@ -1,0 +1,7 @@
+endpoint            = "https://<proxmox-host>:8006/api2/json"
+api_token           = "<user>@<realm>!<token-id>=<secret>"  # realm: pam, pve, etc.
+ssh_public_key_path = "~/.ssh/id_rsa.pub"
+runner_token        = "<github-runner-token>"
+
+runner_vm_ip        = "192.168.1.148"
+gateway             = "192.168.60.254"
