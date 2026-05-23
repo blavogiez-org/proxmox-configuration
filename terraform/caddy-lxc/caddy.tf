@@ -1,11 +1,11 @@
 
-resource "proxmox_virtual_environment_container" "caddy" {
+resource "proxmox_virtual_environment_container" "caddy-ct" {
   node_name    = var.proxmox_node
   started      = true
   unprivileged = false
 
   initialization {
-    hostname = "caddy"
+    hostname = "caddy-ct"
     ip_config {
       ipv4 {
         address = "${var.caddy_ip}/24"

@@ -5,7 +5,7 @@
 set -euo pipefail
 
 S3_PROVIDER="scaleway"
-BUCKET_NAME="proxmox-backups"
+BUCKET_NAME="blavogiez-proxmox-backups"
 
 RETENT=true
 RETENTION="3d"
@@ -23,7 +23,7 @@ if [[ "$RETENT" == "true" ]]; then
   rclone delete "$REMOTE" \
     --min-age "$RETENTION" \
     --log-file=/var/log/proxmox-scaleway-retention.log \
-    --log-level=INFO
+    --log-level=INFO || true
 fi
 
 

@@ -103,8 +103,6 @@ Le site https://portal.blavogiez.fr est mis à jour à chaque nouveau déploieme
 
 **Quelques idées d'améliorations quand j'aurai du temps**
 
-Idéalement, j'aimerais à terme avoir un playbook qui déploit tous les sites décrits par la configuration d'un coup, plutôt que d'appeler pour chaque site un playbook, résultant finalement en N playbooks / connexions.
-
 J'aimerais aussi utiliser un [rate limiter Caddy](https://github.com/mholt/caddy-ratelimit) paramétrable pour chaque site dans la config.
 
 Également empêcher le déploiement d'un site si son domaine est déjà présent dans la config Caddy (pris par un autre site).

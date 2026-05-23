@@ -1,5 +1,5 @@
-resource "proxmox_virtual_environment_vm" "runner-host" {
-  name      = "runner-host"
+resource "proxmox_virtual_environment_vm" "runner-vm" {
+  name      = "runner-vm"
   node_name = "homelab"
 
   cpu {
@@ -32,8 +32,8 @@ resource "proxmox_virtual_environment_vm" "runner-host" {
   initialization {
     ip_config {
       ipv4 {
-        address = var.runner_vm_ip
-        gateway = var.gateway
+        address = "${var.runner_vm_ip}/24"
+        gateway = var.network_gateway
       }
     }
 
@@ -54,7 +54,6 @@ resource "proxmox_virtual_environment_file" "runner_user_data" {
     file_name = "user-data-runner.yaml"
     data = templatefile("${path.module}/cloud-init/user-data-runner.sh.tpl", {
       ssh_public_key_path = file(var.ssh_public_key_path)
-      runner_token        = var.runner_token
     })
   }
 }

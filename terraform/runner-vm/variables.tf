@@ -15,6 +15,6 @@ variable "runner_vm_ip" {
   type = string
 }
 
-variable "gateway" {
+variable "network_gateway" {
   type = string
 }

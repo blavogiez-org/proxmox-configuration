@@ -1,5 +1,5 @@
-resource "proxmox_virtual_environment_vm" "kanboard" {
-  name      = "kanboard"
+resource "proxmox_virtual_environment_vm" "kanboard-vm" {
+  name      = "kanboard-vm"
   node_name = "homelab"
 
   cpu {
