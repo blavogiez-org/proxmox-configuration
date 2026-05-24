@@ -1,3 +1,4 @@
+# action séparée pensée pour être appelée depuis un autre dépôt (voir ../../README.md)
 name: Déploiement frontend sur une VM ayant Caddy
 
 on:
