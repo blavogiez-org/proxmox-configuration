@@ -15,3 +15,7 @@ packages:
   - pipx 
   - gpg
   - python3
+runcmd: 
+  - systemctl enable qemu-guest-agent
+  - systemctl start qemu-guest-agent
+  - curl -fsSl https://get.docker.com | sh

@@ -28,7 +28,7 @@
       # précision : on met unattended et replace car sinon il demande un input manuel
       ansible.builtin.shell:
         cmd: |
-          sudo -u admin bash -c "cd /home/admin/{{ item }}/gh_runner && ./config.sh --url {{ gh_org }} --token {{runner_token}} --unattended --replace"
+          sudo -u admin bash -c "cd /home/admin/{{ item }}/gh_runner && ./config.sh --url {{ gh_org }} --token {{runner_token}} --name {{ item }} --unattended --replace"
           bash -c "cd /home/admin/{{ item }}/gh_runner && ./svc.sh install admin"
           bash -c "cd /home/admin/{{ item }}/gh_runner && ./svc.sh start"
       become: true

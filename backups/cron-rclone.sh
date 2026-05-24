@@ -11,11 +11,11 @@ RETENT=true
 RETENTION="3d"
 DUMPDIR="/var/lib/vz/dump"
 REMOTE="${S3_PROVIDER}:${BUCKET_NAME}/homelab/vzdump"
+REMOTE_DATED="${REMOTE}/$(date +%F)"
 
 vzdump --all --dumpdir "$DUMPDIR" --mode snapshot --compress zstd
 
-
-rclone copy "$DUMPDIR" "$REMOTE" \
+rclone copy "$DUMPDIR" "$REMOTE_DATED" \
   --log-file=/var/log/proxmox-scaleway-backup.log \
   --log-level=INFO
 

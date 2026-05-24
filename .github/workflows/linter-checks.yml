@@ -1,4 +1,4 @@
-# workflow officiel https://www.checkov.io/4.Integrations/GitHub%20Actions.html
+# https://hub.docker.com/r/bridgecrew/checkov/tags
 ---
 name: Analyse statique Checkov
 on:
@@ -12,13 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.9
-          
-      - name: Test with Checkov
-        id: checkov
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: .
+      - name: Executer Checkov
+        run: |
+          docker run --rm -v "$PWD:/repo" bridgecrew/checkov:2 -d /repo
