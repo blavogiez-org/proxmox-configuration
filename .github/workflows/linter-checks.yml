@@ -9,16 +9,24 @@ on:
     branches: [main]
   workflow_dispatch:
 jobs:
-  static-analysis:
+  # 2 jobs séparés pour parallélisme et indépendance
+  static-analysis-checkov:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
 
       # on monte simplement le dépôt en bind mount
+      # quiet pour montrer que les échecs
       - name: Analyse checkov
         run: |
-          docker run --rm -v "$PWD:/repo" bridgecrew/checkov:2 -d /repo
+          docker run --rm -v "$PWD:/repo" bridgecrew/checkov:2 -d /repo --quiet
 
+  static-analysis-tflint:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      # on monte simplement le dépôt en bind mount
       - name: Analyse TFLint
         run: |
-          docker run --rm -v "$PWD:/repo" -w /repo ghcr.io/terraform-linters/tflint:latest
+          docker run --rm -v "$PWD:/repo" -w /repo ghcr.io/terraform-linters/tflint:latest --recursive
