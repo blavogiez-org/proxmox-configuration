@@ -3,11 +3,15 @@
 
 # on fait en docker car les runners self hosted peuvent différer de packages
 ---
-name: Analyse statique du dépôt (linters Checkov / TFLint)
+name: Analyse statique du dépôt
 on:
   push:
     branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: read
+  
 jobs:
   # 2 jobs séparés pour parallélisme et indépendance
   static-analysis-checkov:

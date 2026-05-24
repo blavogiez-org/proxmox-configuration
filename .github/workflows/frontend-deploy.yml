@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  
 jobs:
   deploy:
     uses: blavogiez-org/proxmox-configuration/.github/workflows/frontend-deploy-website.yml@main
