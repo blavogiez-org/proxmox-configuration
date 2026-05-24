@@ -1,0 +1,24 @@
+# workflow officiel https://www.checkov.io/4.Integrations/GitHub%20Actions.html
+---
+name: Analyse statique Checkov
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  build:
+
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+          
+      - name: Test with Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
