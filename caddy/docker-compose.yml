@@ -1,0 +1,20 @@
+services:
+  caddy:
+    container_name: caddy
+    image: caddy-ratelimit:local
+    build:
+      context: .
+    restart: unless-stopped
+    network_mode: host
+    user: root
+    volumes:
+      - /etc/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /var/www:/var/www:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+    name: caddy_data
+  caddy_config:
+    name: caddy_config

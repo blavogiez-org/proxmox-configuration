@@ -6,6 +6,9 @@
     website_domains: "{{ lookup('env', 'WEBSITE_DOMAINS').split(',') }}"
     website_source_dir: "{{ lookup('env', 'WEBSITE_SOURCE_DIR') }}"
     website_referenced: "{{ lookup('env', 'WEBSITE_REFERENCED') | default('true', true) | bool }}"
+    website_rate_limit: "{{ lookup('env', 'WEBSITE_RATE_LIMIT') | default('0', true) | int }}"
+    website_rate_limit_zone: "{{ lookup('env', 'WEBSITE_RATE_LIMIT_ZONE') }}"
+    infra_dir: "{{ lookup('env', 'INFRA_DIR') }}"
   tasks:
     - name: Cleanup de packages qui polluent avant de copier
       ansible.builtin.file:
@@ -64,18 +67,68 @@
         recurse: true
       become: true
 
-    - name: Ajouter le repo Caddy
-      ansible.builtin.shell:
-        cmd: curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/setup.deb.sh' | bash
+    - name: Creer le repertoire de build Caddy
+      ansible.builtin.file:
+        path: /opt/caddy-ratelimit
+        state: directory
+        mode: "0755"
       become: true
-      args:
-        creates: /etc/apt/sources.list.d/caddy-stable.list
 
-    - name: Installer Caddy
-      ansible.builtin.apt:
-        name: caddy
-        state: present
-        update_cache: true
+    - name: Copier le Dockerfile Caddy rate limit
+      ansible.builtin.copy:
+        src: "{{ infra_dir }}/caddy/Dockerfile"
+        dest: /opt/caddy-ratelimit/Dockerfile
+        mode: "0644"
+      become: true
+
+    - name: Copier la config Docker Compose Caddy
+      ansible.builtin.copy:
+        src: "{{ infra_dir }}/caddy/docker-compose.yml"
+        dest: /opt/caddy-ratelimit/docker-compose.yml
+        mode: "0644"
+      become: true
+
+    - name: Build l'image Caddy rate limit
+      ansible.builtin.command:
+        cmd: docker compose -f /opt/caddy-ratelimit/docker-compose.yml build
+      become: true
+
+    - name: Creer le repertoire Caddy
+      ansible.builtin.file:
+        path: /etc/caddy
+        state: directory
+        mode: "0755"
+      become: true
+
+    - name: Installer la base du Caddyfile front
+      ansible.builtin.blockinfile:
+        path: /etc/caddy/Caddyfile
+        create: true
+        marker: "# {mark} ANSIBLE MANAGED DEBUT CADDY"
+        insertbefore: BOF
+        append_newline: true
+        prepend_newline: false
+        block: |
+          {
+              auto_https off
+
+              servers {
+                  trusted_proxies static private_ranges
+                  trusted_proxies_strict
+                  client_ip_headers CF-Connecting-IP X-Forwarded-For
+              }
+          }
+
+          (site_rate_limit) {
+              rate_limit {
+                  zone {args[0]} {
+                      key {client_ip}
+                      events {args[1]}
+                      window 1m
+                      ipv6_prefix 64
+                  }
+              }
+          }
       become: true
 
     - name: Update la config caddy du CT front
@@ -86,9 +139,18 @@
         prepend_newline: true
         block: |
           {% for domain in website_domains %}http://{{ domain }}{% if not loop.last %}, {% endif %}{% endfor %} {
+          {% if website_rate_limit | int > 0 %}
+              route {
+                  import site_rate_limit {{ website_rate_limit_zone }} {{ website_rate_limit }}
+                  root * /var/www/{{ website_primary_domain }}
+                  try_files {path} /index.html
+                  file_server
+              }
+          {% else %}
               root * /var/www/{{ website_primary_domain }}
               try_files {path} /index.html
               file_server
+          {% endif %}
           }
       become: true
 
@@ -113,9 +175,17 @@
       become: true
       when: not (website_referenced | bool)
 
-    - name: Redemarrer Caddy
-      ansible.builtin.service:
-        name: caddy
-        state: restarted
-        enabled: true
+    - name: Valider le Caddyfile
+      ansible.builtin.command:
+        cmd: docker compose -f /opt/caddy-ratelimit/docker-compose.yml run --rm --no-deps caddy caddy validate --config /etc/caddy/Caddyfile
+      become: true
+
+    - name: Demarrer Caddy Docker
+      ansible.builtin.command:
+        cmd: docker compose -f /opt/caddy-ratelimit/docker-compose.yml up -d --build
+      become: true
+
+    - name: Recharger Caddy
+      ansible.builtin.command:
+        cmd: docker compose -f /opt/caddy-ratelimit/docker-compose.yml exec -T caddy caddy reload --config /etc/caddy/Caddyfile
       become: true

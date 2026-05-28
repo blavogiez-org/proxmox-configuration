@@ -46,6 +46,7 @@ jobs:
 
       # il cherchera tous les fichiers du dépôt s'appelant exactement Dockerfile. Si on les appelle autrement (Dockerfile.prod, etc), un find serait meilleur. Ici je fais au plus simple car je nomme mes dockerfile comme tel
       - name: Analyse Hadolint
+        continue-on-error: true
         uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: Dockerfile

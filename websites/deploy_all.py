@@ -24,11 +24,22 @@ websites = config.get("websites") or []
 if not websites:
     sys.exit(f"Config vide: {config_file}")
 
+global_rate_limit = config.get("rate_limit", 0)
+if global_rate_limit is False:
+    global_rate_limit = 0
+if isinstance(global_rate_limit, bool) or not isinstance(global_rate_limit, int) or global_rate_limit < 0:
+    sys.exit("rate_limit global doit etre un entier >= 0 ou false")
+
 for website in websites:
     source_path = website.get("path")
     site_type = website.get("type")
     domains = website.get("domains")
     referenced = website.get("referenced", True)
+    rate_limit = website.get("rate_limit", global_rate_limit)
+    if rate_limit is False:
+        rate_limit = 0
+    if isinstance(rate_limit, bool) or not isinstance(rate_limit, int) or rate_limit < 0:
+        sys.exit(f"rate_limit doit etre un entier >= 0 ou false pour {source_path}")
 
     if site_type not in {"html", "vite"}:
         sys.exit(f"type invalide pour {source_path}: {site_type}")
@@ -48,10 +59,13 @@ for website in websites:
         sys.exit(f"Sources introuvables: {source_dir}")
 
     env = os.environ.copy()
+    env["INFRA_DIR"] = str(repo_dir)
     env["WEBSITE_SOURCE_DIR"] = str(source_dir)
     env["WEBSITE_PRIMARY_DOMAIN"] = domains[0]
     env["WEBSITE_DOMAINS"] = ",".join(domains)
     env["WEBSITE_REFERENCED"] = "true" if referenced else "false"
+    env["WEBSITE_RATE_LIMIT"] = str(rate_limit)
+    env["WEBSITE_RATE_LIMIT_ZONE"] = domains[0].replace(".", "_").replace("-", "_")
 
     portal_status = "avec portail" if referenced else "sans portail"
     print(f"déploiement de {domains[0]} ({site_type}, {portal_status})", flush=True)

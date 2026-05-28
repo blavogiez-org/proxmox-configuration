@@ -1,9 +1,6 @@
+rate_limit: 5
+
 websites:
-  # - path: websites/deploy/openlatex.blavogiez.fr
-  #   type: vite
-  #   domains:
-  #     - openlatex.blavogiez.fr
-  #     - otx.blavogiez.fr
   - path: websites/deploy/test.blavogiez.fr
     type: html
     referenced: false

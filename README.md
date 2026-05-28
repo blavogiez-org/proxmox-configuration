@@ -34,6 +34,8 @@ Dans n'importe quel projet, le fichier `front_deployment.yml` placé à la racin
 
 *Exemple de configuration :*
 ```yaml
+rate_limit: 300
+
 websites:
   - path: websites/deploy/test.blavogiez.fr
     type: html
@@ -41,6 +43,13 @@ websites:
     domains: 
       - test.blavogiez.fr
       - health.blavogiez.fr
+
+  - path: websites/deploy/admin.blavogiez.fr
+    type: vite
+    referenced: false
+    domains:
+      - admin.blavogiez.fr
+    rate_limit: 60
 ```
 
 *Exemple d'appel de la CI/CD réutilisable :*
@@ -64,7 +73,7 @@ jobs:
 
 Le runner clone le dépôt appelant, puis execute [un script Python de déploiement](websites/deploy_all.py), qui lira la configuration racine (`front_deployment.yml`) du dépôt cloné, pour appeler [un playbook Ansible de déploiement](ansible/playbooks/deploy-vite-website.yml) pour chaque site décrit par la configuration.
 
-Ce playbook copie le site en variable dans le répertoire `/var/www`, le build si besoin (Si c'est un site Vite) et ajoute ensuite une entrée dans la configuration Caddy (avec tous les domaines demandés).
+Ce playbook copie le site en variable dans le répertoire `/var/www`, le build si besoin (Si c'est un site Vite) et ajoute ensuite une entrée dans la configuration Caddy (avec tous les domaines demandés). Caddy est lancé via Docker Compose avec une image locale incluant le plugin de rate limit.
 
 Ainsi, le site est déployé en moins de 30 secondes sur une CI/CD et une configuration très minimale.
 
@@ -72,25 +81,34 @@ Ainsi, le site est déployé en moins de 30 secondes sur une CI/CD et une config
 ```caddyfile
 # BEGIN ANSIBLE MANAGED BLOCK test.blavogiez.fr
 http://test.blavogiez.fr, http://health.blavogiez.fr {
-    root * /var/www/test.blavogiez.fr
-    try_files {path} /index.html
-    file_server
+    route {
+        import site_rate_limit test_blavogiez_fr 300
+        root * /var/www/test.blavogiez.fr
+        try_files {path} /index.html
+        file_server
+    }
 }
 # END ANSIBLE MANAGED BLOCK test.blavogiez.fr
 
 # BEGIN ANSIBLE MANAGED BLOCK openlatex.blavogiez.fr
 http://openlatex.blavogiez.fr {
-    root * /var/www/openlatex.blavogiez.fr
-    try_files {path} /index.html
-    file_server
+    route {
+        import site_rate_limit openlatex_blavogiez_fr 300
+        root * /var/www/openlatex.blavogiez.fr
+        try_files {path} /index.html
+        file_server
+    }
 }
 # END ANSIBLE MANAGED BLOCK openlatex.blavogiez.fr
 
 # BEGIN ANSIBLE MANAGED BLOCK portal.blavogiez.fr
 http://portal.blavogiez.fr {
-    root * /var/www/portal.blavogiez.fr
-    try_files {path} /index.html
-    file_server
+    route {
+        import site_rate_limit portal_blavogiez_fr 300
+        root * /var/www/portal.blavogiez.fr
+        try_files {path} /index.html
+        file_server
+    }
 }
 # END ANSIBLE MANAGED BLOCK portal.blavogiez.fr
 ```
@@ -99,11 +117,11 @@ Concrètement, cette configuration permet d'avoir une exposition internet gratui
 
 Le site https://portal.blavogiez.fr est mis à jour à chaque nouveau déploiement quand `referenced: true` est défini pour le site (et la magie de l'idempotence Ansible fait qu'il n'y aura jamais de doublon).
 
+Le `rate_limit` global est appliqué à tous les sites. Sa valeur correspond au nombre de requêtes par minute et par IP. Un site peut définir son propre `rate_limit`, ou le désactiver avec `rate_limit: false`.
+
 ##### Améliorations
 
 **Quelques idées d'améliorations quand j'aurai du temps**
-
-J'aimerais aussi utiliser un [rate limiter Caddy](https://github.com/mholt/caddy-ratelimit) paramétrable pour chaque site dans la config.
 
 Également empêcher le déploiement d'un site si son domaine est déjà présent dans la config Caddy (pris par un autre site).
 
