@@ -1,0 +1,36 @@
+# pensé pour une organisation github (runners s'appliquant à tous les dépôts de l'organisation)
+# explication du besoin des multi dossiers runners : https://github.com/orgs/community/discussions/26258
+- hosts: all
+  gather_facts: false
+  user: admin # ma convention d'utilisateur
+  vars: 
+    runner_count: "{{ lookup('env', 'RUNNER_COUNT') }}"
+    runner_token: "{{ lookup('env', 'RUNNER_TOKEN') }}"
+    runner_names: "{{ lookup('env', 'RUNNER_NAMES').split(',') | map('trim') | list }}"
+    gh_org: "https://github.com/blavogiez-org"
+  tasks:  
+    - name: Téléchargement d'un dossier gh runner (procedure officielle gh)
+      ansible.builtin.shell: 
+        cmd: |
+          mkdir -p /home/admin/gh_runner
+          curl -o /home/admin/gh_runner/actions-runner-linux-x64.tar.gz -L https://github.com/actions/runner/releases/download/v2.323.0/actions-runner-linux-x64-2.323.0.tar.gz
+          tar xzf /home/admin/gh_runner/actions-runner-linux-x64.tar.gz -C /home/admin/gh_runner
+          chown -R admin:admin /home/admin/gh_runner
+
+    - name: Copier le dossier de base pour un nom de runner en variable
+      ansible.builtin.copy: 
+        src: /home/admin/gh_runner
+        dest: /home/admin/{{ item }}
+        remote_src: true
+      loop: "{{ runner_names }}"
+
+    - name: Lancer les runners (svc en utilisant le script gh)
+      # précision : on met unattended et replace car sinon il demande un input manuel
+      ansible.builtin.shell:
+        cmd: |
+          sudo -u admin bash -c "cd /home/admin/{{ item }}/gh_runner && ./config.sh --url {{ gh_org }} --token {{runner_token}} --name {{ item }} --unattended --replace"
+          bash -c "cd /home/admin/{{ item }}/gh_runner && ./svc.sh install admin"
+          bash -c "cd /home/admin/{{ item }}/gh_runner && ./svc.sh start"
+      become: true
+      loop: "{{ runner_names }}"
+      
