@@ -21,6 +21,12 @@ variable "proxmox_ssh_agent" {
   default     = false
 }
 
+variable "proxmox_interface" {
+  description = "Nom de l'interface réseau de la machine."
+  type        = string
+  default     = "eno0"
+}
+
 variable "proxmox_ssh_username" {
   description = "Utilisateur SSH sur le node Proxmox. Requis pour uploader les snippets/hook scripts."
   type        = string
