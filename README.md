@@ -4,7 +4,11 @@
 
 Ce projet est développé et maintenu par **Baptiste Lavogiez** et **Jonas Facon**, avec pour objectif de proposer une infrastructure serveur fiable, automatisée et reproductible autour de Proxmox VE.
 
-### Nous contacter
+Ce dépôt a vocation à être la source commune de nos infrastructures Proxmox personnelles (templates, outils d'administration type VPN...). Puisqu'ayant chacun un serveur avec des besoins différents, ce dépôt sera forké.
+
+Nous privilégierons une approche Infrastructure as Code et similaire aux principes GitOps.
+
+### Réalisé par
 
 | Auteur            | Email                                                             | GitHub                                                           |
 | ----------------- | ----------------------------------------------------------------- | ---------------------------------------------------------------- |
