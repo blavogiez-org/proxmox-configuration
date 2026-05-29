@@ -43,6 +43,7 @@ jobs:
 
       - env:
           CALLER_DIR: ${{ github.workspace }}/blavogiez/action/frontend-deployment/caller
+          CALLER_REPOSITORY: ${{ github.repository }}
           FRONT_HOST: ${{ secrets.FRONT_HOST }}
           FRONT_USER: ${{ secrets.FRONT_USER }}
         run: |

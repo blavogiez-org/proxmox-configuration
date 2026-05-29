@@ -8,7 +8,7 @@ services:
     network_mode: host
     user: root
     volumes:
-      - /etc/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /etc/caddy:/etc/caddy:ro
       - /var/www:/var/www:ro
       - caddy_data:/data
       - caddy_config:/config

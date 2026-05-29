@@ -1,7 +1,5 @@
 # Configuration d'une infrastructure Proxmox
 
-**(En cours d'écriture au 14 mai 2026)**
-
 ## Informations de développement
 
 **Réalisé par** : Baptiste Lavogiez  
@@ -20,7 +18,7 @@ Exemple de projet hébergé :
 
 ## Modèle
 
-L'objectif de ce dépôt est de centraliser toute la configuration du serveur en une source de vérité unique, soit une approche *GitOps*. 
+L'objectif de ce dépôt est de centraliser toute la configuration du serveur en une source de vérité unique, soit une approche inspirée du *GitOps*. 
 
 ### Automatisations
 
@@ -29,7 +27,7 @@ Mes principaux cas d'usage ayant été la migration de [mon projet OpenLaTeX](ht
 
 #### Déploiement de site
 
-Dans n'importe quel projet, le fichier `front_deployment.yml` placé à la racine, couplé à [l'action CI/CD réutilisable](.github/workflows/frontend-deploy-website.yml) de déploiement, déclenchera un déploiement automatique de site (HTML / Vite) sur le serveur, plus précisément sur une CT / LXC (une virtualisation allégée) avec Caddy (un reverse proxy).
+Dans n'importe quel projet, le fichier `domains_deployment.yml` placé à la racine, couplé à [l'action CI/CD réutilisable](.github/workflows/frontend-deploy-website.yml) de déploiement, déclenchera un déploiement automatique de site (HTML / Vite) sur le serveur, plus précisément sur une CT / LXC (une virtualisation allégée) avec Caddy (un reverse proxy).
 
 
 *Exemple de configuration :*
@@ -71,15 +69,41 @@ jobs:
       FRONT_USER: ${{ secrets.FRONT_USER }}
 ```
 
-Le runner clone le dépôt appelant, puis execute [un script Python de déploiement](websites/deploy_all.py), qui lira la configuration racine (`front_deployment.yml`) du dépôt cloné, pour appeler [un playbook Ansible de déploiement](ansible/playbooks/deploy-vite-website.yml) pour chaque site décrit par la configuration.
+Le runner clone le dépôt appelant, puis execute [un script Python de déploiement](websites/deploy_all.py), qui lira la configuration racine (`domains_deployment.yml`) du dépôt cloné, pour appeler [un playbook Ansible de déploiement](ansible/playbooks/deploy-websites.yml) avec tous les sites décrits par la configuration.
 
-Ce playbook copie le site en variable dans le répertoire `/var/www`, le build si besoin (Si c'est un site Vite) et ajoute ensuite une entrée dans la configuration Caddy (avec tous les domaines demandés). Caddy est lancé via Docker Compose avec une image locale incluant le plugin de rate limit.
+Ce playbook recrée les sites dans `/var/www`, les build si besoin (si c'est un site Vite) et recrée le dossier Caddy du dépôt appelant dans `/etc/caddy/sites/<owner__repo>`. Chaque website produit un fichier `.caddy` contenant tous ses domaines. Caddy est lancé via Docker Compose avec une image locale incluant le plugin de rate limit.
 
 Ainsi, le site est déployé en moins de 30 secondes sur une CI/CD et une configuration très minimale.
 
-*Une configuration Caddy après des appels sur différents projets :*
+*La configuration Caddy principale reste stable :*
 ```caddyfile
-# BEGIN ANSIBLE MANAGED BLOCK test.blavogiez.fr
+{
+    auto_https off
+
+    servers {
+        trusted_proxies static private_ranges
+        trusted_proxies_strict
+        client_ip_headers CF-Connecting-IP X-Forwarded-For
+    }
+}
+
+(site_rate_limit) {
+    rate_limit {
+        zone {args[0]} {
+            key {client_ip}
+            events {args[1]}
+            window 1m
+            ipv6_prefix 64
+        }
+    }
+}
+
+import sites/*/*.caddy
+```
+
+*Chaque site a ensuite son propre fragment :*
+```caddyfile
+# /etc/caddy/sites/blavogiez__mon-depot/test.blavogiez.fr.caddy
 http://test.blavogiez.fr, http://health.blavogiez.fr {
     route {
         import site_rate_limit test_blavogiez_fr 300
@@ -88,34 +112,11 @@ http://test.blavogiez.fr, http://health.blavogiez.fr {
         file_server
     }
 }
-# END ANSIBLE MANAGED BLOCK test.blavogiez.fr
-
-# BEGIN ANSIBLE MANAGED BLOCK openlatex.blavogiez.fr
-http://openlatex.blavogiez.fr {
-    route {
-        import site_rate_limit openlatex_blavogiez_fr 300
-        root * /var/www/openlatex.blavogiez.fr
-        try_files {path} /index.html
-        file_server
-    }
-}
-# END ANSIBLE MANAGED BLOCK openlatex.blavogiez.fr
-
-# BEGIN ANSIBLE MANAGED BLOCK portal.blavogiez.fr
-http://portal.blavogiez.fr {
-    route {
-        import site_rate_limit portal_blavogiez_fr 300
-        root * /var/www/portal.blavogiez.fr
-        try_files {path} /index.html
-        file_server
-    }
-}
-# END ANSIBLE MANAGED BLOCK portal.blavogiez.fr
 ```
 
 Concrètement, cette configuration permet d'avoir une exposition internet gratuite, sans aucune gestion de certificats (grâce à Caddy), avec une configuration minimale, étant très utile pour des projets de groupe.
 
-Le site https://portal.blavogiez.fr est mis à jour à chaque nouveau déploiement quand `referenced: true` est défini pour le site (et la magie de l'idempotence Ansible fait qu'il n'y aura jamais de doublon).
+Le site https://portal.blavogiez.fr est mis à jour à chaque nouveau déploiement quand `referenced: true` est défini pour le site. Le bloc de portail est géré par dépôt appelant, donc retirer un site du YAML retire aussi son entrée au prochain déploiement.
 
 Le `rate_limit` global est appliqué à tous les sites. Sa valeur correspond au nombre de requêtes par minute et par IP. Un site peut définir son propre `rate_limit`, ou le désactiver avec `rate_limit: false`.
 
@@ -123,7 +124,7 @@ Le `rate_limit` global est appliqué à tous les sites. Sa valeur correspond au 
 
 **Quelques idées d'améliorations quand j'aurai du temps**
 
-Également empêcher le déploiement d'un site si son domaine est déjà présent dans la config Caddy (pris par un autre site).
+Empêcher explicitement le déploiement d'un site si son domaine est déjà présent dans les fragments Caddy d'un autre dépôt. Aujourd'hui, les doublons dans le même YAML sont refusés et les collisions globales sont détectées par `caddy validate`.
 
 #### Création de ressources
 
@@ -149,4 +150,6 @@ Quelques ressources qui m'ont fait gagner du temps :
 
 - [Documentation bpg-proxmox](https://registry.terraform.io/providers/bpg/proxmox/latest/docs)
 - [Helper Scripts Proxmox](https://github.com/community-scripts/ProxmoxVE)
+- [Caddyfile import](https://caddyserver.com/docs/caddyfile/directives/import)
+- [Ansible Template](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/template_module.html)
 - [Ansible Blockinfile](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/blockinfile_module.html)

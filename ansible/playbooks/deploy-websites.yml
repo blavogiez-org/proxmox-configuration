@@ -1,0 +1,235 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    caddy_work_dir: /opt/caddy-ratelimit
+    caddy_config_dir: /etc/caddy
+    caddy_sites_dir: /etc/caddy/sites
+    repository_sites_dir: "{{ caddy_sites_dir }}/{{ caller_repository_slug }}"
+    portal_file: /var/www/portal.blavogiez.fr/index.html
+    vite_websites: "{{ websites | selectattr('type', 'equalto', 'vite') | list }}"
+    html_websites: "{{ websites | selectattr('type', 'equalto', 'html') | list }}"
+    referenced_websites: "{{ websites | selectattr('referenced') | list }}"
+  tasks:
+    - name: Nettoyer node_modules locaux pour les sites Vite
+      ansible.builtin.file:
+        path: "{{ website.source_dir }}/node_modules"
+        state: absent
+      delegate_to: localhost
+      loop: "{{ vite_websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Recreer les repertoires web
+      ansible.builtin.file:
+        path: /var/www/{{ website.primary_domain }}
+        state: absent
+      become: true
+      loop: "{{ websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Creer les repertoires web
+      ansible.builtin.file:
+        path: /var/www/{{ website.primary_domain }}
+        state: directory
+        mode: "0755"
+      become: true
+      loop: "{{ websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Copier les sites HTML vers /var/www
+      ansible.builtin.copy:
+        src: "{{ website.source_dir }}/"
+        dest: /var/www/{{ website.primary_domain }}/
+        mode: "0644"
+        directory_mode: "0755"
+      become: true
+      loop: "{{ html_websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Installer nodejs et npm si necessaire
+      ansible.builtin.apt:
+        name:
+          - nodejs
+          - npm
+        state: present
+        update_cache: true
+      become: true
+      when: vite_websites | length > 0
+
+    - name: Creer le repertoire de build des sites Vite
+      ansible.builtin.file:
+        path: /var/www/build
+        state: directory
+        mode: "0755"
+      become: true
+      when: vite_websites | length > 0
+
+    - name: Recreer les sources de build Vite
+      ansible.builtin.file:
+        path: /var/www/build/{{ website.primary_domain }}
+        state: absent
+      become: true
+      loop: "{{ vite_websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Copier les sources Vite vers /var/www/build
+      ansible.builtin.copy:
+        src: "{{ website.source_dir }}/"
+        dest: /var/www/build/{{ website.primary_domain }}/
+        mode: "0644"
+        directory_mode: "0755"
+      become: true
+      loop: "{{ vite_websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Installer les dependances npm
+      ansible.builtin.command:
+        cmd: npm ci
+        chdir: /var/www/build/{{ website.primary_domain }}
+      become: true
+      loop: "{{ vite_websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Build les frontends Vite
+      ansible.builtin.command:
+        cmd: npm run build
+        chdir: /var/www/build/{{ website.primary_domain }}
+      become: true
+      loop: "{{ vite_websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Copier les builds Vite vers /var/www
+      ansible.builtin.copy:
+        src: /var/www/build/{{ website.primary_domain }}/dist/
+        dest: /var/www/{{ website.primary_domain }}/
+        remote_src: true
+        mode: "0644"
+        directory_mode: "0755"
+      become: true
+      loop: "{{ vite_websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Fixer les permissions web
+      ansible.builtin.file:
+        path: /var/www/{{ website.primary_domain }}
+        state: directory
+        mode: "0755"
+        recurse: true
+      become: true
+      loop: "{{ websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Creer le repertoire de build Caddy
+      ansible.builtin.file:
+        path: "{{ caddy_work_dir }}"
+        state: directory
+        mode: "0755"
+      become: true
+
+    - name: Copier le Dockerfile Caddy rate limit
+      ansible.builtin.copy:
+        src: "{{ infra_dir }}/caddy/Dockerfile"
+        dest: "{{ caddy_work_dir }}/Dockerfile"
+        mode: "0644"
+      become: true
+
+    - name: Copier la config Docker Compose Caddy
+      ansible.builtin.copy:
+        src: "{{ infra_dir }}/caddy/docker-compose.yml"
+        dest: "{{ caddy_work_dir }}/docker-compose.yml"
+        mode: "0644"
+      become: true
+
+    - name: Build l'image Caddy rate limit
+      ansible.builtin.command:
+        cmd: "docker compose -f {{ caddy_work_dir }}/docker-compose.yml build"
+      become: true
+
+    - name: Creer les repertoires Caddy
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      become: true
+      loop:
+        - "{{ caddy_config_dir }}"
+        - "{{ caddy_sites_dir }}"
+
+    - name: Installer le Caddyfile front
+      ansible.builtin.template:
+        src: "{{ infra_dir }}/ansible/templates/caddy/Caddyfile.j2"
+        dest: "{{ caddy_config_dir }}/Caddyfile"
+        mode: "0644"
+      become: true
+
+    - name: Recreer le dossier Caddy du depot appelant
+      ansible.builtin.file:
+        path: "{{ repository_sites_dir }}"
+        state: absent
+      become: true
+
+    - name: Creer le dossier Caddy du depot appelant
+      ansible.builtin.file:
+        path: "{{ repository_sites_dir }}"
+        state: directory
+        mode: "0755"
+      become: true
+
+    - name: Generer les fragments Caddy des websites
+      ansible.builtin.template:
+        src: "{{ infra_dir }}/ansible/templates/caddy/website.caddy.j2"
+        dest: "{{ repository_sites_dir }}/{{ website.caddy_fragment }}"
+        mode: "0644"
+      become: true
+      loop: "{{ websites }}"
+      loop_control:
+        loop_var: website
+
+    - name: Update le portail pour le depot appelant
+      ansible.builtin.blockinfile:
+        path: "{{ portal_file }}"
+        marker: "<!--{mark} ANSIBLE MANAGED REPOSITORY {{ caller_repository_slug }}-->"
+        append_newline: true
+        prepend_newline: true
+        block: |
+          {% for website in referenced_websites %}
+          {% for domain in website.domains %}
+          <p><a href="https://{{ domain }}">{{ domain }}</a></p>
+          {% endfor %}
+          {% endfor %}
+      become: true
+      when: referenced_websites | length > 0
+
+    - name: Retirer le depot du portail si aucun site reference
+      ansible.builtin.blockinfile:
+        path: "{{ portal_file }}"
+        marker: "<!--{mark} ANSIBLE MANAGED REPOSITORY {{ caller_repository_slug }}-->"
+        state: absent
+      become: true
+      when: referenced_websites | length == 0
+
+    - name: Valider le Caddyfile
+      ansible.builtin.command:
+        cmd: "docker compose -f {{ caddy_work_dir }}/docker-compose.yml run --rm --no-deps caddy caddy validate --config {{ caddy_config_dir }}/Caddyfile"
+      become: true
+      changed_when: false
+
+    - name: Demarrer Caddy Docker
+      ansible.builtin.command:
+        cmd: "docker compose -f {{ caddy_work_dir }}/docker-compose.yml up -d --build"
+      become: true
+
+    - name: Recharger Caddy
+      ansible.builtin.command:
+        cmd: "docker compose -f {{ caddy_work_dir }}/docker-compose.yml exec -T caddy caddy reload --config {{ caddy_config_dir }}/Caddyfile"
+      become: true

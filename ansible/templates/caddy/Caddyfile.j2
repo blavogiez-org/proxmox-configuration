@@ -1,0 +1,22 @@
+{
+    auto_https off
+
+    servers {
+        trusted_proxies static private_ranges
+        trusted_proxies_strict
+        client_ip_headers CF-Connecting-IP X-Forwarded-For
+    }
+}
+
+(site_rate_limit) {
+    rate_limit {
+        zone {args[0]} {
+            key {client_ip}
+            events {args[1]}
+            window 1m
+            ipv6_prefix 64
+        }
+    }
+}
+
+import sites/*/*.caddy

@@ -1,0 +1,14 @@
+{% for domain in website.domains %}http://{{ domain }}{% if not loop.last %}, {% endif %}{% endfor %} {
+{% if website.rate_limit | int > 0 %}
+    route {
+        import site_rate_limit {{ website.rate_limit_zone }} {{ website.rate_limit }}
+        root * /var/www/{{ website.primary_domain }}
+        try_files {path} /index.html
+        file_server
+    }
+{% else %}
+    root * /var/www/{{ website.primary_domain }}
+    try_files {path} /index.html
+    file_server
+{% endif %}
+}

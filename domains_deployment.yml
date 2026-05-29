@@ -4,6 +4,6 @@ websites:
   - path: websites/deploy/test.blavogiez.fr
     type: html
     referenced: false
-    domains: 
+    domains:
       - test.blavogiez.fr
       - health.blavogiez.fr
