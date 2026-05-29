@@ -6,5 +6,5 @@ resource "proxmox_virtual_environment_network_linux_vlan" "this" {
   vlan      = var.vlan_id
   address   = var.address
 
-  comment   = var.comment
+  comment = var.comment
 }

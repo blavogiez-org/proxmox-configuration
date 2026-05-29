@@ -1,19 +1,21 @@
-module "vmbr1" {
+module "vlan1" {
   source = "./modules/vlan"
 
-  vlan_id   = 10
-  interface = "eno0"
-  node_name = "pve"
-  address   = "192.168.10.0/24"
-  comment    = "POUR INFRA"
+  name      = "vlan1"
+  vlan_id   = 1
+  interface = "nic0"
+  node_name = "homelab"
+  address   = "192.168.10.1/24"
+  comment   = "POUR INFRA"
 }
 
-module "vmbr2" {
+module "vlan2" {
   source = "./modules/vlan"
 
-  vlan_id   = 20
-  interface = "eno0"
-  node_name = "pve"
-  address = "172.16.10.0/24"
-  comment    = "POUR SERVICES EXPOSES A L EXTERIEUR"
+  name      = "vlan2"
+  vlan_id   = 2
+  interface = "nic0"
+  node_name = "homelab"
+  address   = "172.16.10.1/24"
+  comment   = "POUR SERVICES EXPOSES A L EXTERIEUR"
 }
