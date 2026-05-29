@@ -19,3 +19,7 @@ module "vlan2" {
   address   = "172.16.10.1/24"
   comment   = "POUR SERVICES EXPOSES A L EXTERIEUR"
 }
+
+module "minimal-backup" {
+  source = "./modules/backup"
+}
