@@ -1,0 +1,34 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
+terraform/backend.tf
+terraform/tfplan
+.gitops/
+
+# Secrets
+*.key
+*.pem
+*.p12
+*.pfx
+config/proxmox-bootstrap.local.yml
+config/proxmox-bootstrap.local.yaml
+config/proxmox-bootstrap.env
+
+# Ansible
+.ansible/
+ansible/
+ansible.cfg
+*.retry
+*.vault
+.vault_pass
+.vault_pass.txt
+vault-password.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
