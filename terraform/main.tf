@@ -51,11 +51,30 @@ module "wireguard" {
   lxc_ip              = "192.168.10.12"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  template_file_id    = var.template_file_id
 
   cpu       = 1
   memory    = 2048
   disk_size = 10
 
   bridge = module.vlan1.bridge_name
+}
+
+module "kanboard" {
+  source = "./modules/lxc"
+
+  name                   = "kanboard"
+  node_name              = "homelab"
+  lxc_id                 = 113
+  lxc_ip                 = "192.168.10.13"
+  network_gateway        = "192.168.10.1"
+  ssh_public_key_path    = var.ssh_public_key_path
+  cloud_init_template_id = 9010
+
+  cpu       = 1
+  memory    = 2048
+  disk_size = 10
+
+  bridge = module.vlan1.bridge_name
+
+  cloud_init_user_data_file = "kanboard-user-data.yaml.tpl"
 }

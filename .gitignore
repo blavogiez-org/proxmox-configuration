@@ -19,6 +19,7 @@ config/proxmox-bootstrap.local.yml
 config/proxmox-bootstrap.local.yaml
 config/proxmox-bootstrap.env
 
+*.tar.zst
 # Ansible
 .ansible/
 ansible.cfg

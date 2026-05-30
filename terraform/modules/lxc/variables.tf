@@ -47,6 +47,18 @@ variable "template_file_id" {
   default = "local:vztmpl/debian-13-standard_13.1-2_amd64.tar.zst"
 }
 
+variable "cloud_init_template_id" {
+  description = "ID du template LXC Proxmox cloud-init-ready a cloner. Null utilise template_file_id."
+  type        = number
+  default     = null
+}
+
+variable "cloud_init_user_data_file" {
+  description = "Nom du template user-data dans le dossier cloud-init root."
+  type        = string
+  default     = null
+}
+
 variable "os_type" {
   type    = string
   default = "debian"
@@ -69,4 +81,10 @@ variable "unprivileged" {
 variable "nesting" {
   type    = bool
   default = true
+}
+
+variable "username" {
+  type        = string
+  default     = "admin"
+  description = "Utilisateur cree par le user-data cloud-init."
 }
