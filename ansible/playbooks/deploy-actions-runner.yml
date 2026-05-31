@@ -1,6 +1,6 @@
 # pensé pour une organisation github (runners s'appliquant à tous les dépôts de l'organisation)
 # explication du besoin des multi dossiers runners : https://github.com/orgs/community/discussions/26258
-- hosts: all
+- hosts: actions-runner
   gather_facts: false
   user: admin # ma convention d'utilisateur
   vars: 

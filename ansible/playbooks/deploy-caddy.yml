@@ -1,8 +1,8 @@
-- hosts: all
+- hosts: caddy
   become: true
   vars:
     caddy_remote_dir: "/opt/caddy"
-    caddy_local_dir: "{{ playbook_dir }}/../../../caddy"
+    caddy_local_dir: "{{ playbook_dir }}/../../caddy"
 
   tasks:
     - name: S'assurer que les répertoires existent

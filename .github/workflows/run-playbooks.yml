@@ -1,0 +1,46 @@
+---
+name: Déploiements Ansible (mises à jour de l'infra)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs: 
+  setup-ansible:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          pipx install ansible-core
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - run: |
+          ansible-galaxy collection install -r ansible/requirements.yml
+
+  deploy-caddy:
+    needs: ["setup-ansible"]
+    runs-on: self-hosted
+    steps:
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.CADDY_SSH_KEY }}
+          log-public-key: false
+
+      - run: |
+          mkdir -p ~/.ssh
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - uses: actions/checkout@v4
+
+      - run: |
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Déployer caddy
+        run: |
+          bash ansible/deploy-caddy.sh
