@@ -2,7 +2,7 @@
   become: true
   vars:
     caddy_remote_dir: "/opt/caddy"
-    caddy_local_dir: ".."
+    caddy_local_dir: "{{ playbook_dir }}/../../../caddy"
 
   tasks:
     - name: S'assurer que les répertoires existent
@@ -24,14 +24,13 @@
         - docker-compose.yml
       register: docker_files
 
-    - name: Copier les fichiers de configuration (Caddyfile, sites)
+    - name: Copier la configuration Caddy
       ansible.builtin.copy:
         src: "{{ caddy_local_dir }}/{{ item }}"
         dest: "{{ caddy_remote_dir }}/{{ item }}"
         mode: '0644'
       loop:
         - Caddyfile
-        - sites/
       register: config_files
 
     - name: Vérifier si le conteneur Caddy est en cours d'exécution
@@ -53,4 +52,3 @@
         - config_files.changed 
         - not docker_files.changed
         - caddy_running.stdout != ""
-
