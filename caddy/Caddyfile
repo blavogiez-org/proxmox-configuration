@@ -1,1 +1,1 @@
-import sites/*/*.conf
+import /etc/caddy/sites/*.conf

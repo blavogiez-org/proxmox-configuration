@@ -1,0 +1,8 @@
+rate_limit: 5
+
+websites:
+  - path: temp-test-dir/deploy/test.blavogiez.fr
+    type: html
+    domains:
+      - test-temp.blavogiez.fr
+      - health-temp.blavogiez.fr
