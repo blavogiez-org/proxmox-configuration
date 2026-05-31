@@ -1,12 +1,18 @@
 # Configuration d'une infrastructure Proxmox
 
+**Fork personnalisé à une base commune développée avec Jonas Facon, camarade de BUT.**
+
 ## Informations de développement
 
-Ce projet est développé et maintenu par **Baptiste Lavogiez** et **Jonas Facon**, avec pour objectif de proposer une infrastructure serveur fiable, automatisée et reproductible autour de Proxmox VE.
+La base commune est développée et maintenue par **Baptiste Lavogiez** et **Jonas Facon**, avec pour objectif de proposer une infrastructure serveur fiable, automatisée et reproductible autour de Proxmox VE.
 
-Ce dépôt a vocation à être la source commune de nos infrastructures Proxmox personnelles (templates, outils d'administration type VPN...). Puisqu'ayant chacun un serveur avec des besoins différents, ce dépôt sera forké.
+Notre projet commun a vocation à être la source commune de nos infrastructures Proxmox personnelles (templates, outils d'administration type VPN...). Puisqu'ayant chacun un serveur avec des besoins et services différents, ce dépôt est forké par chacun.
 
-Nous privilégierons une approche Infrastructure as Code et similaire aux principes GitOps.
+En l'occurence, je prévois de déployer des services tels que Kanboard, Nextcloud, Vaultwarden et Uptime Kuma.
+
+Puisque le dépôt doit être public, et pour que les workflows le soient aussi, nous restons sur GitHub par simplicité. 
+
+Ce projet privilégie une approche Infrastructure as Code et similaire aux principes GitOps.
 
 ### Réalisé par
 
