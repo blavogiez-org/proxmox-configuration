@@ -6,6 +6,10 @@ on:
       - main
   workflow_dispatch:
 
+
+permissions:
+  contents: read
+  
 jobs:
   static-analysis-checkov:
     runs-on: self-hosted
@@ -68,14 +72,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [ "caddy" ]
+        include:
+          - service: caddy
+            playbook: ansible/playbooks/deploy-caddy.yml
+            ssh_key_secret: CADDY_SSH_KEY
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup SSH (pour Ansible)
+      - name: "Setup SSH pour ${{ matrix.service }}"
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.ANSIBLE_SSH_KEY }}
+          ssh-private-key: ${{ secrets[matrix.ssh_key_secret] }}
           log-public-key: false
 
       - name: Désactiver HostKeyChecking
@@ -99,4 +106,4 @@ jobs:
       - name: "Déploiement de ${{ matrix.service }}"
         run: |
           export PATH="$HOME/.local/bin:$PATH"
-          ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventories/inventory.yml ansible/playbooks/deploy-${{ matrix.service }}.yml
+          ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventories/inventory.yml "${{ matrix.playbook }}"

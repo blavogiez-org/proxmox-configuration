@@ -15,6 +15,11 @@ Nous privilégierons une approche Infrastructure as Code et similaire aux princi
 | Baptiste Lavogiez | [baptiste.lavogiez@proton.me](mailto:baptiste.lavogiez@proton.me) | [blavogiez](https://github.com/blavogiez) |
 | Jonas Facon       | [jonas.facon@proton.me](mailto:jonas.facon@proton.me)             | [Jonas0o0](https://github.com/Jonas0o0)   |
 
+## Conventions de développement
+
+Puisqu'il s'agit d'un projet commun, nous avons défini quelques règles :
+- 
+
 
 ## Présentation
 
