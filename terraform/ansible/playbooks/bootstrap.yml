@@ -1,0 +1,98 @@
+---
+- name: Preparation des conteneurs LXC
+  hosts: all
+  gather_facts: false
+  vars_prompt:
+    - name: ansible_ssh_private_key_file
+      prompt: Cle privee SSH
+      private: false
+
+    - name: bootstrap_ssh_public_key_file
+      prompt: Cle publique a installerf
+      private: false
+
+  tasks:
+    - name: Attendre SSH
+      ansible.builtin.wait_for:
+        host: "{{ ansible_host | default(inventory_hostname) }}"
+        port: 22
+        timeout: 300
+      delegate_to: localhost
+      become: false
+
+    - name: Installer Python si absent
+      ansible.builtin.raw: test -x /usr/bin/python3 || (apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y python3)
+      changed_when: false
+
+- name: Configuration initiale des conteneurs LXC
+  hosts: all
+  become: true
+
+  vars:
+    bootstrap_packages:
+      - sudo
+      - openssh-server
+      - ca-certificates
+      - curl
+      - git
+      - gnupg
+      - python3
+      - python3-apt
+      - vim
+
+  tasks:
+    - name: Mettre a jour le cache apt
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Installer les paquets de base
+      ansible.builtin.apt:
+        name: "{{ bootstrap_packages }}"
+        state: present
+
+    - name: Creer le groupe admin
+      ansible.builtin.group:
+        name: "{{ bootstrap_user }}"
+        state: present
+
+    - name: Creer l'utilisateur admin
+      ansible.builtin.user:
+        name: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        shell: /bin/bash
+        groups: sudo
+        append: true
+        create_home: true
+        state: present
+
+    - name: Creer le repertoire SSH
+      ansible.builtin.file:
+        path: "/home/{{ bootstrap_user }}/.ssh"
+        state: directory
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0700"
+
+    - name: Installer la cle SSH autorisee
+      ansible.builtin.copy:
+        dest: "/home/{{ bootstrap_user }}/.ssh/authorized_keys"
+        content: "{{ lookup('file', bootstrap_ssh_public_key_file) }}\n"
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0600"
+
+    - name: Autoriser sudo sans mot de passe
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/{{ bootstrap_user }}"
+        content: "{{ bootstrap_user }} ALL=(ALL) NOPASSWD:ALL\n"
+        owner: root
+        group: root
+        mode: "0440"
+        validate: "visudo -cf %s"
+
+    - name: Demarrer et activer le service SSH
+      ansible.builtin.service:
+        name: ssh
+        enabled: true
+        state: started

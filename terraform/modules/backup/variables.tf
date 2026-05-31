@@ -1,0 +1,3 @@
+variable "storage" {
+  type = string
+}

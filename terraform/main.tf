@@ -18,7 +18,7 @@ module "vlan2" {
 
 module "minimal-backup" {
   source = "./modules/backup"
-
+  storage = var.storage
 }
 
 module "gh-runner" {
@@ -59,43 +59,40 @@ module "wireguard" {
   bridge = module.vlan1.bridge_name
 }
 
+# https://caddyserver.com/docs/install
+# https://github.com/caddyserver/caddy
+module "caddy" {
+  source = "./modules/lxc"
+
+  name                = "caddy"
+  node_name           = "homelab"
+  lxc_id              = 113
+  lxc_ip              = "192.168.10.13"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+
+  cpu       = 1
+  memory    = 512
+  disk_size = 5
+
+  bridge = module.vlan1.bridge_name
+}
+
+
 module "kanboard" {
   source = "./modules/lxc"
 
-  name                   = "kanboard"
-  node_name              = "homelab"
-  lxc_id                 = 113
-  lxc_ip                 = "192.168.10.13"
-  network_gateway        = "192.168.10.1"
-  ssh_public_key_path    = var.ssh_public_key_path
-  cloud_init_template_id = 9010
+  name                = "kanboard"
+  node_name           = "homelab"
+  lxc_id              = 114
+  lxc_ip              = "192.168.10.14"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
 
   cpu       = 1
   memory    = 2048
   disk_size = 10
 
   bridge = module.vlan1.bridge_name
-
-  cloud_init_user_data_file = "kanboard-user-data.yaml.tpl"
-}
-
-# https://caddyserver.com/docs/install
-# https://github.com/caddyserver/caddy
-module "caddy" {
-  source = "./modules/lxc"
-
-  name                   = "caddy"
-  node_name              = "homelab"
-  lxc_id                 = 211
-  lxc_ip                 = "172.16.10.11"
-  network_gateway        = "172.16.10.1"
-  ssh_public_key_path    = var.ssh_public_key_path
-  cloud_init_template_id = 9010
-
-  cpu       = 1
-  memory    = 512
-  disk_size = 5
-
-  bridge = module.vlan2.bridge_name
 }
 
