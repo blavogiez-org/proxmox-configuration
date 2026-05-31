@@ -22,7 +22,7 @@ jobs:
       - run: |
           ansible-galaxy collection install -r ansible/requirements.yml
 
-  deploy-caddy:
+  run-playbooks:
     needs: ["setup-ansible"]
     runs-on: self-hosted
     steps:
