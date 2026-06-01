@@ -4,5 +4,5 @@ websites:
   - path: temp-test-dir/deploy/test.blavogiez.fr
     type: html
     domains:
-      - test-temp.blavogiez.fr
-      - health-temp.blavogiez.fr
+      - common-test-temp.blavogiez.fr
+      - common-health-temp.blavogiez.fr

@@ -1,14 +1,10 @@
 # Configuration d'une infrastructure Proxmox
 
-**Fork personnalisé d'une [base commune développée avec Jonas Facon, camarade de BUT](github.com/jobacogiez-org/proxmox-gitops).**
-
 ## Informations de développement
 
 La base commune est développée et maintenue par **Baptiste Lavogiez** et **Jonas Facon**, avec pour objectif de proposer une infrastructure serveur fiable, automatisée et reproductible autour de Proxmox VE.
 
 Notre projet commun a vocation à être la source commune de nos infrastructures Proxmox personnelles (templates, outils d'administration type VPN...). Puisqu'ayant chacun un serveur avec des besoins et services différents, ce dépôt est forké par chacun.
-
-En l'occurrence, je prévois de déployer des services tels que Kanboard, Nextcloud, Vaultwarden et Uptime Kuma.
 
 Puisque le dépôt doit être public, et pour que les workflows le soient aussi, nous restons sur GitHub par simplicité. 
 
