@@ -78,5 +78,25 @@ module "caddy" {
   bridge = module.vlan1.bridge_name
 }
 
+module "dokploy" {
+  source = "./modules/vm"
+
+  name                = "dokploy"
+  username            = "admin"
+  node_name           = "homelab"
+  vm_id               = 211
+  vm_template_id      = 9000
+  vm_ip               = "172.16.10.11"
+  network_gateway     = "172.16.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+
+  cpu       = 2
+  memory    = 4096
+  disk_size = 50
+
+  bridge = module.vlan2.bridge_name
+  cloud_init_user_data_file = "../dokploy/dokploy.yaml"
+}
+
 
 
