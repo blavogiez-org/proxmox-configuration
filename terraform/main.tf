@@ -95,7 +95,7 @@ module "dokploy" {
   disk_size = 50
 
   bridge = module.vlan2.bridge_name
-  cloud_init_user_data_file = "kanboard-user-data.yaml.tpl"
+  cloud_init_user_data_file = "../dokploy/dokploy.yaml"
 }
 
 
