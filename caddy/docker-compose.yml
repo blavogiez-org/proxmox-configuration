@@ -7,6 +7,8 @@ services:
     restart: unless-stopped
     network_mode: host
     user: root
+    env_file:
+      - .env
     volumes:
       - .:/etc/caddy:ro
       - /var/www:/var/www:ro
