@@ -54,8 +54,3 @@ variable "vlan_id" {
   type    = number
   default = null
 }
-
-variable "cloud_init_user_data_file" {
-  type = string
-  default = null
-}
