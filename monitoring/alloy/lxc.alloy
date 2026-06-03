@@ -1,0 +1,26 @@
+loki.write "default" {
+  endpoint {
+    url = "http://192.168.10.14:3100/loki/api/v1/push"
+  }
+}
+
+loki.source.journal "journal" {
+  forward_to = [loki.write.default.receiver]
+  labels = {
+    job  = "lxc-journal"
+    host = constants.hostname
+  }
+}
+
+local.file_match "varlog" {
+  path_targets = [{
+    __path__ = "/var/log/*.log",
+    job      = "lxc-varlog",
+    host     = constants.hostname,
+  }]
+}
+
+loki.source.file "varlog" {
+  targets    = local.file_match.varlog.targets
+  forward_to = [loki.write.default.receiver]
+}
