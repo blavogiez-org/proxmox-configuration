@@ -2,7 +2,7 @@ name: Appel d'un déploiement front (pour exemple)
 
 on:
   push:
-    branches: [main]
+    branches: [main, 3*]
   workflow_dispatch:
 
 permissions:
@@ -10,5 +10,5 @@ permissions:
   
 jobs:
   deploy:
-    uses: jobacogiez-org/proxmox-gitops/.github/workflows/deploy-domains.yml@main
+    uses: jobacogiez-org/proxmox-gitops/.github/workflows/deploy-domains.yml@3-installation-vault
     secrets: inherit
