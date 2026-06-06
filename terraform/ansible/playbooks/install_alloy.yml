@@ -1,0 +1,12 @@
+# Repris de https://grafana.com/docs/alloy/latest/set-up/install/ansible/
+
+- name: Install Alloy
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install Alloy
+      ansible.builtin.include_role:
+        name: grafana.grafana.alloy
+      vars:
+        alloy_config: "{{ lookup('ansible.builtin.file', playbook_dir ~ '/../../../monitoring/alloy/lxc.alloy') }}"

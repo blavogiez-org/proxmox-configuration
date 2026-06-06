@@ -1,0 +1,14 @@
+# toutes les vm sur lesquelles installer alloy
+all:
+  vars:
+    # admin vu que c'est déjà setup
+    ansible_user: admin
+  hosts:
+    gh-runner:
+      ansible_host: 192.168.10.11
+    wireguard:
+      ansible_host: 192.168.10.12
+    caddy:
+      ansible_host: 192.168.10.13
+    monitoring:
+      ansible_host: 192.168.10.14
