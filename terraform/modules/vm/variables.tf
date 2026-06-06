@@ -18,6 +18,17 @@ variable "vm_id" {
   type = number
 }
 
+# le cloud init voulu ! le défaut met admin, ssh key et met docker
+variable "user_data_arg" {
+  type    = string
+  default = "user_data_default"
+}
+
+variable "hostname" {
+  type = string 
+  default = "hostname-a-remplacer-alloy-en-a-besoin"
+}
+
 variable "network_gateway" {
   type = string
 }

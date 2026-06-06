@@ -21,9 +21,11 @@ module "minimal-backup" {
   storage = var.storage
 }
 
+# déploiement runner dispo en playbook
 module "gh-runner" {
   source = "./modules/vm"
 
+  hostname            = "gh-runner"
   name                = "gh-runner"
   username            = "admin"
   node_name           = "homelab"
@@ -78,9 +80,11 @@ module "caddy" {
   bridge = module.vlan1.bridge_name
 }
 
+# cf dossier monitoring
 module "monitoring" {
   source = "./modules/vm"
 
+  hostname            = "monitoring"
   name                = "monitoring"
   username            = "admin"
   node_name           = "homelab"

@@ -1,4 +1,8 @@
 #cloud-config
+# alloy a besoin du hostname pour bien envoyer les logs
+hostname: ${hostname}
+preserve_hostname: false
+
 users:
   - name: admin
     groups: docker
