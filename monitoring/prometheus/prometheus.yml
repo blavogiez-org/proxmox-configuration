@@ -1,6 +1,7 @@
 global:
   scrape_interval: 15s
 
+# on prend le exporter
 scrape_configs:
   - job_name: proxmox
     metrics_path: /pve
@@ -10,7 +11,8 @@ scrape_configs:
       node: ["1"]
     static_configs:
       - targets:
-          - IP NODEE PROXMOX A REPLACE
+          #IP NODEE PROXMOX A REPLACE
+          - 192.168.1.50
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

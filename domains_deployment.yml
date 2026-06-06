@@ -4,10 +4,7 @@ websites:
   - path: temp-test-dir/deploy/test.blavogiez.fr
     type: html
     domains:
-<<<<<<< Updated upstream
       - common-test-temp.blavogiez.fr
       - common-health-temp.blavogiez.fr
-=======
       - central-test-temp.blavogiez.fr
       - central-health-temp.blavogiez.fr
->>>>>>> Stashed changes

@@ -4,6 +4,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$script_dir"
 
+# todo faire l'input dans ansible plutot
 read -rp "Runner count: " RUNNER_COUNT
 read -rp "Runner names: " RUNNER_NAMES
 read -rsp "Runner token: " RUNNER_TOKEN; echo

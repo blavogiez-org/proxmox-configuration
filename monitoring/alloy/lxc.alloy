@@ -1,3 +1,47 @@
+// repris de https://github.com/grafana/alloy-scenarios/tree/main/docker-monitoring et adapté aux ip utilisées
+
+// ###############################
+// #### Metrics Configuration ####
+// ###############################
+
+// Host cAdvisor on the Docker socket to expose container metrics.
+prometheus.exporter.cadvisor "docker" {
+  docker_host      = "unix:///var/run/docker.sock"
+  docker_only      = true
+  storage_duration = "5m"
+}
+
+discovery.relabel "docker_metrics" {
+  targets = prometheus.exporter.cadvisor.docker.targets
+
+  rule {
+    target_label = "job"
+    replacement  = "integrations/docker"
+  }
+
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+}
+
+// Collect cAdvisor metrics and push them to Prometheus.
+prometheus.scrape "docker" {
+  targets         = discovery.relabel.docker_metrics.output
+  forward_to      = [prometheus.remote_write.default.receiver]
+  scrape_interval = "10s"
+}
+
+prometheus.remote_write "default" {
+  endpoint {
+    url = "http://192.168.10.14:9090/api/v1/write"
+  }
+}
+
+// ###############################
+// #### Logging Configuration ####
+// ###############################
+
 loki.write "default" {
   endpoint {
     url = "http://192.168.10.14:3100/loki/api/v1/push"
@@ -7,8 +51,8 @@ loki.write "default" {
 loki.source.journal "journal" {
   forward_to = [loki.write.default.receiver]
   labels = {
-    job  = "lxc-journal"
-    host = constants.hostname
+    job  = "lxc-journal",
+    host = constants.hostname,
   }
 }
 
@@ -23,4 +67,61 @@ local.file_match "varlog" {
 loki.source.file "varlog" {
   targets    = local.file_match.varlog.targets
   forward_to = [loki.write.default.receiver]
+}
+
+// Discover Docker containers and extract metadata.
+discovery.docker "local" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "docker_logs" {
+  targets = []
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container_name"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+    target_label  = "compose_project"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "compose_service"
+  }
+
+  rule {
+    target_label = "job"
+    replacement  = "docker"
+  }
+
+  rule {
+    target_label = "host"
+    replacement  = constants.hostname
+  }
+
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+}
+
+loki.source.docker "default" {
+  host          = "unix:///var/run/docker.sock"
+  targets       = discovery.docker.local.targets
+  labels        = {"platform" = "docker"}
+  relabel_rules = discovery.relabel.docker_logs.rules
+  forward_to    = [loki.process.docker_logs.receiver]
+}
+
+loki.process "docker_logs" {
+  forward_to = [loki.write.default.receiver]
+
+  stage.drop {
+    source     = "container_name"
+    expression = "(alloy|grafana|loki)"
+  }
 }

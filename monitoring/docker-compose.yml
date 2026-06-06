@@ -1,6 +1,6 @@
 services:
   grafana:
-    image: grafana/grafana-oss:latest
+    image: grafana/grafana:13.0.1
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -13,7 +13,7 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
 
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:3.7.0
     restart: unless-stopped
     ports:
       - "3100:3100"
@@ -23,19 +23,21 @@ services:
       - loki_data:/loki
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v3.11.3-distroless
     restart: unless-stopped
     ports:
       - "9090:9090"
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-remote-write-receiver"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
 
+  # exterieur au pve pour pas etre trop privilegie
   pve-exporter:
-    image: prompve/prometheus-pve-exporter:latest
+    image: prompve/prometheus-pve-exporter:3.9.0
     restart: unless-stopped
     ports:
       - "9221:9221"
