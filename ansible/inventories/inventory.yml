@@ -10,5 +10,5 @@ all:
       ansible_host: 192.168.10.12
     caddy:
       ansible_host: 192.168.10.13
-    kanboard:
+    monitoring:
       ansible_host: 192.168.10.14
