@@ -24,10 +24,10 @@ jobs:
           secrets: |
             secret/data/proxmox/ci * ;
             
-      - name: Check secret loaded
-        run: |
-          test -n "$CADDY_SSH_KEY"
-          echo "CADDY_SSH_KEY loaded"
+      # - name: Check secret loaded
+      #   run: |
+      #     test -n "$CADDY_SSH_KEY"
+      #     echo "CADDY_SSH_KEY loaded"
 
       - uses: webfactory/ssh-agent@v0.7.0
         with:
