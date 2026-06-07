@@ -122,6 +122,7 @@ module "vault" {
   bridge = module.vlan1.bridge_name
 }
 
+#https://github.com/dokploy/dokploy
 module "dokploy" {
   source = "./modules/vm"
 
@@ -139,8 +140,8 @@ module "dokploy" {
   memory    = 4096
   disk_size = 50
 
-  bridge                    = module.vlan2.bridge_name
-  cloud_init_user_data_file = "../dokploy/dokploy.yaml"
+  bridge = module.vlan2.bridge_name
+  user_data_arg = "user_data_dokploy"
 }
 
 
