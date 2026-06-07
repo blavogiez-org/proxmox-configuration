@@ -17,7 +17,7 @@ module "vlan2" {
 }
 
 module "minimal-backup" {
-  source = "./modules/backup"
+  source  = "./modules/backup"
   storage = var.storage
 }
 
@@ -94,12 +94,37 @@ module "monitoring" {
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
 
-  cpu       = 2
-  memory    = 4096
+  cpu       = 1
+  memory    = 1024
   disk_size = 25
 
   bridge = module.vlan1.bridge_name
 }
+
+# vm dédiée vault
+# https://github.com/openbao/openbao
+# https://hub.docker.com/r/openbao/openbao
+module "vault" {
+  source = "./modules/vm"
+
+  hostname            = "vault"
+  name                = "vault"
+  username            = "admin"
+  node_name           = "homelab"
+  vm_id               = 115
+  vm_template_id      = 9000
+  vm_ip               = "192.168.10.15"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+
+  cpu       = 2
+  memory    = 4096
+  disk_size = 15
+
+  bridge = module.vlan1.bridge_name
+}
+
+
 
 
 

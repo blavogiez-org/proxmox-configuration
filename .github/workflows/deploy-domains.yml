@@ -14,9 +14,24 @@ jobs:
   deploy-websites:
     runs-on: self-hosted
     steps:
+      - name: Import OpenBao secrets
+        uses: hashicorp/vault-action@v4
+        with:
+          url: https://vault.blavogiez.fr
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/proxmox/ci * ;
+            
+      # - name: Check secret loaded
+      #   run: |
+      #     test -n "$CADDY_SSH_KEY"
+      #     echo "CADDY_SSH_KEY loaded"
+
       - uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets.CADDY_SSH_KEY }}
+          ssh-private-key: ${{ env.CADDY_SSH_KEY }}
           log-public-key: false
 
       - run: |

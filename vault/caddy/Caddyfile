@@ -1,0 +1,4 @@
+# il faut pointer dessus avec un reverse proxy public https comme cloudflared/caddy
+http://vault.blavogiez.fr {
+  reverse_proxy openbao:8200
+}
