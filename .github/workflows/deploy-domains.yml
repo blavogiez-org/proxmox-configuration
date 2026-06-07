@@ -52,10 +52,10 @@ jobs:
           pipx install ansible-core
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Déployer les websites déclarés
-        env:
-          CALLER_DIR: ${{ github.workspace }}/caller
-          CALLER_REPOSITORY: ${{ github.event.repository.name }}
-        run: |
-          cd "$GITHUB_WORKSPACE/infra"
-          bash ansible/deploy-websites.sh
+      # - name: Déployer les websites déclarés
+      #   env:
+      #     CALLER_DIR: ${{ github.workspace }}/caller
+      #     CALLER_REPOSITORY: ${{ github.event.repository.name }}
+      #   run: |
+      #     cd "$GITHUB_WORKSPACE/infra"
+      #     bash ansible/deploy-websites.sh
