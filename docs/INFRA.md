@@ -3,7 +3,7 @@
 ## Sous-réseaux
 
 Ces sous-réseaux seront le coeur des services hébergés sur Proxmox. Ils sont isolés et injoignables par le reste du réseau privé.
-Ils sont [décrits dans le dossier terraform](terraform/main.tf)
+Ils sont [décrits dans le dossier terraform](terraform/environments/production/main.tf)
 
 ![Sous-réseaux vmbr1 et vmbr1](assets/infra/image-1.png)
 

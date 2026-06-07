@@ -58,4 +58,4 @@ jobs:
           CALLER_REPOSITORY: ${{ github.event.repository.name }}
         run: |
           cd "$GITHUB_WORKSPACE/infra"
-          bash ansible/deploy-websites.sh
+          bash ansible/scripts/deploy-websites.sh

@@ -2,7 +2,7 @@
   become: true
   vars:
     monitoring_remote_dir: "/opt/monitoring"
-    monitoring_local_dir: "{{ playbook_dir }}/../../monitoring"
+    monitoring_local_dir: "{{ playbook_dir }}/../../services/monitoring"
 
   tasks:
     - name: Copier le dossier monitoring

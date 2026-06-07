@@ -1,5 +1,5 @@
 module "vlan1" {
-  source = "./modules/vlan"
+  source = "../../modules/vlan"
 
   name      = "vmbr1"
   node_name = "homelab"
@@ -8,7 +8,7 @@ module "vlan1" {
 }
 
 module "vlan2" {
-  source = "./modules/vlan"
+  source = "../../modules/vlan"
 
   name      = "vmbr2"
   node_name = "homelab"
@@ -17,13 +17,13 @@ module "vlan2" {
 }
 
 module "minimal-backup" {
-  source  = "./modules/backup"
+  source  = "../../modules/backup"
   storage = var.storage
 }
 
 # déploiement runner dispo en playbook
 module "gh-runner" {
-  source = "./modules/vm"
+  source = "../../modules/vm"
 
   hostname            = "gh-runner"
   name                = "gh-runner"
@@ -45,7 +45,7 @@ module "gh-runner" {
 # https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/
 # https://github.com/wg-easy/wg-easy
 module "wireguard" {
-  source = "./modules/lxc"
+  source = "../../modules/lxc"
 
   name                = "wireguard"
   node_name           = "homelab"
@@ -64,7 +64,7 @@ module "wireguard" {
 # https://caddyserver.com/docs/install
 # https://github.com/caddyserver/caddy
 module "caddy" {
-  source = "./modules/lxc"
+  source = "../../modules/lxc"
 
   name                = "caddy"
   node_name           = "homelab"
@@ -82,7 +82,7 @@ module "caddy" {
 
 # cf dossier monitoring
 module "monitoring" {
-  source = "./modules/vm"
+  source = "../../modules/vm"
 
   hostname            = "monitoring"
   name                = "monitoring"
@@ -105,7 +105,7 @@ module "monitoring" {
 # https://github.com/openbao/openbao
 # https://hub.docker.com/r/openbao/openbao
 module "vault" {
-  source = "./modules/vm"
+  source = "../../modules/vm"
 
   hostname            = "vault"
   name                = "vault"

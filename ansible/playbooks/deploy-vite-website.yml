@@ -48,7 +48,7 @@
 
     - name: Créer les fichiers Caddy des websites Vite
       ansible.builtin.template:
-        src: "{{ playbook_dir }}/../../caddy/website.conf.j2"
+        src: "{{ playbook_dir }}/../../services/caddy/website.conf.j2"
         dest: "{{ sites_remote_dir }}/{{ item.1 }}.conf"
         mode: '0644'
       loop: "{{ vite_websites | subelements('domains') }}"
