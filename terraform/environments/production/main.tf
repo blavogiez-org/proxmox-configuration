@@ -36,7 +36,7 @@ module "gh-runner" {
   ssh_public_key_path = var.ssh_public_key_path
 
   cpu       = 2
-  memory    = 4096
+  memory    = 2048
   disk_size = 10
 
   bridge = module.vlan1.bridge_name
@@ -55,7 +55,7 @@ module "wireguard" {
   ssh_public_key_path = var.ssh_public_key_path
 
   cpu       = 1
-  memory    = 1024
+  memory    = 512
   disk_size = 10
 
   bridge = module.vlan1.bridge_name
@@ -74,7 +74,7 @@ module "caddy" {
   ssh_public_key_path = var.ssh_public_key_path
 
   cpu       = 1
-  memory    = 1024
+  memory    = 512
   disk_size = 10
 
   bridge = module.vlan1.bridge_name
@@ -117,8 +117,8 @@ module "vault" {
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
 
-  cpu       = 2
-  memory    = 4096
+  cpu       = 1
+  memory    = 1024
   disk_size = 15
 
   bridge = module.vlan1.bridge_name

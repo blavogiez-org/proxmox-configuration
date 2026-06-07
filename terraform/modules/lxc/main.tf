@@ -40,6 +40,7 @@ resource "proxmox_virtual_environment_container" "this" {
 
   memory {
     dedicated = var.memory
+    swap      = 512
   }
 
   disk {
