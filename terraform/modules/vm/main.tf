@@ -43,19 +43,22 @@ resource "proxmox_virtual_environment_vm" "this" {
       keys     = [trimspace(file(pathexpand(var.ssh_public_key_path)))]
       username = var.username
     }
-    user_data_file_id = proxmox_virtual_environment_file.runner_user_data.id
+    user_data_file_id = proxmox_virtual_environment_file.boostrap_user_data.id
   }
 }
 
-resource "proxmox_virtual_environment_file" "runner_user_data" {
+resource "proxmox_virtual_environment_file" "boostrap_user_data" {
   content_type = "snippets"
   datastore_id = "local"
   node_name    = var.node_name
 
   source_raw {
-    file_name = "user-data-runner.yaml"
-    data = templatefile("${path.module}/cloud-init/user-data-runner.sh.tpl", {
-      ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    file_name = "user-data-bootstrap.yaml"
+    # par défaut cible le user-data-default ou sinon change
+    # pré configuration machine, pas possible avec les LXC
+    data = templatefile("${path.root}/cloud-init/${var.user_data_arg}.tpl", {
+      ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path))),
+      hostname = var.hostname
     })
   }
 }

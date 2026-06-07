@@ -1,3 +1,4 @@
+# les lxc acceptent pas cloud init donc on doit faire en ansible
 ---
 - name: Preparation des conteneurs LXC
   hosts: all
@@ -56,6 +57,7 @@
         name: "{{ bootstrap_user }}"
         state: present
 
+    # convention pour pas etre root
     - name: Creer l'utilisateur admin
       ansible.builtin.user:
         name: "{{ bootstrap_user }}"
@@ -102,6 +104,7 @@
         cmd: |
           curl -fsSl https://get.docker.com | sh
 
+    # ou alors faire podman
     - name: Ajouter l'utilisateur admin au groupe docker
       ansible.builtin.user:
         name: "{{ bootstrap_user }}"

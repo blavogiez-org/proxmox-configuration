@@ -1,10 +1,10 @@
-# toutes les LXC à setup
-# si c'est déjà fait ansible va skip
+# toutes les vm sur lesquelles installer alloy
 all:
   vars:
+    # admin vu que c'est déjà setup
     ansible_user: admin
   hosts:
-    actions-runner: 
+    gh-runner:
       ansible_host: 192.168.10.11
     wireguard:
       ansible_host: 192.168.10.12

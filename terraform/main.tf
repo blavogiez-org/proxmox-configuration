@@ -21,9 +21,11 @@ module "minimal-backup" {
   storage = var.storage
 }
 
+# déploiement runner dispo en playbook
 module "gh-runner" {
   source = "./modules/vm"
 
+  hostname            = "gh-runner"
   name                = "gh-runner"
   username            = "admin"
   node_name           = "homelab"
@@ -71,9 +73,30 @@ module "caddy" {
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
 
-  cpu       = 3
+  cpu       = 1
   memory    = 1024
   disk_size = 10
+
+  bridge = module.vlan1.bridge_name
+}
+
+# cf dossier monitoring
+module "monitoring" {
+  source = "./modules/vm"
+
+  hostname            = "monitoring"
+  name                = "monitoring"
+  username            = "admin"
+  node_name           = "homelab"
+  vm_id               = 114
+  vm_template_id      = 9000
+  vm_ip               = "192.168.10.14"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+
+  cpu       = 2
+  memory    = 4096
+  disk_size = 25
 
   bridge = module.vlan1.bridge_name
 }

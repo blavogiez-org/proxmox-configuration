@@ -6,3 +6,5 @@ websites:
     domains:
       - common-test-temp.blavogiez.fr
       - common-health-temp.blavogiez.fr
+      - central-test-temp.blavogiez.fr
+      - central-health-temp.blavogiez.fr

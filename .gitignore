@@ -34,3 +34,5 @@ vault-password.txt
 Thumbs.db
 .idea/
 .vscode/
+
+.env
