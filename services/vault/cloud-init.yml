@@ -1,0 +1,52 @@
+#cloud-config
+hostname: ${hostname}
+preserve_hostname: false
+
+users:
+  - name: admin
+    groups: docker
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+packages:
+  - qemu-guest-agent
+  - curl
+  - git
+
+write_files:
+  - path: /opt/vault/docker-compose.yml
+    content: |
+      services:
+        openbao:
+          image: openbao/openbao:latest
+          container_name: openbao
+          restart: unless-stopped
+          cap_add:
+            - IPC_LOCK
+          ports:
+            - "8200:8200"
+          volumes:
+            - ./openbao/config:/etc/openbao
+            - ./openbao/file:/openbao/file
+          command: server -config=/etc/openbao/openbao.hcl
+
+  - path: /opt/vault/openbao/config/openbao.hcl
+    content: |
+      ui = true
+      storage "file" {
+        path = "/openbao/file"
+      }
+      listener "tcp" {
+        address     = "0.0.0.0:8200"
+        tls_disable = true
+      }
+      api_addr = "http://localhost:8200"
+
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - curl -sSL https://get.docker.com | sh
+  - mkdir -p /opt/vault/openbao/file
+  - chown -R 100:1000 /opt/vault/openbao/file
+  - cd /opt/vault && docker compose up -d

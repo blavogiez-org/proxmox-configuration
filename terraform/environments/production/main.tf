@@ -40,6 +40,7 @@ module "gh-runner" {
   disk_size = 10
 
   bridge = module.vlan1.bridge_name
+  user_data_template_path = "${path.root}/../../../services/base-vm/cloud-init.yml"
 }
 
 # https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/
@@ -99,6 +100,7 @@ module "monitoring" {
   disk_size = 25
 
   bridge = module.vlan1.bridge_name
+  user_data_template_path = "${path.root}/../../../services/monitoring/cloud-init.yml"
 }
 
 # vm dédiée vault
@@ -122,6 +124,29 @@ module "vault" {
   disk_size = 15
 
   bridge = module.vlan1.bridge_name
+  user_data_template_path = "${path.root}/../../../services/vault/cloud-init.yml"
+}
+
+# https://dokploy.com/
+module "dokploy" {
+  source = "../../modules/vm"
+
+  hostname            = "dokploy"
+  name                = "dokploy"
+  username            = "admin"
+  node_name           = "homelab"
+  vm_id               = 211
+  vm_template_id      = 9000
+  vm_ip               = "172.16.10.11"
+  network_gateway     = "172.16.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+
+  cpu       = 2
+  memory    = 4096
+  disk_size = 50
+
+  bridge = module.vlan2.bridge_name
+  user_data_template_path = "${path.root}/../../../services/dokploy/cloud-init.yml"
 }
 
 
