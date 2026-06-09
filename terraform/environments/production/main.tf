@@ -148,3 +148,20 @@ module "dokploy" {
   bridge = module.vlan2.bridge_name
   user_data_template_path = "${path.root}/../../../services/dokploy/cloud-init.yml"
 }
+
+module "cloudflared" {
+  source = "../../modules/lxc"
+
+  name                = "cloudflared"
+  node_name           = "homelab"
+  lxc_id              = 212
+  lxc_ip              = "172.16.10.12"
+  network_gateway     = "172.16.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+
+  cpu       = 1
+  memory    = 256
+  disk_size = 8
+
+  bridge = module.vlan2.bridge_name
+}
