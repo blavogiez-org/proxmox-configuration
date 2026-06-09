@@ -12,7 +12,6 @@
         mode: '0755'
       loop:
         - "{{ caddy_remote_dir }}"
-        - "{{ caddy_remote_dir }}/sites"
 
     - name: Copier les fichiers Docker (Dockerfile, compose)
       ansible.builtin.copy:
@@ -31,7 +30,14 @@
         mode: '0644'
       loop:
         - Caddyfile
-      register: config_files
+      register: main_config
+
+    - name: Copier les sites Caddy
+      ansible.builtin.copy:
+        src: "{{ caddy_local_dir }}/sites"
+        dest: "{{ caddy_remote_dir }}/"
+        mode: '0644'
+      register: sites_config
 
     - name: Vérifier si le conteneur Caddy est en cours d'exécution
       ansible.builtin.command: docker ps --filter "name=caddy" --filter "status=running" -q
@@ -49,6 +55,6 @@
       ansible.builtin.command:
         cmd: docker exec caddy caddy reload --config /etc/caddy/Caddyfile
       when: 
-        - config_files.changed 
+        - (main_config.changed or sites_config.changed)
         - not docker_files.changed
         - caddy_running.stdout != ""
