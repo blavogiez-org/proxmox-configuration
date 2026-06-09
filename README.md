@@ -32,6 +32,8 @@ L’objectif de ce projet est de concevoir un serveur Proxmox VE clé en main.
 Il est pensé pour fournir une base solide regroupant les services essentiels dont tout serveur a besoin, comme un VPN, un reverse proxy, ainsi qu’une configuration sécurisée et fiable.
 Cela inclut notamment le chiffrement des disques, les sauvegardes automatiques et la gestion de réseaux virtuels.
 
+Pour plus de détails sur l'architecture réseau et les composants, consultez la **[Documentation de l'Infrastructure](docs/INFRA.md)**.
+
 ## Approche GitOps
 
 Le projet repose sur une approche GitOps : le dépôt Git constitue la source de vérité de l’infrastructure.

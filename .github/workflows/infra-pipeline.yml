@@ -47,22 +47,22 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
-        run: terraform -chdir=terraform init
+        run: terraform -chdir=terraform/environments/production init
 
       - name: Terraform Validate
-        run: terraform -chdir=terraform validate
+        run: terraform -chdir=terraform/environments/production validate
 
       - name: setup du secret terraform tfvars (evite d'avoir trop de variables)
         run: |
           umask 077
-          cat > terraform/ci.auto.tfvars <<'EOF'
+          cat > terraform/environments/production/ci.auto.tfvars <<'EOF'
           ${{ secrets.TERRAFORM_TFVARS }}
           EOF
 
       # un plan, pas encore de apply ou quoi, ce serait plus complexe et sera géré après, avec backend distant et étude d'autres outils
       - name: Terraform Plan
         run: |
-          terraform -chdir=terraform plan -no-color
+          terraform -chdir=terraform/environments/production plan -no-color
       # dans tous les cas même après ça fonctionnera par un principe de PR, jamais de apply
 
   ansible:

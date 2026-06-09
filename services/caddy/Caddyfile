@@ -1,0 +1,6 @@
+{
+    # On désactive l'auto-HTTPS car Cloudflare gère le certificat
+    auto_https off
+}
+
+import /etc/caddy/sites/*.conf
