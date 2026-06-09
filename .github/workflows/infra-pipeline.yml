@@ -66,7 +66,7 @@ jobs:
       # dans tous les cas même après ça fonctionnera par un principe de PR, jamais de apply
 
   ansible:
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
     runs-on: self-hosted
     strategy:
