@@ -148,8 +148,3 @@ module "dokploy" {
   bridge = module.vlan2.bridge_name
   user_data_template_path = "${path.root}/../../../services/dokploy/cloud-init.yml"
 }
-
-
-
-
-

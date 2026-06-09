@@ -67,6 +67,7 @@ jobs:
 
   ansible:
     if: ${{ github.event_name == 'workflow_dispatch' }}
+    # temporairement desac pour pas que les changements soient mix entre les deux infra, a faire post fork perso propre if: ${{ github.event_name == 'push' }}
     needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
     runs-on: self-hosted
     strategy:
