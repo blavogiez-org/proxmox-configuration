@@ -33,6 +33,8 @@ vault-password.txt
 .DS_Store
 Thumbs.db
 .idea/
+*.env
+build/
 .vscode/
 
 .env
