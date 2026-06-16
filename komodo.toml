@@ -6,6 +6,6 @@ deploy = true
 server = "Local"
 git_provider = "github.com"
 repo = "jobacogiez-org/proxmox-gitops"
-branch = "20-déploiement-komodo-poc"
+branch = "main"
 run_directory = "services/kanboard-poc-komodo"
 file_paths = ["docker-compose.yaml"]
