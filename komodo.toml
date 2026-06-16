@@ -1,12 +1,10 @@
 [[stack]]
 name = "kanboard"
 deploy = true
-tags = ["prod"]
 
 [stack.config]
-server = "local"
+server = "Local"
 git_provider = "github.com"
-git_account = "blavogiez"
 repo = "jobacogiez-org/proxmox-gitops"
 branch = "20-déploiement-komodo-poc"
 run_directory = "services/kanboard-poc-komodo"
