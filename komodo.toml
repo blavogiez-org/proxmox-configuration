@@ -1,0 +1,11 @@
+[[stack]]
+name = "kanboard"
+deploy = true
+
+[stack.config]
+server = "Local"
+git_provider = "github.com"
+repo = "jobacogiez-org/proxmox-gitops"
+branch = "main"
+run_directory = "services/kanboard-poc-komodo"
+file_paths = ["docker-compose.yaml"]

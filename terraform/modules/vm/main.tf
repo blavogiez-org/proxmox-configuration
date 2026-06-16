@@ -18,7 +18,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   }
 
   disk {
-    datastore_id = "local-lvm"
+    datastore_id = var.datastore_id
     interface    = "scsi0"
     size         = var.disk_size
     iothread     = true

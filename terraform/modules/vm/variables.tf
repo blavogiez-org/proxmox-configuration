@@ -22,6 +22,11 @@ variable "user_data_template_path" {
   type = string
 }
 
+variable "datastore_id" {
+  type=string
+  default= "local-lvm"
+}
+
 variable "hostname" {
   type = string 
   default = "hostname-a-remplacer-alloy-en-a-besoin"

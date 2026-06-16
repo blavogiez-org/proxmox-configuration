@@ -127,12 +127,12 @@ module "vault" {
   user_data_template_path = "${path.root}/../../../services/vault/cloud-init.yml"
 }
 
-# https://dokploy.com/
-module "dokploy" {
+# https://komo.do/docs/setup
+module "komodo" {
   source = "../../modules/vm"
 
-  hostname            = "dokploy"
-  name                = "dokploy"
+  hostname            = "komodo"
+  name                = "komodo"
   username            = "admin"
   node_name           = "homelab"
   vm_id               = 211
@@ -140,13 +140,14 @@ module "dokploy" {
   vm_ip               = "172.16.10.11"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "base-vm"
 
-  cpu       = 2
+  cpu       = 3
   memory    = 4096
   disk_size = 50
 
   bridge = module.vlan2.bridge_name
-  user_data_template_path = "${path.root}/../../../services/dokploy/cloud-init.yml"
+  user_data_template_path = "${path.root}/../../../services/komodo/cloud-init.yml"
 }
 
 module "cloudflared" {

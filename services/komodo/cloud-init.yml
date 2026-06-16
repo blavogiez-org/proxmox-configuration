@@ -1,0 +1,23 @@
+#cloud-config
+hostname: ${hostname}
+preserve_hostname: false
+
+
+users:
+  - name: admin
+    groups: docker
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+packages:
+  - qemu-guest-agent
+  - curl
+
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - curl -fsSL https://get.docker.com | sudo sh
+  - wget -P komodo https://raw.githubusercontent.com/moghtech/komodo/main/compose/mongo.compose.yaml
+  - wget -P komodo https://raw.githubusercontent.com/moghtech/komodo/main/compose/compose.env
+  - docker compose -p komodo -f komodo/mongo.compose.yaml --env-file komodo/compose.env up -d
