@@ -1,21 +1,28 @@
 name: kanboard
+
 services:
   app:
     image: ${KANBOARD_IMAGE:-kanboard/kanboard:latest}
     container_name: kanboard
     restart: always
-    ports:
-     - "80:80"
-     - "443:443"
     volumes:
-     - data:/var/www/app/data
-     - plugins:/var/www/app/plugins
-     - certs:/etc/nginx/ssl
+      - data:/var/www/app/data
+      - plugins:/var/www/app/plugins
+      - certs:/etc/nginx/ssl
     environment:
       DATABASE_URL: postgres://kanboard:kanboard-secret@db/kanboard
     depends_on:
       db:
         condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kanboard.rule=Host(`kanboard-poc.host.blavogiez.fr`)"
+      - "traefik.http.routers.kanboard.entrypoints=web"
+      - "traefik.http.services.kanboard.loadbalancer.server.port=80"
+    networks:
+      - default
+      - proxy
+
   db:
     image: postgres:15-alpine
     restart: always
@@ -30,12 +37,16 @@ services:
       start_period: 15s
       interval: 10s
       timeout: 5s
+    networks:
+      - default
+
 volumes:
   data:
-    driver: local
   plugins:
-    driver: local
   certs:
-    driver: local
   db:
-    driver: local
+
+networks:
+  default:
+  proxy:
+    external: true
