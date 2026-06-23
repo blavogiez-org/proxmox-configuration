@@ -166,3 +166,25 @@ module "cloudflared" {
 
   bridge = module.vlan2.bridge_name
 }
+
+# https://docs.goauthentik.io/install-config/install/docker-compose/
+module "authentik" {
+  source = "../../modules/vm"
+  hostname            = "authentik"
+  name                = "authentik"
+  username            = "admin"
+  node_name           = "homelab"
+  vm_id               = 116
+  vm_template_id      = 9000
+  vm_ip               = "192.168.10.16"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "base-vm"
+
+  cpu       = 1
+  memory    = 2048
+  disk_size = 10
+
+  bridge = module.vlan1.bridge_name
+  user_data_template_path = "${path.root}/../../../services/authentik/cloud-init.yml"
+}
