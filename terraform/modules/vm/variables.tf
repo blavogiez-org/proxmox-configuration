@@ -24,7 +24,7 @@ variable "user_data_template_path" {
 
 variable "datastore_id" {
   type=string
-  default= "local-lvm"
+  default= "encrypted-zfs"
 }
 
 variable "hostname" {

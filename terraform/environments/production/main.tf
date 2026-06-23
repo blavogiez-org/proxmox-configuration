@@ -2,7 +2,7 @@ module "vlan1" {
   source = "../../modules/vlan"
 
   name      = "vmbr1"
-  node_name = "homelab"
+  node_name = "pve1"
   address   = "192.168.10.1/24"
   comment   = "POUR INFRA"
 }
@@ -11,7 +11,7 @@ module "vlan2" {
   source = "../../modules/vlan"
 
   name      = "vmbr2"
-  node_name = "homelab"
+  node_name = "pve1"
   address   = "172.16.10.1/24"
   comment   = "POUR SERVICES EXPOSES A L EXTERIEUR"
 }
@@ -28,7 +28,7 @@ module "gh-runner" {
   hostname            = "gh-runner"
   name                = "gh-runner"
   username            = "admin"
-  node_name           = "homelab"
+  node_name           = "pve1"
   vm_id               = 111
   vm_template_id      = 9000
   vm_ip               = "192.168.10.11"
@@ -49,7 +49,7 @@ module "wireguard" {
   source = "../../modules/lxc"
 
   name                = "wireguard"
-  node_name           = "homelab"
+  node_name           = "pve1"
   lxc_id              = 112
   lxc_ip              = "192.168.10.12"
   network_gateway     = "192.168.10.1"
@@ -68,7 +68,7 @@ module "caddy" {
   source = "../../modules/lxc"
 
   name                = "caddy"
-  node_name           = "homelab"
+  node_name           = "pve1"
   lxc_id              = 113
   lxc_ip              = "192.168.10.13"
   network_gateway     = "192.168.10.1"
@@ -88,7 +88,7 @@ module "monitoring" {
   hostname            = "monitoring"
   name                = "monitoring"
   username            = "admin"
-  node_name           = "homelab"
+  node_name           = "pve1"
   vm_id               = 114
   vm_template_id      = 9000
   vm_ip               = "192.168.10.14"
@@ -112,7 +112,7 @@ module "vault" {
   hostname            = "vault"
   name                = "vault"
   username            = "admin"
-  node_name           = "homelab"
+  node_name           = "pve1"
   vm_id               = 115
   vm_template_id      = 9000
   vm_ip               = "192.168.10.15"
@@ -134,13 +134,13 @@ module "komodo" {
   hostname            = "komodo"
   name                = "komodo"
   username            = "admin"
-  node_name           = "homelab"
+  node_name           = "pve1"
   vm_id               = 211
   vm_template_id      = 9000
   vm_ip               = "172.16.10.11"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "base-vm"
+  datastore_id = "encrypted-zfs"
 
   cpu       = 3
   memory    = 4096
@@ -154,7 +154,7 @@ module "cloudflared" {
   source = "../../modules/lxc"
 
   name                = "cloudflared"
-  node_name           = "homelab"
+  node_name           = "pve1"
   lxc_id              = 212
   lxc_ip              = "172.16.10.12"
   network_gateway     = "172.16.10.1"
@@ -173,13 +173,13 @@ module "authentik" {
   hostname            = "authentik"
   name                = "authentik"
   username            = "admin"
-  node_name           = "homelab"
+  node_name           = "pve1"
   vm_id               = 116
   vm_template_id      = 9000
   vm_ip               = "192.168.10.16"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "base-vm"
+  datastore_id = "encrypted-zfs"
 
   cpu       = 1
   memory    = 2048

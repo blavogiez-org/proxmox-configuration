@@ -53,7 +53,7 @@ resource "proxmox_virtual_environment_vm" "this" {
 
 resource "proxmox_virtual_environment_file" "boostrap_user_data" {
   content_type = "snippets"
-  datastore_id = "local"
+  datastore_id = "local" # encrypted-zfs ne peut pas supporter autre chose que des vm
   node_name    = var.node_name
 
   source_raw {

@@ -39,7 +39,7 @@ variable "disk_size" {
 
 variable "datastore_id" {
   type    = string
-  default = "local-lvm"
+  default = "encrypted-zfs"
 }
 
 variable "template_file_id" {
