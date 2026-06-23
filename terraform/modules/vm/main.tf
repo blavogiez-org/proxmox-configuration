@@ -2,7 +2,6 @@ resource "proxmox_virtual_environment_vm" "this" {
   vm_id     = var.vm_id
   name      = var.name
   node_name = var.node_name
-
   cpu {
     cores = var.cpu
     type  = "host"
@@ -15,6 +14,7 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   clone {
     vm_id = var.vm_template_id
+    datastore_id = var.datastore_id
   }
 
   disk {
@@ -42,6 +42,7 @@ resource "proxmox_virtual_environment_vm" "this" {
         gateway = var.network_gateway
       }
     }
+    datastore_id = var.datastore_id
 
     user_account {
       keys     = [trimspace(file(pathexpand(var.ssh_public_key_path)))]

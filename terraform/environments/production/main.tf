@@ -1,20 +1,21 @@
-module "vlan1" {
-  source = "../../modules/vlan"
+# conversion SDN à faire. Poc fait à la main, description en bloc a faire
+# module "vlan1" {
+#   source = "../../modules/vlan"
 
-  name      = "vmbr1"
-  node_name = "pve1"
-  address   = "192.168.10.1/24"
-  comment   = "POUR INFRA"
-}
+#   name      = "vmbr1"
+#   node_name = "pve1"
+#   address   = "192.168.10.1/24"
+#   comment   = "POUR INFRA"
+# }
 
-module "vlan2" {
-  source = "../../modules/vlan"
+# module "vlan2" {
+#   source = "../../modules/vlan"
 
-  name      = "vmbr2"
-  node_name = "pve1"
-  address   = "172.16.10.1/24"
-  comment   = "POUR SERVICES EXPOSES A L EXTERIEUR"
-}
+#   name      = "vmbr2"
+#   node_name = "pve1"
+#   address   = "172.16.10.1/24"
+#   comment   = "POUR SERVICES EXPOSES A L EXTERIEUR"
+# }
 
 module "minimal-backup" {
   source  = "../../modules/backup"
@@ -34,12 +35,13 @@ module "gh-runner" {
   vm_ip               = "192.168.10.11"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
 
   cpu       = 2
   memory    = 2048
   disk_size = 10
 
-  bridge = module.vlan1.bridge_name
+  bridge = "prvvnet1"
   user_data_template_path = "${path.root}/../../../services/base-vm/cloud-init.yml"
 }
 
@@ -54,12 +56,13 @@ module "wireguard" {
   lxc_ip              = "192.168.10.12"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
 
   cpu       = 1
   memory    = 512
   disk_size = 10
 
-  bridge = module.vlan1.bridge_name
+  bridge = "prvvnet1"
 }
 
 # https://caddyserver.com/docs/install
@@ -73,12 +76,13 @@ module "caddy" {
   lxc_ip              = "192.168.10.13"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
 
   cpu       = 1
   memory    = 512
   disk_size = 10
 
-  bridge = module.vlan1.bridge_name
+  bridge = "prvvnet1"
 }
 
 # cf dossier monitoring
@@ -94,12 +98,13 @@ module "monitoring" {
   vm_ip               = "192.168.10.14"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
 
   cpu       = 1
   memory    = 1024
   disk_size = 25
 
-  bridge = module.vlan1.bridge_name
+  bridge = "prvvnet1"
   user_data_template_path = "${path.root}/../../../services/monitoring/cloud-init.yml"
 }
 
@@ -118,12 +123,13 @@ module "vault" {
   vm_ip               = "192.168.10.15"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
 
   cpu       = 1
   memory    = 1024
   disk_size = 15
 
-  bridge = module.vlan1.bridge_name
+  bridge = "prvvnet1"
   user_data_template_path = "${path.root}/../../../services/vault/cloud-init.yml"
 }
 
@@ -146,7 +152,7 @@ module "komodo" {
   memory    = 4096
   disk_size = 50
 
-  bridge = module.vlan2.bridge_name
+  bridge = "pubvnet1"
   user_data_template_path = "${path.root}/../../../services/komodo/cloud-init.yml"
 }
 
@@ -159,12 +165,13 @@ module "cloudflared" {
   lxc_ip              = "172.16.10.12"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
 
   cpu       = 1
   memory    = 256
   disk_size = 8
 
-  bridge = module.vlan2.bridge_name
+  bridge = "pubvnet1"
 }
 
 # https://docs.goauthentik.io/install-config/install/docker-compose/
@@ -185,6 +192,6 @@ module "authentik" {
   memory    = 2048
   disk_size = 10
 
-  bridge = module.vlan1.bridge_name
+  bridge = "prvvnet1"
   user_data_template_path = "${path.root}/../../../services/authentik/cloud-init.yml"
 }
