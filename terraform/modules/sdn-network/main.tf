@@ -4,7 +4,7 @@ resource "proxmox_sdn_vnet" "prvvnet1" {
   id            = var.vnet_id
   zone          = var.zone_id
   alias         = "VNET"
-  isolate_ports = true
+  isolate_ports = false
   vlan_aware    = false
 }
 
