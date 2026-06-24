@@ -1,3 +1,4 @@
+# idée de todo : déduire que c'est prvvnet1 ou pubvnet1 selon l'ip voulue
 # repris de https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/sdn_vnet
 # les SDN proxmox exposent après leur créatione un bridge exploitable (meme nom que le vnet) avec le SNAT activé par défaut (sortie possible)
 resource "proxmox_sdn_zone_simple" "zone_1" {

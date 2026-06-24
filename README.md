@@ -23,7 +23,7 @@ Puisqu'il s'agit d'un projet commun, nous définissons ces conventions :
 - Limiter le développement par IA afin d'apprendre au mieux, n'utiliser que pour se documenter / review
 - Lorsque l'on utilise un nouvel outil, se renseigner rapidement sur les bonnes pratiques
 - Appliquer les principes [DRY, KISS, YAGNI](https://scalastic.io/solid-dry-kiss/)
-- [Feature branch](https://www.atlassian.com/fr/git/tutorials/comparing-workflows/feature-branch-workflow) et merge requests (lorsque le dépôt deviendra plus complexe)
+- [Feature branch](https://www.atlassian.com/fr/git/tutorials/comparing-workflows/feature-branch-workflow) et merge requests (à part pour des petits edit / modifications de doc)
 - Pour les installations complexes, écrire une documentation / procédure pour que l'autre puisse la reproduire
 
 ## Présentation
