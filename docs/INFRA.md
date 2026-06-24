@@ -1,74 +1,54 @@
-# Composants sur vmbr1 : Infrastructure d'administration du Proxmox
+# Infrastructure d'administration du PVE
 
-## Sous-réseaux
+## 1. Sous-réseaux de machines virtuelles
 
 Ces sous-réseaux seront le coeur des services hébergés sur Proxmox. Ils sont isolés et injoignables par le reste du réseau privé.
-Ils sont [décrits dans le dossier terraform](terraform/environments/production/main.tf)
+Ils sont [décrits dans le dossier terraform](terraform/environments/production/main.tf) sous forme de SDN Proxmox (en gros, un framework/abstraction réseau)
 
-![Sous-réseaux vmbr1 et vmbr1](assets/infra/image-1.png)
+![Sous réseau prvvnet1](assets/infra/prvvnet1.png)
 
-`vmbr1` désigne tous les services d'administration du PVE.
-`vmbr2` désigne tous les services qui seront exposés (sites publics).
+![Sous-réseau pubvnet1](assets/infra/pubvnet1.png)
 
-## VPN Wireguard
+`prvvnet1` désigne tous les services d'administration du PVE (exemple : OpenBao, monitoring Prometheus/Loki/Grafana, Authentik, runners Git...).
+`pubvnet1` désigne tous les services qui seront exposés sur internet public (exemple : Kanboard, n'importe quel projet hébergé comme OpenLaTeX).
 
-L'objectif est d'avoir accès au réseau privé de Proxmox depuis n'importe où, de façon sécurisée.
+Lorsque le SDN est créé, il expose des Linux bridge qui sont directement exploitables avec le SNAT configuré (permet au sous-réseau de sortir sur internet en prenant l'adresse de l'hôte proxmox)
 
-On installera le VPN Wireguard, en l'occurence `wg-easy`.
+Ce sont ces bridges qui une fois associés aux VMs permettent le trafic réseau
 
-Voir les liens suivants pour installation :
+Ce découpage en sous-réseau permet de protéger facilement les plages par pare-feu/VPN.
+
+## 2. VPN Wireguard
+
+Une fois les sous-réseaux créés/compris, l'objectif sera d'y avoir accès, depuis n'importe où, de façon sécurisée. 
+
+On utilisera un VPN. on a choisi Wireguard, avec l'implémentation frontend `wg-easy`.
+
+Voir les liens suivants pour l'installation :
 - https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/
 - https://github.com/wg-easy/wg-easy
 
-### Variables utilisées
+## Variables utilisées
 
-Ici, les variables suivantes représentent :
-- `192.168.1.50` le root PVE central, accessible en réseau domestique
-- `192.168.10.12` la machine Wireguard (cf Terraform), accessible en réseau isolé `vmbr1`
+Dans cette procédure d'installation de Wireguard, les variables suivantes représentent :
+- `192.168.1.100` le root PVE central, accessible en réseau domestique
+- `192.168.10.0/24` le sous réseau `prvvnet1` (voir terraform)
+- `172.16.10.0/24` le sous réseau `pubvnet1` (voir terraform)
+
+
+## Installation Docker Compose
+
+Pour fluidifier les accès aux sous-réseaux, l'option la plus simple est d'héberger wireguard sur l'hôte Proxmox (`192.168.1.100`). En effet, si l'on mettait Wireguard lui-même sur un sous-réseau (comme `prvvnet1` ), il faudrait beaucoup plus de configuration, et ce serait moins versionnable et plus manuel, ce qui serait contraire à l'objectif de ce dépôt.
+
+Dans le dépôt est décrit une configuration `docker-compose` paramétrée pour les variables décrites ci-dessous.
+Cf [Docker compose](../services/wgeasy/docker-compose.yml)
+
 
 ### Création d'un Client
 
-### Accès privé
-
-L'objectif est ici d'accéder aux réseaux isolés depuis un PC connecté sur le même réseau domestique que le root PVE central (dans le même logement).
-
-Puisque les sous-réseaux `vmbr1` et `vmbr2` sont isolés, il faut un intermédiaire.
-Ce sera le root PVE central qui fera l'intermédiaire.
-
-
-C'est donc ici l'endpoint `192.168.1.50`, soit le root PVE central, qui sera pointé par le client et qui redirigera vers la machine Wireguard.
-
-(pour une machine Wireguard sur l'ip `192.168.10.12`, telle que définie dans le Terraform)
-
-```bash
-root@homelab:~#   echo 'net.ipv4.ip_forward=1' >/etc/sysctl.d/99-ip-forward.conf
-root@homelab:~#   sysctl -p /etc/sysctl.d/99-ip-forward.conf
-root@homelab:~#   nft delete table ip wg_forward 2>/dev/null || true
-root@homelab:~#   nft add table ip wg_forward
-root@homelab:~#   nft 'add chain ip wg_forward prerouting { type nat hook prerouting priority dstnat; policy accept; }'
-root@homelab:~#   nft 'add chain ip wg_forward forward { type filter hook forward priority filter; policy drop; }'
-root@homelab:~#   nft add rule ip wg_forward prerouting iifname "vmbr0" udp dport 51820 dnat to 192.168.10.12:51820
-root@homelab:~#   nft add rule ip wg_forward forward ct state established,related accept
-root@homelab:~#   nft add rule ip wg_forward forward iifname "vmbr0" oifname "vmbr1" ip daddr 192.168.10.12 udp dport 51820 accept
-root@homelab:~#   nft list ruleset >/etc/nftables.conf
-root@homelab:~#   systemctl enable --now nftables
-```
-
 #### Configuration Wireguard
 
-Puisqu'on est au tout début, on fait un tunnel SSH avec redirection de port pour aller sur l'UI wireguard, car le réseau est isolé.
-
-On ajoute d'abord une route temporaire vers le réseau isolé via le root PVE central (quand on aura fini, on l'enlève) :
-
-```bash
-sudo ip route add 192.168.10.0/24 via 192.168.1.50
-```
-
-```bash
-ssh -L 51821:127.0.0.1:51821 root@192.168.10.12
-```
-
-Ensuite, se rendre sur "http://localhost:51821", et créer un compte admin.
+Se rendre sur "http://192.168.1.100:51821", et créer un compte admin.
 
 ##### Configuration globale
 
@@ -77,7 +57,6 @@ Ensuite, se rendre sur "http://localhost:51821", et créer un compte admin.
 ##### Configuration spécifique
 
 ![Configuration client](assets/infra/image-2.png)
-
 
 ### Accès public
 
@@ -95,11 +74,11 @@ Ensuite, on met l'adresse de notre box avec le port, par exemple `12.34.56.78:28
 
 (On peut également penser à des solutions comme un tunnel Cloudflare sur le PVE + nom de domaine si on veut aller plus loin sans box)
 
-**Attention, il faut uniquement exposer le port 51820 qui est en UDP et aucun autre port, surtout par le port 51821 qui est l'UI Wireguard. Et de façon plus large, il faut exposer le moins de ports en public.**
+**Attention, il faut uniquement exposer le port 51820 qui est en UDP et aucun autre port, surtout pas le port 51821 qui est l'UI Wireguard. Et de façon plus large, il faut exposer le moins de ports en public.**
 
 ### Chaîne finale
 
-Le VPN contacterait alors `12.34.56.78:28820`, qui contacte le root PVE central, qui contacte ensuite la machine hébergeant WireGuard.
+Le VPN contacterait alors `12.34.56.78:28820`, qui contacte le root PVE central.
 
 ### Connexion par un client
 

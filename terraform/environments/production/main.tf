@@ -51,25 +51,7 @@ module "gh-runner" {
   user_data_template_path = "${path.root}/../../../services/base-vm/cloud-init.yml"
 }
 
-# https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/
-# https://github.com/wg-easy/wg-easy
-module "wireguard" {
-  source = "../../modules/lxc"
-
-  name                = "wireguard"
-  node_name           = "pve1"
-  lxc_id              = 112
-  lxc_ip              = "192.168.10.12"
-  network_gateway     = "192.168.10.1"
-  ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
-
-  cpu       = 1
-  memory    = 512
-  disk_size = 10
-
-  bridge = "prvvnet1"
-}
+# (wireguard se fait sur l'hôte proxmox pour fluidifier les accès réseau)
 
 # https://caddyserver.com/docs/install
 # https://github.com/caddyserver/caddy
