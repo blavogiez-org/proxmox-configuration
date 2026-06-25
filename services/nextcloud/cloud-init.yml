@@ -1,0 +1,26 @@
+#cloud-config
+hostname: ${hostname}
+preserve_hostname: false
+
+users:
+  - name: admin
+    groups: docker
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+packages:
+  - qemu-guest-agent
+  - curl
+  - openssl
+
+# on ajoute le reporting erreurs pour que ça remonte à loki
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - curl -fsSL https://get.docker.com | sudo sh
+  - echo "MYSQL_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> .env
+  - echo "MYSQL_ROOT_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> .env
+  - echo "NEXTCLOUD_ADMIN_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> .env
+
+
