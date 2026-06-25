@@ -1,0 +1,15 @@
+# le README de https://github.com/coredns/coredns est très complet !
+
+services:
+  coredns:
+    image: coredns/coredns
+    restart: unless-stopped
+    command: "--conf /config/Corefile"
+    volumes:
+     - ./config:/config
+    ports:
+     - 53:53/udp
+
+# pour tester à la fin
+# dig @{{ ip de coredns }} vault.priv.{{ domain }}.fr
+# dig @{{ ip de coredns }} vault.priv.toto.fr

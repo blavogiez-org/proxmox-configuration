@@ -1,0 +1,21 @@
+# le README de https://github.com/coredns/coredns est très complet !
+# réalisé selon
+# https://coredns.io/plugins/
+# https://coredns.io/plugins/template/
+# Tout ce qui est priv.DOMAIN ira à Caddy, et cela permettra de ne pas utiliser Internet pour que l'IP VPN soit gardée, et donc pour restreindre l'accès à des sites comme vault.priv.blavogiez.fr par exemple
+
+.:53 {
+    errors
+    log
+
+    template IN A priv.{{ domain }} {
+        # le scope de match est déjà prévu en haut, sinon ce serait un bazar à remplacer avec le domaine
+        match .*
+        # coredns a un conflit de syntaxe avec jinja donc on protege les brackets 
+        answer "{{ '{{' }} .Name {{ '}}' }} 60 IN A 192.168.10.13"
+    }
+
+    # 1.1.1.1 = cloudflare et 8.8.8.8 = google 
+    forward . 1.1.1.1 1.0.0.1 8.8.8.8
+    cache 30
+}
