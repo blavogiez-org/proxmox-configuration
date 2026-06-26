@@ -1,5 +1,5 @@
 {
-    # On désactive l'auto-HTTPS car Cloudflare gère le certificat
+    # on désactive l'auto-HTTPS car Cloudflare gère le certificat
     auto_https off
 }
 

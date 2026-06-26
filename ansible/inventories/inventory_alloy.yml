@@ -6,7 +6,7 @@ all:
   hosts:
     gh-runner:
       ansible_host: 192.168.10.11
-    wireguard:
+    coredns:
       ansible_host: 192.168.10.12
     caddy:
       ansible_host: 192.168.10.13

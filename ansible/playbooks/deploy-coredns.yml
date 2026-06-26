@@ -43,3 +43,11 @@
         build: always
         state: present
       when: docker_files.changed or corefile.changed or coredns_running.stdout == ""
+
+    - name: Redémarrer Coredns si le Corefile a changé
+      community.docker.docker_compose_v2:
+        project_src: "{{ coredns_remote_dir }}"
+        state: restarted
+      when:
+        - corefile.changed
+        - coredns_running.stdout != ""
