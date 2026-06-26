@@ -1,4 +1,4 @@
-monitoring.{{ domain }}:80 {
+monitoring.priv.{{ domain }} {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
@@ -8,6 +8,6 @@ monitoring.{{ domain }}:80 {
 
     # Bloqué pour tout le reste
     handle {
-        respond 403
+        respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
     }
 }

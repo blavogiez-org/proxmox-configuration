@@ -1,6 +1,4 @@
-{
-    # on désactive l'auto-HTTPS car Cloudflare gère le certificat
-    auto_https off
-}
-
 import /etc/caddy/sites/*.conf
+# TODO : configuration HTTPS même pour les sites locaux/privés pour être blindé niveau sécurité
+# j'ai deja une solution avec tls internal pour Caddy mais faut faire confiance au certificat sur chaque machine ce qui est bof
+# on pourra utiliser le plugin d'extension https://github.com/caddy-dns/cloudflare

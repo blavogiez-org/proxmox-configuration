@@ -35,6 +35,10 @@
         - Caddyfile
       register: main_config
 
+    - name: supprimer le contenu des sites pour que le git soit vraiment la source de vérité (= pas de site supplémentaire en remote autorisé)
+      ansible.builtin.shell:
+        cmd: rm -rf {{ caddy_remote_dir }}/sites/*
+
     # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/fileglob_lookup.html 
     # ressource utile pour bien itérer dessus
     - name: Générer les sites de template
