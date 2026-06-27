@@ -129,6 +129,11 @@ module "cloudflared" {
   disk_size = 8
 
   bridge = "pubvnet1"
+  user_data_raw = templatefile("${path.root}/../../../services/cloudflared/cloud-init.yml", {
+    hostname         = "authentik"
+    ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    tunnel_token = data.vault_generic_secret.cloudflared_secrets.data["tunnel_token"]
+  })
 }
 
 # https://docs.goauthentik.io/install-config/install/docker-compose/

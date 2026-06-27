@@ -1,7 +1,5 @@
-#cloud-config
 hostname: ${hostname}
 preserve_hostname: false
-
 
 users:
   - name: admin
@@ -15,9 +13,41 @@ packages:
   - qemu-guest-agent
   - curl
 
+write_files:
+  - path: /opt/traefik/docker-compose.yml
+    content: |
+      services:
+        traefik:
+          image: traefik:v3.7
+          command:
+            - "--api.insecure=true"
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--providers.docker.network=proxy"
+            - "--entrypoints.web.address=:80"
+          ports:
+            - "80:80"
+            - "8080:8080"
+          volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+          networks: 
+            - proxy
+      networks:
+        proxy:
+          external: true
+
+  - path: /opt/komodo/compose.env
+    permissions: '0600'
+    content: |
+      DB_PASSWORD=${db_password}
+      API_KEY=${api_key}
+
 runcmd:
   - systemctl enable --now qemu-guest-agent
   - curl -fsSL https://get.docker.com | sudo sh
-  - wget -P komodo https://raw.githubusercontent.com/moghtech/komodo/main/compose/mongo.compose.yaml
-  - wget -P komodo https://raw.githubusercontent.com/moghtech/komodo/main/compose/compose.env
-  - docker compose -p komodo -f komodo/mongo.compose.yaml --env-file komodo/compose.env up -d
+  - docker network create proxy || true
+  - cd /opt/traefik
+  - docker compose up -d
+  - cd /opt/komodo
+  - wget https://raw.githubusercontent.com/moghtech/komodo/main/compose/mongo.compose.yaml
+  - docker compose -p komodo -f mongo.compose.yaml --env-file compose.env up -d

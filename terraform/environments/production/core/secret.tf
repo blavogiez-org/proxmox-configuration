@@ -7,6 +7,10 @@ data "vault_generic_secret" "komodo_api" {
   path = "secret/data/komodo/api"
 }
 
+data "vault_generic_secret" "cloudflared_secrets" {
+  path = "secret/data/cloudflared/config"
+}
+
 data "vault_generic_secret" "authentik_secrets" {
   path = "secret/data/authentik/config"
 }

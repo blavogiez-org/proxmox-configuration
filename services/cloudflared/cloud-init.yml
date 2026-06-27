@@ -1,4 +1,3 @@
-#cloud-config
 hostname: ${hostname}
 preserve_hostname: false
 
@@ -14,20 +13,26 @@ packages:
   - qemu-guest-agent
   - curl
 
-# écrit le fichier .env proprement AVANT de lancer les commandes
 write_files:
-  - path: /opt/authentik/.env
+  - path: /opt/cloudflared/.env
     permissions: '0600'
     content: |
-      PG_PASS=${pg_pass}
-      AUTHENTIK_SECRET_KEY=${authentik_secret}
-      AUTHENTIK_ERROR_REPORTING__ENABLED=true
+      TUNNEL_TOKEN=${tunnel_token}
+      TUNNEL_NAME=proxmox-tunnel
 
-# suit la doc
+  - path: /opt/cloudflared/docker-compose.yml
+    content: |
+      services:
+        cloudflared:
+          image: cloudflare/cloudflared:latest
+          container_name: cloudflared
+          restart: always
+          command: tunnel run
+          env_file:
+            - .env
+
 runcmd:
   - systemctl enable --now qemu-guest-agent
   - curl -fsSL https://get.docker.com | sudo sh
-  - mkdir -p /opt/authentik
-  - cd /opt/authentik
-  - wget https://docs.goauthentik.io/compose.yml
+  - cd /opt/cloudflared
   - docker compose up -d
