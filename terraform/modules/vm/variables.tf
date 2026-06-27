@@ -18,8 +18,9 @@ variable "vm_id" {
   type = number
 }
 
-variable "user_data_template_path" {
-  type = string
+variable "user_data_raw" {
+  description = "Le contenu brut du fichier cloud-init généré par le parent"
+  type        = string
 }
 
 variable "datastore_id" {

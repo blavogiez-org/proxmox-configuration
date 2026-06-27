@@ -59,9 +59,7 @@ resource "proxmox_virtual_environment_file" "boostrap_user_data" {
 
   source_raw {
     file_name = "${var.name}-user-data.yaml"
-    data = templatefile(var.user_data_template_path, {
-      ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path))),
-      hostname       = var.hostname
-    })
+    # On passe directement la string générée par le parent
+    data      = var.user_data_raw
   }
 }

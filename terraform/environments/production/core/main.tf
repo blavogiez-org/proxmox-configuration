@@ -1,37 +1,14 @@
 # idée de todo : déduire que c'est prvvnet1 ou pubvnet1 selon l'ip voulue
 # repris de https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/sdn_vnet
-# les SDN proxmox exposent après leur créatione un bridge exploitable (meme nom que le vnet) avec le SNAT activé par défaut (sortie possible)
-resource "proxmox_sdn_zone_simple" "zone_1" {
-  id = "zone1"
-  mtu = 1500
-}
-
-# pour infra
-module "prvvnet1" {
-  source = "../../modules/sdn-network"
-  zone_id = proxmox_sdn_zone_simple.zone_1.id
-  vnet_id = "prvvnet1"
-  subnet_cidr = "192.168.10.0/24"
-  subnet_gateway = "192.168.10.1"
-}
-
-# pour services publics
-module "pubvnet1" {
-  source = "../../modules/sdn-network"
-  zone_id = proxmox_sdn_zone_simple.zone_1.id
-  vnet_id = "pubvnet1"
-  subnet_cidr = "172.16.10.0/24"
-  subnet_gateway = "172.16.10.1"
-}
-
+# les SDN proxmox exposent après leur créatione un bridge exploitable (meme nom que le vnet) avec le SNAT activé par défaut (sortie possible)
 module "minimal-backup" {
-  source  = "../../modules/backup"
+  source  = "../../../modules/backup"
   storage = var.storage
 }
 
 # déploiement runner dispo en playbook
 module "gh-runner" {
-  source = "../../modules/vm"
+  source = "../../../modules/vm"
 
   hostname            = "gh-runner"
   name                = "gh-runner"
@@ -42,14 +19,19 @@ module "gh-runner" {
   vm_ip               = "192.168.10.11"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
+  datastore_id        = "encrypted-zfs"
 
   cpu       = 2
   memory    = 2048
   disk_size = 10
 
   bridge = "prvvnet1"
-  user_data_template_path = "${path.root}/../../../services/base-vm/cloud-init.yml"
+
+  # Pas de secrets Vault ici, juste les variables de base
+  user_data_raw = templatefile("${path.root}/../../../services/base-vm/cloud-init.yml", {
+    hostname       = "gh-runner"
+    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
+  })
 }
 
 # (wireguard se fait sur l'hôte proxmox pour fluidifier les accès réseau)
@@ -57,7 +39,7 @@ module "gh-runner" {
 # https://caddyserver.com/docs/install
 # https://github.com/caddyserver/caddy
 module "caddy" {
-  source = "../../modules/lxc"
+  source = "../../../modules/lxc"
 
   name                = "caddy"
   node_name           = "pve1"
@@ -65,7 +47,7 @@ module "caddy" {
   lxc_ip              = "192.168.10.13"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
+  datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 512
@@ -76,7 +58,7 @@ module "caddy" {
 
 # cf dossier monitoring
 module "monitoring" {
-  source = "../../modules/vm"
+  source = "../../../modules/vm"
 
   hostname            = "monitoring"
   name                = "monitoring"
@@ -87,44 +69,24 @@ module "monitoring" {
   vm_ip               = "192.168.10.14"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
+  datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 1024
   disk_size = 25
 
   bridge = "prvvnet1"
-  user_data_template_path = "${path.root}/../../../services/monitoring/cloud-init.yml"
-}
 
-# vm dédiée vault
-# https://github.com/openbao/openbao
-# https://hub.docker.com/r/openbao/openbao
-module "vault" {
-  source = "../../modules/vm"
-
-  hostname            = "vault"
-  name                = "vault"
-  username            = "admin"
-  node_name           = "pve1"
-  vm_id               = 115
-  vm_template_id      = 9000
-  vm_ip               = "192.168.10.15"
-  network_gateway     = "192.168.10.1"
-  ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
-
-  cpu       = 1
-  memory    = 1024
-  disk_size = 15
-
-  bridge = "prvvnet1"
-  user_data_template_path = "${path.root}/../../../services/vault/cloud-init.yml"
+  # Pas de secrets Vault ici non plus
+  user_data_raw = templatefile("${path.root}/../../../services/monitoring/cloud-init.yml", {
+    hostname       = "monitoring"
+    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
+  })
 }
 
 # https://komo.do/docs/setup
 module "komodo" {
-  source = "../../modules/vm"
+  source = "../../../modules/vm"
 
   hostname            = "komodo"
   name                = "komodo"
@@ -135,18 +97,24 @@ module "komodo" {
   vm_ip               = "172.16.10.11"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
+  datastore_id        = "encrypted-zfs"
 
   cpu       = 3
   memory    = 4096
   disk_size = 50
 
   bridge = "pubvnet1"
-  user_data_template_path = "${path.root}/../../../services/komodo/cloud-init.yml"
+
+  user_data_raw = templatefile("${path.root}/../../../services/komodo/cloud-init.yml", {
+    hostname       = "komodo"
+    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    db_password    = data.vault_generic_secret.komodo_db.data["password"]
+    api_key        = data.vault_generic_secret.komodo_api.data["token"]
+  })
 }
 
 module "cloudflared" {
-  source = "../../modules/lxc"
+  source = "../../../modules/lxc"
 
   name                = "cloudflared"
   node_name           = "pve1"
@@ -154,7 +122,7 @@ module "cloudflared" {
   lxc_ip              = "172.16.10.12"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
+  datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 256
@@ -165,7 +133,8 @@ module "cloudflared" {
 
 # https://docs.goauthentik.io/install-config/install/docker-compose/
 module "authentik" {
-  source = "../../modules/vm"
+  source = "../../../modules/vm"
+
   hostname            = "authentik"
   name                = "authentik"
   username            = "admin"
@@ -175,34 +144,19 @@ module "authentik" {
   vm_ip               = "192.168.10.16"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
+  datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 2048
   disk_size = 10
 
   bridge = "prvvnet1"
-  user_data_template_path = "${path.root}/../../../services/authentik/cloud-init.yml"
+
+  # Injection de la clé secrète et du mot de passe DB pour Authentik
+  user_data_raw = templatefile("${path.root}/../../../services/authentik/cloud-init.yml", {
+    hostname         = "authentik"
+    ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    pg_pass          = data.vault_generic_secret.authentik_secrets.data["pg_pass"]
+    authentik_secret = data.vault_generic_secret.authentik_secrets.data["secret_key"]
+  })
 }
-
-module "nextcloud" {
-  source = "../../modules/vm"
-  hostname            = "nextcloud"
-  name                = "nextcloud"
-  username            = "admin"
-  node_name           = "pve1"
-  vm_id               = 213
-  vm_template_id      = 9000
-  vm_ip               = "172.16.10.13"
-  network_gateway     = "172.16.10.1"
-  ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
-
-  cpu       = 1
-  memory    = 2048
-  disk_size = 500
-
-  bridge = "pubvnet1"
-  user_data_template_path = "${path.root}/../../../services/nextcloud/cloud-init.yml"
-}
-
