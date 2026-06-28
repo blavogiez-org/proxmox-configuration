@@ -17,8 +17,7 @@ if ! command -v git >/dev/null 2>&1; then
     exit 1
 fi
 
-# 2. Clonage ou mise à jour du dépôt
-echo -e "\n[ÉTAPE 0/5] Récupération du dépôt Git..."
+echo -e "\n[ÉTAPE 0/6] Récupération du dépôt Git..."
 if [ -d "$REPO_DIR" ]; then
     echo "[INFO] Le dossier '$REPO_DIR' existe déjà. Mise à jour (git pull)..."
     cd "$REPO_DIR"
@@ -30,27 +29,28 @@ else
     cd "$REPO_DIR"
 fi
 
-# 3. Configuration des droits (en pointant vers le dossier scripts/)
 echo "[INFO] Configuration des permissions d'exécution..."
-chmod +x scripts/CheckDependences.sh scripts/CreateTfvars.sh scripts/LunchTerraform.sh scripts/CreateBaoSecrets.sh
+chmod +x scripts/CheckDependences.sh scripts/CreateTfvars.sh scripts/LunchTerraform.sh scripts/CreateBaoSecrets.sh scripts/CreateSettings.sh
 
-# 4. Lancement de la séquence
-echo -e "\n[ÉTAPE 1/5] Vérification des dépendances..."
+echo -e "\n[ÉTAPE 1/6] Vérification des dépendances..."
 ./scripts/CheckDependences.sh
 
-echo -e "\n[ÉTAPE 2/5] Création de la configuration Proxmox (tfvars)..."
+echo -e "\n[ÉTAPE 2/6] Création de la configuration Proxmox (tfvars)..."
 ./scripts/CreateTfvars.sh < /dev/tty
 
 TFVARS_PATH="terraform/environments/production/terraform.tfvars"
 
-echo -e "\n[ÉTAPE 3/5] Déploiement de la couche 'bootstrap' (Terraform)..."
+echo -e "\n[ÉTAPE 3/6] Déploiement de la couche 'bootstrap' (Terraform)..."
 ./scripts/LunchTerraform.sh "$TFVARS_PATH" "bootstrap"
 
-echo -e "\n[ÉTAPE 4/5] Injection des secrets dans OpenBao..."
+echo -e "\n[ÉTAPE 4/6] Injection des secrets dans OpenBao..."
 read -p "Saisissez l'IP physique de votre Proxmox pour configurer le routage vers OpenBao (ex: 192.168.1.100) : " PROXMOX_IP < /dev/tty
 ./scripts/CreateBaoSecrets.sh "$PROXMOX_IP" < /dev/tty
 
-echo -e "\n[ÉTAPE 5/5] Déploiement de la couche 'core' (Terraform)..."
+echo -e "\n[ÉTAPE 5/6] Génération de la configuration globale (settings.yml)..."
+./scripts/CreateSettings.sh < /dev/tty
+
+echo -e "\n[ÉTAPE 6/6] Déploiement de la couche 'core' (Terraform)..."
 ./scripts/LunchTerraform.sh "$TFVARS_PATH" "core"
 
 echo -e "\n==========================================================="
