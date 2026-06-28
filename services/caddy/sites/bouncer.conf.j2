@@ -5,6 +5,6 @@ bouncer.priv.{{ domain }}:80 {
     respond "IP de la requête : {remote_host}" 200
 }
 
-bouncer.{{ domain }} {
+http://bouncer.{{ domain }} {
     respond "IP de la requête : {remote_host}" 200
 }

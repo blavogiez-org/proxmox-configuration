@@ -1,0 +1,8 @@
+komodo.{{ domain }}:80 {
+    reverse_proxy 172.16.10.11:9120 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-Proto https
+    }
+}
+

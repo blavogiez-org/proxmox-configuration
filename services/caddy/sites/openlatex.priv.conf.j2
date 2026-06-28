@@ -1,9 +1,9 @@
-http://vault.priv.{{ domain }} {
+http://openlatex-api.priv.{{ domain }} {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
     handle @vpn_only {
-        reverse_proxy 192.168.10.15:8200
+        reverse_proxy 172.16.10.51:80
     }
 
     # Bloqué pour tout le reste
