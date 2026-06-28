@@ -30,7 +30,7 @@ module "vault" {
   hostname            = "vault"
   name                = "vault"
   username            = "admin"
-  node_name           = "pve1"
+  node_name           = "pve"
   vm_id               = 115
   vm_template_id      = 9000
   vm_ip               = "192.168.10.15"
