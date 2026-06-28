@@ -23,7 +23,7 @@ variable "user_data_raw" {
   type        = string
 }
 
-variable "datastore_id" {
+variable "target_datastore_id" {
   type=string
   default= "encrypted-zfs"
 }

@@ -30,13 +30,13 @@ module "vault" {
   hostname            = "vault"
   name                = "vault"
   username            = "admin"
-  node_name           = "pve1"
+  node_name           = var.node_name
   vm_id               = 115
   vm_template_id      = 9000
   vm_ip               = "192.168.10.15"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id        = "encrypted-zfs"
+  target_datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 1024

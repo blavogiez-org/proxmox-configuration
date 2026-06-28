@@ -37,7 +37,7 @@ variable "disk_size" {
   default = 20
 }
 
-variable "datastore_id" {
+variable "target_datastore_id" {
   type    = string
   default = "encrypted-zfs"
 }

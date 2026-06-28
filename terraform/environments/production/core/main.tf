@@ -3,7 +3,7 @@
 # les SDN proxmox exposent après leur créatione un bridge exploitable (meme nom que le vnet) avec le SNAT activé par défaut (sortie possible)
 module "minimal-backup" {
   source  = "../../../modules/backup"
-  storage = var.storage
+  storage = backup_storage
 }
 
 # déploiement runner dispo en playbook
@@ -13,13 +13,13 @@ module "gh-runner" {
   hostname            = "gh-runner"
   name                = "gh-runner"
   username            = "admin"
-  node_name           = "pve1"
+  node_name           = var.node_name
   vm_id               = 111
   vm_template_id      = 9000
   vm_ip               = "192.168.10.11"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id        = "encrypted-zfs"
+  target_datastore_id        = "encrypted-zfs"
 
   cpu       = 2
   memory    = 2048
@@ -42,12 +42,12 @@ module "caddy" {
   source = "../../../modules/lxc"
 
   name                = "caddy"
-  node_name           = "pve1"
+  node_name           = var.node_name
   lxc_id              = 113
   lxc_ip              = "192.168.10.13"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id        = "encrypted-zfs"
+  target_datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 512
@@ -63,13 +63,13 @@ module "monitoring" {
   hostname            = "monitoring"
   name                = "monitoring"
   username            = "admin"
-  node_name           = "pve1"
+  node_name           = var.node_name
   vm_id               = 114
   vm_template_id      = 9000
   vm_ip               = "192.168.10.14"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id        = "encrypted-zfs"
+  target_datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 1024
@@ -91,13 +91,13 @@ module "komodo" {
   hostname            = "komodo"
   name                = "komodo"
   username            = "admin"
-  node_name           = "pve1"
+  node_name           = var.node_name
   vm_id               = 211
   vm_template_id      = 9000
   vm_ip               = "172.16.10.11"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id        = "encrypted-zfs"
+  target_datastore_id        = "encrypted-zfs"
 
   cpu       = 3
   memory    = 4096
@@ -117,12 +117,12 @@ module "cloudflared" {
   source = "../../../modules/lxc"
 
   name                = "cloudflared"
-  node_name           = "pve1"
+  node_name           = var.node_name
   lxc_id              = 212
   lxc_ip              = "172.16.10.12"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id        = "encrypted-zfs"
+  target_datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 256
@@ -143,13 +143,13 @@ module "authentik" {
   hostname            = "authentik"
   name                = "authentik"
   username            = "admin"
-  node_name           = "pve1"
+  node_name           = var.node_name
   vm_id               = 116
   vm_template_id      = 9000
   vm_ip               = "192.168.10.16"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  datastore_id        = "encrypted-zfs"
+  target_datastore_id        = "encrypted-zfs"
 
   cpu       = 1
   memory    = 2048
