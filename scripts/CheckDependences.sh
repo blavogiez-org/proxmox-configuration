@@ -8,7 +8,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Liste des dépendances à vérifier
-DEPENDENCIES=("git" "terraform" "ansible")
+DEPENDENCIES=("git" "terraform" "ansible" "bao")
 MISSING_COUNT=0
 
 # Boucle de vérification
