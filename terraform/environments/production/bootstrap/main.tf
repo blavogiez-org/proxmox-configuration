@@ -5,7 +5,7 @@ resource "proxmox_sdn_zone_simple" "zone_1" {
 
 # pour infra
 module "prvvnet1" {
-  source         = "../../modules/sdn-network"
+  source         = "../../../modules/sdn-network"
   zone_id        = proxmox_sdn_zone_simple.zone_1.id
   vnet_id        = "prvvnet1"
   subnet_cidr    = "192.168.10.0/24"
@@ -14,7 +14,7 @@ module "prvvnet1" {
 
 # pour services publics
 module "pubvnet1" {
-  source         = "../../modules/sdn-network"
+  source         = "../../../modules/sdn-network"
   zone_id        = proxmox_sdn_zone_simple.zone_1.id
   vnet_id        = "pubvnet1"
   subnet_cidr    = "172.16.10.0/24"
@@ -25,7 +25,7 @@ module "pubvnet1" {
 # https://github.com/openbao/openbao
 # https://hub.docker.com/r/openbao/openbao
 module "vault" {
-  source = "../../modules/vm"
+  source = "../../../modules/vm"
 
   hostname            = "vault"
   name                = "vault"
@@ -43,5 +43,5 @@ module "vault" {
   disk_size = 15
 
   bridge                  = "prvvnet1"
-  user_data_template_path = "${path.root}/../../../services/vault/cloud-init.yml"
+  user_data_template_path = "${path.root}/../../../../services/vault/cloud-init.yml"
 }
