@@ -43,7 +43,7 @@ module "vault" {
   disk_size = 15
 
   bridge                  = "prvvnet1"
-  user_data_raw = templatefile("${path.root}/../../../services/vault/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/vault/cloud-init.yml", {
     hostname         = "vault"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
