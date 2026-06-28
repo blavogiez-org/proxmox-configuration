@@ -13,7 +13,7 @@ module "gh-runner" {
   hostname            = "gh-runner"
   name                = "gh-runner"
   username            = "admin"
-  node_name           = "pve"
+  node_name           = "pve1"
   vm_id               = 111
   vm_template_id      = 9000
   vm_ip               = "192.168.10.11"
@@ -42,7 +42,7 @@ module "caddy" {
   source = "../../../modules/lxc"
 
   name                = "caddy"
-  node_name           = "pve"
+  node_name           = "pve1"
   lxc_id              = 113
   lxc_ip              = "192.168.10.13"
   network_gateway     = "192.168.10.1"
@@ -63,7 +63,7 @@ module "monitoring" {
   hostname            = "monitoring"
   name                = "monitoring"
   username            = "admin"
-  node_name           = "pve"
+  node_name           = "pve1"
   vm_id               = 114
   vm_template_id      = 9000
   vm_ip               = "192.168.10.14"
@@ -91,7 +91,7 @@ module "komodo" {
   hostname            = "komodo"
   name                = "komodo"
   username            = "admin"
-  node_name           = "pve"
+  node_name           = "pve1"
   vm_id               = 211
   vm_template_id      = 9000
   vm_ip               = "172.16.10.11"
@@ -117,7 +117,7 @@ module "cloudflared" {
   source = "../../../modules/lxc"
 
   name                = "cloudflared"
-  node_name           = "pve"
+  node_name           = "pve1"
   lxc_id              = 212
   lxc_ip              = "172.16.10.12"
   network_gateway     = "172.16.10.1"
@@ -143,7 +143,7 @@ module "authentik" {
   hostname            = "authentik"
   name                = "authentik"
   username            = "admin"
-  node_name           = "pve"
+  node_name           = "pve1"
   vm_id               = 116
   vm_template_id      = 9000
   vm_ip               = "192.168.10.16"
