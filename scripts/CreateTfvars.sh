@@ -19,14 +19,15 @@ fi
 
 # Lecture des entrées utilisateur
 read -p "Adresse du host Proxmox (ex: https://192.168.1.10:8006) : " proxmox_host
-read -p "Utilisateur (ex: root) : " user
-read -p "Realm (ex: pam) : " realm
-read -p "Token ID (ex: terraform) : " token_id
-read -s -p "Secret du token : " secret
+read -p "Utilisateur (ex: terraform) : " user
+read -p "Realm (ex: pve) : " realm
+read -p "Token ID (ex: tf) : " token_id
+read -s -p "Secret du token (champ masqué): " secret
 echo "" # Retour à la ligne après le mot de passe caché
 read -p "Chemin clé privée SSH (ex: ~/.ssh/id_rsa) : " ssh_priv
 read -p "Chemin clé publique SSH (ex: ~/.ssh/id_rsa.pub) : " ssh_pub
 read -p "Nom du stockage (ex: local-lvm) : " storage
+read -p "Nom du node (ex: pve) : " node_name
 
 # Création du répertoire de destination au cas où il n'existerait pas encore
 mkdir -p "$(dirname "$TFVARS_FILE")"
@@ -47,6 +48,10 @@ ssh_public_key_path          = "$ssh_pub"
 
 # Infrastructure & Runner
 storage      = "$storage"
+
+# si il y a que un PVE qui sera utilisé pas besoin de le changer
+# si il y en a un autre, le préciser dans les appels de modules
+node_name = "$node_name"
 EOF
 
 echo "[SUCCESS] Fichier terraform.tfvars généré avec succès !"
