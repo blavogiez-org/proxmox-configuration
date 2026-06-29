@@ -206,6 +206,23 @@ module "nextcloud" {
   user_data_template_path = "${path.root}/../../../services/nextcloud/cloud-init.yml"
 }
 
+module "coredns" {
+  source = "../../modules/lxc"
+  name                = "coredns"
+  node_name           = "pve1"
+  lxc_id               = 112
+  lxc_ip               = "192.168.10.12"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
+
+  cpu       = 1
+  memory    = 256
+  disk_size = 3
+
+  bridge = "prvvnet1"
+}
+
 module "vaultwarden" {
   source = "../../modules/vm"
   hostname            = "vaultwarden"
@@ -224,5 +241,27 @@ module "vaultwarden" {
   disk_size = 12
 
   bridge = "prvvnet1"
-  user_data_template_path = "${path.root}/../../../services/vaultwarden/cloud-init.yml"
+  user_data_template_path = "${path.root}/../../../services/base-vm/cloud-init.yml"
 }
+
+module "ck-x" {
+  source = "../../modules/vm"
+  hostname            = "ck-x"
+  name                = "ck-x"
+  username            = "admin"
+  node_name           = "pve1"
+  vm_id               = 291
+  vm_template_id      = 9000
+  vm_ip               = "172.16.10.91"
+  network_gateway     = "172.16.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
+
+  cpu       = 3
+  memory    = 8192
+  disk_size = 50
+
+  bridge = "pubvnet1"
+  user_data_template_path = "${path.root}/../../../services/base-vm/cloud-init.yml"
+}
+

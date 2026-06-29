@@ -20,7 +20,7 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.kanboard.rule=Host(`kanboard-poc.blavogiez.fr`)"
+      - "traefik.http.routers.kanboard.rule=Host(`unkanboard.blavogiez.fr`)"
       - "traefik.http.routers.kanboard.entrypoints=web"
       - "traefik.http.services.kanboard.loadbalancer.server.port=80"
     networks:

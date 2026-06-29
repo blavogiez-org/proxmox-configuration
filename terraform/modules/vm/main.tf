@@ -50,6 +50,18 @@ resource "proxmox_virtual_environment_vm" "this" {
     }
     user_data_file_id = proxmox_virtual_environment_file.boostrap_user_data.id
   }
+
+  lifecycle {
+    ignore_changes = [
+      initialization[0].user_data_file_id,
+      initialization[0].meta_data_file_id,
+      initialization[0].network_data_file_id,
+      initialization[0].vendor_data_file_id,
+      network_device[0].mac_address,
+      boot_order,
+      vga,
+    ]
+  }
 }
 
 resource "proxmox_virtual_environment_file" "boostrap_user_data" {

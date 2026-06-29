@@ -16,5 +16,5 @@ file_paths = ["docker-compose.yml"]
 
 [stack.config.pre_deploy]
 command = """
-[ -f .env ] || (KANBOARD_DB_PASSWORD="$(openssl rand -hex 32)" && echo "KANBOARD_DB_PASSWORD=$KANBOARD_DB_PASSWORD" > .env && chmod 600 .env)
+[ -f .env ] || (KANBOARD_DB_PASSWORD="$(openssl rand -hex 32)" && echo "KANBOARD_DB_PASSWORD=$KANBOARD_DB_PASSWORD" > .env)
 """
