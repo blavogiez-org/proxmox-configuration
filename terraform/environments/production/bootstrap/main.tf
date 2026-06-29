@@ -26,8 +26,7 @@ resource "proxmox_download_file" "debian13" {
   datastore_id = "local"
   content_type = "import"
 
-  # l'url n'est pas forcément stable, les qcow2 sont un peu rares pour les mirrors
-  url       = "https://laotzu.ftp.acc.umu.se/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
+  url = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
   file_name = "debian-13-genericcloud-amd64.qcow2"
 }
 
