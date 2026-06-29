@@ -1,4 +1,4 @@
-data "proxmox_sdn_zone_simple" "zone_1" {
+resource "proxmox_sdn_zone_simple" "zone_1" {
   id  = "zone1"
   mtu = 1500
 }
