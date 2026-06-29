@@ -5,7 +5,8 @@ deploy = true
 [stack.config]
 server = "Local"
 git_provider = "github.com"
-repo = "blavogiez-org/proxmox-gitops"
+repo = "blavogiez-org/proxmox-configuration"
 branch = "main"
-run_directory = "services/kanboard"
+clone_path = "/etc/komodo/stacks/kanboard"
+run_directory = "/etc/komodo/stacks/kanboard/services/kanboard"
 file_paths = ["docker-compose.yml"]

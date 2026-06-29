@@ -21,3 +21,5 @@ runcmd:
   - wget -P komodo https://raw.githubusercontent.com/moghtech/komodo/main/compose/mongo.compose.yaml
   - wget -P komodo https://raw.githubusercontent.com/moghtech/komodo/main/compose/compose.env
   - docker compose -p komodo -f komodo/mongo.compose.yaml --env-file komodo/compose.env up -d
+  # pour traefik
+  - docker network create proxy
