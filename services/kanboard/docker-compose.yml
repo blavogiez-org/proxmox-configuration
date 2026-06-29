@@ -1,3 +1,6 @@
+# il y a des vulnérabilités pour certaines anciennes versions
+# https://nvd.nist.gov/vuln/detail/CVE-2025-52576
+
 # poc typique pour un déploiement automatisé Komodo
 name: kanboard
 
@@ -11,7 +14,7 @@ services:
       - plugins:/var/www/app/plugins
       - certs:/etc/nginx/ssl
     environment:
-      DATABASE_URL: postgres://kanboard:kanboard-secret@db/kanboard
+      DATABASE_URL: postgres://kanboard:${KANBOARD_DB_PASSWORD}@db/kanboard
     depends_on:
       db:
         condition: service_healthy
@@ -29,7 +32,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: kanboard
-      POSTGRES_PASSWORD: kanboard-secret
+      POSTGRES_PASSWORD: ${KANBOARD_DB_PASSWORD}
       POSTGRES_DB: kanboard
     volumes:
       - db:/var/lib/postgresql/data

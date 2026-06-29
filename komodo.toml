@@ -1,4 +1,7 @@
+# Dans komodo, on crée une description de dépôt git, puis resource sync qui se base sur ce dépôt et on copie le lien webhook "sync" dans Github (avec le payload format json)
+# Ensuite tout se déploit automatiquement selon ce fichier. pour les domaines dynamiques, on peut le décrire dans les labels du conteneur et traefik va le chercher
 [[stack]]
+# faire gaffe au nommage des stacks, les "." se transforment en "_", donc mieux vaut éviter
 name = "kanboard"
 deploy = true
 
@@ -10,3 +13,8 @@ branch = "main"
 clone_path = "/etc/komodo/stacks/kanboard"
 run_directory = "/etc/komodo/stacks/kanboard/services/kanboard"
 file_paths = ["docker-compose.yml"]
+
+[stack.config.pre_deploy]
+command = """
+[ -f .env ] || (KANBOARD_DB_PASSWORD="$(openssl rand -hex 32)" && echo "KANBOARD_DB_PASSWORD=$KANBOARD_DB_PASSWORD" > .env && chmod 600 .env)
+"""
