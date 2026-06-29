@@ -7,5 +7,5 @@ packages:
   - qemu-guest-agent
 runcmd:
   - systemctl enable --now qemu-guest-agent
-# apres ce cloud init, il faut faire 
+# apres ce cloud init, il faut faire
 # root@pve1# qm template <vmid>
