@@ -75,9 +75,6 @@ resource "proxmox_virtual_environment_file" "cloud_init" {
   node_name    = var.node_name
   datastore_id = "local"
   content_type = "snippets"
-  depends_on = [
-    proxmox_virtual_environment_vm.debian13
-  ]
 
   source_file {
     path      = "${path.root}/../../../../services/template-vm/cloud-init.yml"
@@ -101,6 +98,9 @@ module "vault" {
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
   target_datastore_id        = var.storage
+  depends_on = [
+    proxmox_virtual_environment_vm.debian13
+  ]
 
   cpu       = 1
   memory    = 1024
