@@ -96,7 +96,7 @@ module "vault" {
   vm_ip               = "192.168.10.15"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = "encrypted-zfs"
+  target_datastore_id        = var.storage
 
   cpu       = 1
   memory    = 1024

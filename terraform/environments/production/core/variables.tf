@@ -44,7 +44,7 @@ variable "backup_storage" {
   type = string
 }
 
-variable "target_datastore_id" {
+variable "storage" {
   description = "disque utilisé par la VM/LXC. Utiliser de préférence du ZFS raid1 avec redondance, et chiffré si possible"
   type = string 
 }

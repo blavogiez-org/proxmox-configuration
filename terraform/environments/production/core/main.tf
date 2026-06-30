@@ -3,7 +3,7 @@
 # les SDN proxmox exposent après leur créatione un bridge exploitable (meme nom que le vnet) avec le SNAT activé par défaut (sortie possible)
 module "minimal-backup" {
   source  = "../../../modules/backup"
-  storage = backup_storage
+  storage = var.backup_storage
 }
 
 # déploiement runner dispo en playbook
@@ -19,7 +19,7 @@ module "gh-runner" {
   vm_ip               = "192.168.10.11"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = "encrypted-zfs"
+  target_datastore_id        = var.storage
 
   cpu       = 2
   memory    = 2048
@@ -47,7 +47,7 @@ module "caddy" {
   lxc_ip              = "192.168.10.13"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = "encrypted-zfs"
+  target_datastore_id        = var.storage
 
   cpu       = 1
   memory    = 512
@@ -69,7 +69,7 @@ module "monitoring" {
   vm_ip               = "192.168.10.14"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = "encrypted-zfs"
+  target_datastore_id        = var.storage
 
   cpu       = 1
   memory    = 1024
@@ -97,7 +97,7 @@ module "komodo" {
   vm_ip               = "172.16.10.11"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = "encrypted-zfs"
+  target_datastore_id        = var.storage
 
   cpu       = 3
   memory    = 4096
@@ -122,7 +122,7 @@ module "cloudflared" {
   lxc_ip              = "172.16.10.12"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = "encrypted-zfs"
+  target_datastore_id        = var.storage
 
   cpu       = 1
   memory    = 256
@@ -149,7 +149,7 @@ module "authentik" {
   vm_ip               = "192.168.10.16"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = "encrypted-zfs"
+  target_datastore_id        = var.storage
 
   cpu       = 1
   memory    = 2048
