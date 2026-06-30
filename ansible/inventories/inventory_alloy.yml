@@ -12,3 +12,5 @@ all:
       ansible_host: 192.168.10.13
     monitoring:
       ansible_host: 192.168.10.14
+    komodo: 
+      ansible_host: 172.16.10.11

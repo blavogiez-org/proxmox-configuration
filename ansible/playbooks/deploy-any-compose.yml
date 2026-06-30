@@ -1,14 +1,18 @@
 # but de ce playbook : déployer n'importe quel compose tel que décrit dans la structure services
 # trame : on copie les fichiers dans /opt/{service}, et selon si ça a changé ou non on redémarre la stack
 # exemple actuel avec komodo, playbook au stade de test
-- hosts: komodo
+- hosts: "{{ host }}"
   become: true
+  vars_files:
+    - ../../settings.yml
   vars:
-    target_service: "komodo"
-    target_remote_dir: "/opt/{{ target_service }}"
+    #target_service: "komodo"
+    target_remote_dir: "/opt"
     target_local_dir: "{{ playbook_dir }}/../../services/{{ target_service }}"
 
   tasks:
+    # chargement des secrets openbao relatifs au service TODO
+    
     - name: S'assurer que le répertoire existe
       ansible.builtin.file:
         path: "{{ target_remote_dir }}"
@@ -22,6 +26,15 @@
         mode: '0644'
       register: target_remote_stack
 
+    - name: générer les éventuels templates (*.j2)
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ target_remote_dir }}/{{ target_service }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+        mode: '0644'
+      loop: "{{ query('community.general.filetree', target_local_dir) }}"
+      when: item.state == 'file' and item.path.endswith('.j2')
+      register: target_templates
+
     - name: Vérifier si un conteneur contenant target_service est en cours d'exécution
       ansible.builtin.command: docker ps --filter "name={{ target_service }}" --filter "status=running" -q
       register: target_running
@@ -29,8 +42,9 @@
 
     - name: Redémarrer target (si config/env a changé ou si éteint)
       community.docker.docker_compose_v2:
-        project_src: "{{ target_remote_dir }}"
+        project_src: "{{ target_remote_dir }}/{{ target_service }}"
         state: present
       when: >
-        target_remote_stack.changed or 
+        target_remote_stack.changed or
+        target_templates.changed or
         target_running.stdout == ""
