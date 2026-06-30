@@ -34,7 +34,7 @@ services:
       - mongo
     ports:
       - 9120:9120
-    env_file: ./compose.env
+    env_file: .env
     environment:
       KOMODO_DATABASE_ADDRESS: mongo:27017
     volumes:
@@ -58,7 +58,7 @@ services:
     restart: unless-stopped
     depends_on:
       - core
-    env_file: ./compose.env
+    env_file: .env
     volumes:
       ## Attach the Core / Periphery communication keys
       - keys:/config/keys

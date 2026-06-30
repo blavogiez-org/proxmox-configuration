@@ -15,6 +15,7 @@ packages:
   - libicu76
   - git
   - curl 
+  - tree
   - pip 
   - pipx 
   - gpg
