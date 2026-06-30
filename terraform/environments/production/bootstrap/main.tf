@@ -34,6 +34,7 @@ resource "proxmox_virtual_environment_vm" "debian13" {
   name      = "debian13-template"
   node_name = var.node_name
   vm_id     = 9000
+  template = true
 
   started = true
 
