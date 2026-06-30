@@ -27,7 +27,7 @@ echo "" # Retour à la ligne après le mot de passe caché
 read -p "Chemin clé privée SSH (ex: ~/.ssh/id_rsa) : " ssh_priv
 read -p "Chemin clé publique SSH (ex: ~/.ssh/id_rsa.pub) : " ssh_pub
 read -p "Nom du stockage (ex: local-lvm) : " storage
-read -p "Nom du stockage pour las backup minimal (ex: local-lvm) : "backup_storage
+read -p "Nom du stockage pour las backup minimal (ex: local-lvm) : " backup_storage
 read -p "Nom du node (ex: pve) : " node_name
 
 # Création du répertoire de destination au cas où il n'existerait pas encore
