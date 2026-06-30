@@ -75,6 +75,9 @@ resource "proxmox_virtual_environment_file" "cloud_init" {
   node_name    = var.node_name
   datastore_id = "local"
   content_type = "snippets"
+  depends_on = [
+    proxmox_virtual_environment_vm.debian13
+  ]
 
   source_file {
     path      = "${path.root}/../../../../services/template-vm/cloud-init.yml"
