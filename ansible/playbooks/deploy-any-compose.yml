@@ -1,0 +1,36 @@
+# but de ce playbook : déployer n'importe quel compose tel que décrit dans la structure services
+# trame : on copie les fichiers dans /opt/{service}, et selon si ça a changé ou non on redémarre la stack
+# exemple actuel avec komodo, playbook au stade de test
+- hosts: komodo
+  become: true
+  vars:
+    target_service: "komodo"
+    target_remote_dir: "/opt/{{ target_service }}"
+    target_local_dir: "{{ playbook_dir }}/../../services/{{ target_service }}"
+
+  tasks:
+    - name: S'assurer que le répertoire existe
+      ansible.builtin.file:
+        path: "{{ target_remote_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copier l'ensemble du service vers le remote
+      ansible.builtin.copy:
+        src: "{{ target_local_dir }}"
+        dest: "{{ target_remote_dir }}"
+        mode: '0644'
+      register: target_remote_stack
+
+    - name: Vérifier si un conteneur contenant target_service est en cours d'exécution
+      ansible.builtin.command: docker ps --filter "name={{ target_service }}" --filter "status=running" -q
+      register: target_running
+      changed_when: false
+
+    - name: Redémarrer target (si config/env a changé ou si éteint)
+      community.docker.docker_compose_v2:
+        project_src: "{{ target_remote_dir }}"
+        state: present
+      when: >
+        target_remote_stack.changed or 
+        target_running.stdout == ""
