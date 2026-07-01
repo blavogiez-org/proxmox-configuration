@@ -6,7 +6,7 @@ name: kanboard
 
 services:
   app:
-    image: ${KANBOARD_IMAGE:-kanboard/kanboard:latest}
+    image: kanboard/kanboard:v1.2.52
     container_name: kanboard
     restart: always
     volumes:
