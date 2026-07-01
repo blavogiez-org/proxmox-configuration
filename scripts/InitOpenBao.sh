@@ -1,7 +1,7 @@
 #!/bin/bash
 export BAO_ADDR="http://192.168.10.15:8200"
 
-RAW_KEYS_FILE="./bao_keys_raw.json"
+RAW_KEYS_FILE="/tmp/bao_keys_raw.json"
 
 USER_SECRETS_FILE="/tmp/secrets_openbao_utilisateur.txt"
 
