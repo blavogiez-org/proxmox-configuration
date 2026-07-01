@@ -64,3 +64,6 @@ else
         echo "Le serveur est deja deverrouille."
     fi
 fi
+
+export VAULT_TOKEN=$(jq -r '.root_token' /tmp/bao_keys_raw.json)
+export VAULT_ADDR="http://192.168.10.15:8200"
