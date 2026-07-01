@@ -23,7 +23,8 @@ else
     echo "[INFO] La route est déjà configurée."
 fi
 
-./InitOpenBao.sh < /dev/tty
+SCRIPT_DIR="$(dirname "$0")"
+"$SCRIPT_DIR/InitOpenBao.sh" < /dev/tty
 
 echo -e "\n[INFO] Saisie des secrets pour OpenBao"
 echo "---------------------------------------------------"
