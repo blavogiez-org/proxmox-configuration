@@ -1,17 +1,15 @@
 # but de ce playbook : déployer n'importe quel compose tel que décrit dans la structure services
-# trame : on copie les fichiers dans /opt/{service}, et selon si ça a changé ou non on redémarre la stack
-# exemple actuel avec komodo, playbook au stade de test
+# trame : on copie les fichiers dans /opt/{service}, on template les fichiers, et selon si ça a changé ou non on redémarre la stack
 - hosts: "{{ host }}"
   become: true
   vars_files:
     - ../../settings.yml
   vars:
-    #target_service: "komodo"
     target_remote_dir: "/opt"
     target_local_dir: "{{ playbook_dir }}/../../services/{{ target_service }}"
 
   tasks:
-    # chargement des secrets openbao relatifs au service TODO
+    # TODO chargement des secrets openbao relatifs au service
     
     - name: S'assurer que le répertoire existe
       ansible.builtin.file:
@@ -35,16 +33,16 @@
       when: item.state == 'file' and item.path.endswith('.j2')
       register: target_templates
 
-    - name: Vérifier si un conteneur contenant target_service est en cours d'exécution
-      ansible.builtin.command: docker ps --filter "name={{ target_service }}" --filter "status=running" -q
-      register: target_running
-      changed_when: false
-
-    - name: Redémarrer target (si config/env a changé ou si éteint)
+    - name: S'assurer que la stack est présente et démarrée
       community.docker.docker_compose_v2:
         project_src: "{{ target_remote_dir }}/{{ target_service }}"
         state: present
-      when: >
-        target_remote_stack.changed or
-        target_templates.changed or
-        target_running.stdout == ""
+      register: target_compose
+
+    - name: Redémarrer la stack si un fichier monté a changé
+      community.docker.docker_compose_v2:
+        project_src: "{{ target_remote_dir }}/{{ target_service }}"
+        state: restarted
+      when:
+        - target_remote_stack.changed or target_templates.changed
+        - not target_compose.changed
