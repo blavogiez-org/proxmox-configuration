@@ -2,7 +2,7 @@
 # repris de https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/sdn_vnet
 # les SDN proxmox exposent après leur créatione un bridge exploitable (meme nom que le vnet) avec le SNAT activé par défaut (sortie possible)
 module "minimal-backup" {
-  source  = "../../../modules/backup"
+  source  = "../../../../modules/backup"
   storage = var.backup_storage
 }
 
