@@ -94,7 +94,7 @@ module "monitoring" {
   disk_size = 25
 
   bridge = "prvvnet1"
-  user_data_template_path = "${path.root}/../../../services/monitoring/cloud-init.yml"
+  user_data_template_path = "${path.root}/../../../services/base-vm/cloud-init.yml"
 }
 
 # vm dédiée vault

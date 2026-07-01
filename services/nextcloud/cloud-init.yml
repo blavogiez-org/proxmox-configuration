@@ -19,8 +19,8 @@ packages:
 runcmd:
   - systemctl enable --now qemu-guest-agent
   - curl -fsSL https://get.docker.com | sudo sh
-  - echo "MYSQL_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> .env
-  - echo "MYSQL_ROOT_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> .env
-  - echo "NEXTCLOUD_ADMIN_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> .env
+  - echo "MYSQL_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> /opt/nextcloud/.env
+  - echo "MYSQL_ROOT_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> /opt/nextcloud/.env
+  - echo "NEXTCLOUD_ADMIN_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')" >> /opt/nextcloud/.env
 
 

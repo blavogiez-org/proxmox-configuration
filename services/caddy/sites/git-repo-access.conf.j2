@@ -1,0 +1,17 @@
+# raccourci de liens vers le contenu brut du dépôt proxmox-gitops
+
+get.{{ domain }}:80 {
+	rewrite * /jobacogiez-org/proxmox-gitops/main{uri}
+
+	reverse_proxy https://raw.githubusercontent.com {
+		header_up Host raw.githubusercontent.com
+	}
+}
+
+http://get.priv.{{ domain }} {
+	rewrite * /jobacogiez-org/proxmox-gitops/main{uri}
+
+	reverse_proxy https://raw.githubusercontent.com {
+		header_up Host raw.githubusercontent.com
+	}
+}

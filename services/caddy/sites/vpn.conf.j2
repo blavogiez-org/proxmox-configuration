@@ -1,0 +1,21 @@
+vpn.priv.{{ domain }}:80 {
+    # Whitelist : VPN + Réseau Admin local
+    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
+    
+    handle @vpn_only {
+        reverse_proxy 192.168.10.1:51821
+    }
+
+    # Bloqué pour tout le reste
+    handle {
+        respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
+    }
+}
+
+# tester si le rate_limit à 5 se trigger à chaque connexion ou alors à chaque handshake (voir si il est applicable) 
+# pas encore on en public
+# vpn.{{ domain }}:80 {
+    # reverse_proxy 192.168.10.1:51820
+
+    # import site_rate_limit zone 5
+# }
