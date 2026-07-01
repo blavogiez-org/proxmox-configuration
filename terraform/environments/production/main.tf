@@ -185,26 +185,6 @@ module "authentik" {
   user_data_template_path = "${path.root}/../../../services/authentik/cloud-init.yml"
 }
 
-module "nextcloud" {
-  source = "../../modules/vm"
-  hostname            = "nextcloud"
-  name                = "nextcloud"
-  username            = "admin"
-  node_name           = "pve1"
-  vm_id               = 213
-  vm_template_id      = 9000
-  vm_ip               = "172.16.10.13"
-  network_gateway     = "172.16.10.1"
-  ssh_public_key_path = var.ssh_public_key_path
-  datastore_id = "encrypted-zfs"
-
-  cpu       = 1
-  memory    = 2048
-  disk_size = 500
-
-  bridge = "pubvnet1"
-  user_data_template_path = "${path.root}/../../../services/nextcloud/cloud-init.yml"
-}
 
 module "coredns" {
   source = "../../modules/lxc"
