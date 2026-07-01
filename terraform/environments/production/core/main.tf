@@ -28,7 +28,7 @@ module "gh-runner" {
   bridge = "prvvnet1"
 
   # Pas de secrets Vault ici, juste les variables de base
-  user_data_raw = templatefile("${path.root}/../../../services/base-vm/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
     hostname       = "gh-runner"
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
@@ -78,7 +78,7 @@ module "monitoring" {
   bridge = "prvvnet1"
 
   # Pas de secrets Vault ici non plus
-  user_data_raw = templatefile("${path.root}/../../../services/monitoring/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/monitoring/cloud-init.yml", {
     hostname       = "monitoring"
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
@@ -105,7 +105,7 @@ module "komodo" {
 
   bridge = "pubvnet1"
 
-  user_data_raw = templatefile("${path.root}/../../../services/komodo/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/komodo/cloud-init.yml", {
     hostname       = "komodo"
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
@@ -151,7 +151,7 @@ module "authentik" {
   bridge = "prvvnet1"
 
   # Injection de la clé secrète et du mot de passe DB pour Authentik
-  user_data_raw = templatefile("${path.root}/../../../services/authentik/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/authentik/cloud-init.yml", {
     hostname         = "authentik"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
     pg_pass          = data.vault_generic_secret.authentik_secrets.data["pg_pass"]
