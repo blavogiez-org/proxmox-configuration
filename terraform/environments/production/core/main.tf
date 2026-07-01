@@ -108,8 +108,6 @@ module "komodo" {
   user_data_raw = templatefile("${path.root}/../../../services/komodo/cloud-init.yml", {
     hostname       = "komodo"
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
-    db_password    = data.vault_generic_secret.komodo_db.data["password"]
-    api_key        = data.vault_generic_secret.komodo_api.data["token"]
   })
 }
 

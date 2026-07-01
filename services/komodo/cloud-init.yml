@@ -36,12 +36,6 @@ write_files:
         proxy:
           external: true
 
-  - path: /opt/komodo/compose.env
-    permissions: '0600'
-    content: |
-      DB_PASSWORD=${db_password}
-      API_KEY=${api_key}
-
 runcmd:
   - systemctl enable --now qemu-guest-agent
   - curl -fsSL https://get.docker.com | sudo sh
