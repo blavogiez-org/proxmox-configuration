@@ -26,10 +26,34 @@ fi
 SCRIPT_DIR="$(dirname "$0")"
 "$SCRIPT_DIR/InitOpenBao.sh" < /dev/tty
 
+export BAO_ADDR="http://192.168.10.15:8200"
+
+echo -e "\n[INFO] Authentification OpenBao"
+echo "---------------------------------------------------"
+# On tente de récupérer le token généré automatiquement par l'initialisation
+if [ -f "/tmp/bao_keys_raw.json" ]; then
+    echo "[INFO] Récupération automatique du Token Root..."
+    export BAO_TOKEN=$(jq -r '.root_token' /tmp/bao_keys_raw.json)
+else
+    # Si le fichier n'existe pas (serveur déjà initialisé avant), on le demande à l'utilisateur
+    read -s -p "Veuillez entrer le Token Root : " user_token
+    echo ""
+    export BAO_TOKEN="$user_token"
+fi
+
+echo -e "\n[INFO] Vérification du moteur de secrets"
+echo "---------------------------------------------------"
+# On s'assure que le chemin "secret/" existe bien avant d'y injecter des données
+if ! bao secrets list | grep -q "^secret/"; then
+    echo "[INFO] Activation du moteur Key-Value (v2) sur le chemin 'secret/'..."
+    bao secrets enable -path=secret kv-v2 > /dev/null
+    echo "[SUCCESS] Moteur activé."
+else
+    echo "[INFO] Le moteur de secrets est déjà actif."
+fi
+
 echo -e "\n[INFO] Saisie des secrets pour OpenBao"
 echo "---------------------------------------------------"
-
-export BAO_ADDR="http://192.168.10.15:8200"
 
 echo "--- Komodo Database ---"
 read -p "POSTGRES_USER : " komodo_db_user
