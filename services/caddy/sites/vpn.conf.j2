@@ -13,8 +13,9 @@ vpn.priv.{{ domain }}:80 {
 }
 
 # tester si le rate_limit à 5 se trigger à chaque connexion ou alors à chaque handshake (voir si il est applicable) 
-vpn.{{ domain }}:80 {
-    reverse_proxy 192.168.10.1:51820
+# pas encore on en public
+# vpn.{{ domain }}:80 {
+    # reverse_proxy 192.168.10.1:51820
 
-    import site_rate_limit zone 5
-}
+    # import site_rate_limit zone 5
+# }
