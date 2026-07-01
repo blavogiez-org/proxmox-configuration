@@ -1,11 +1,11 @@
 # --- CONFIGURATION GLOBALE ---
-domain: "blavogiez.fr"
+domain: "votredomaine.fr"
 timezone: "Europe/Paris"
 admin_user: "admin"
 
 # --- INFRASTRUCTURE ---
 proxmox:
   endpoint: "https://pve.home.arpa:8006/api2/json"
-  node: "pve1"
-  storage: "encrypted-zfs"
+  node: "homelab"
+  storage: "local-lvm"
   ssh_user: "root"
