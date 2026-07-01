@@ -6,6 +6,6 @@ admin_user: "admin"
 # --- INFRASTRUCTURE ---
 proxmox:
   endpoint: "https://pve.home.arpa:8006/api2/json"
-  node: "homelab"
-  storage: "local-lvm"
+  node: "pve1"
+  storage: "encrypted-zfs"
   ssh_user: "root"
