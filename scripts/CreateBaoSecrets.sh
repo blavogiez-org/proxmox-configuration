@@ -55,16 +55,6 @@ fi
 echo -e "\n[INFO] Saisie des secrets pour OpenBao"
 echo "---------------------------------------------------"
 
-echo "--- Komodo Database ---"
-read -p "POSTGRES_USER : " komodo_db_user
-read -p "POSTGRES_DB : " komodo_db_name
-read -s -p "POSTGRES_PASSWORD : " komodo_db_pass
-echo -e "\n"
-
-echo "--- Komodo API ---"
-read -s -p "API_KEY : " komodo_api_key
-echo -e "\n"
-
 echo "--- Cloudflared ---"
 read -s -p "Tunnel Token : " cloudflared_token
 echo -e "\n"
@@ -76,14 +66,6 @@ read -s -p "POSTGRES_PASSWORD : " authentik_db_pass
 echo -e "\n"
 
 echo "[INFO] Injection des secrets dans OpenBao en cours..."
-
-bao kv put secret/komodo/database \
-    POSTGRES_USER="$komodo_db_user" \
-    POSTGRES_DB="$komodo_db_name" \
-    POSTGRES_PASSWORD="$komodo_db_pass" > /dev/null
-
-bao kv put secret/komodo/api \
-    API_KEY="$komodo_api_key" > /dev/null
 
 bao kv put secret/cloudflared/config \
     tunnel_token="$cloudflared_token" > /dev/null
