@@ -1,7 +1,7 @@
 #!/bin/bash
 export BAO_ADDR="http://192.168.10.15:8200"
 
-RAW_KEYS_FILE="/root/bao_keys_raw.json"
+RAW_KEYS_FILE="./bao_keys_raw.json"
 
 USER_SECRETS_FILE="/tmp/secrets_openbao_utilisateur.txt"
 
@@ -43,7 +43,6 @@ if [ "$INIT_STATUS" == "false" ]; then
             echo "Les secrets ont ete generes dans : $USER_SECRETS_FILE"
             ;;
         *)
-            # Si l'utilisateur tape autre chose que 'o', 'y', 'oui', etc.
             echo "Initialisation annulee par l'utilisateur. Passage a l'etape suivante."
             ;;
     esac
