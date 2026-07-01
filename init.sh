@@ -30,7 +30,7 @@ else
 fi
 
 echo "[INFO] Configuration des permissions d'exécution..."
-chmod +x scripts/CheckDependences.sh scripts/CreateTfvars.sh scripts/LunchTerraform.sh scripts/CreateBaoSecrets.sh scripts/CreateSettings.sh
+chmod +x scripts/CheckDependences.sh scripts/CreateTfvars.sh scripts/LunchTerraform.sh scripts/CreateBaoSecrets.sh scripts/CreateSettings.sh scripts/InitOpenBao.sh
 
 echo -e "\n[ÉTAPE 1/6] Vérification des dépendances..."
 ./scripts/CheckDependences.sh
