@@ -2,7 +2,6 @@
 export BAO_ADDR="http://192.168.10.15:8200"
 
 RAW_KEYS_FILE="/tmp/bao_keys_raw.json"
-
 USER_SECRETS_FILE="/tmp/secrets_openbao_utilisateur.txt"
 
 INIT_STATUS=$(bao status -format=json | jq -r '.initialized')
@@ -36,16 +35,32 @@ if [ "$INIT_STATUS" == "false" ]; then
             done
 
             echo "===============================================" >> "$USER_SECRETS_FILE"
-
             chmod 600 "$USER_SECRETS_FILE"
 
             echo "OpenBao initialise avec succes."
             echo "Les secrets ont ete generes dans : $USER_SECRETS_FILE"
+
+            echo "Deverrouillage automatique du serveur en cours..."
+
+            # On extrait exactement 3 cles (index 0 a 2) et on les passe a la commande unseal
+            jq -r '.unseal_keys_b64[0:3][]' "$RAW_KEYS_FILE" | while read -r key; do
+                bao operator unseal "$key" > /dev/null
+            done
+
+            echo "Serveur deverrouille avec succes. Il est pret a etre utilise."
             ;;
         *)
             echo "Initialisation annulee par l'utilisateur. Passage a l'etape suivante."
             ;;
     esac
 else
-    echo "OpenBao est deja initialise. Aucune action requise."
+    echo "OpenBao est deja initialise."
+
+    # Verification du scellement si le serveur etait deja initialise
+    SEALED_STATUS=$(bao status -format=json | jq -r '.sealed')
+    if [ "$SEALED_STATUS" == "true" ]; then
+        echo "Le serveur est actuellement scelle. Un deverrouillage manuel est requis."
+    else
+        echo "Le serveur est deja deverrouille."
+    fi
 fi
