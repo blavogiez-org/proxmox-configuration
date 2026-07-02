@@ -23,7 +23,7 @@ else
     echo "[INFO] La route est déjà configurée."
 fi
 
-SCRIPT_DIR="$(dirname "$0")"
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 source "$SCRIPT_DIR/InitOpenBao.sh" < /dev/tty
 
 export BAO_ADDR="http://192.168.10.15:8200"
