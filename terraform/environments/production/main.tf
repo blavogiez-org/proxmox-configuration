@@ -94,7 +94,7 @@ module "monitoring" {
   disk_size = 25
 
   bridge = "prvvnet1"
-  user_data_template_path = "${path.root}/../../../services/monitoring/cloud-init.yml"
+  user_data_template_path = "${path.root}/../../../services/base-vm/cloud-init.yml"
 }
 
 # vm dédiée vault
@@ -185,4 +185,21 @@ module "authentik" {
   user_data_template_path = "${path.root}/../../../services/authentik/cloud-init.yml"
 }
 
+
+module "coredns" {
+  source = "../../modules/lxc"
+  name                = "coredns"
+  node_name           = "pve1"
+  lxc_id               = 112
+  lxc_ip               = "192.168.10.12"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+  datastore_id = "encrypted-zfs"
+
+  cpu       = 1
+  memory    = 256
+  disk_size = 3
+
+  bridge = "prvvnet1"
+}
 

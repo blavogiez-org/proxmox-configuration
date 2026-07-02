@@ -18,6 +18,8 @@ packages:
 runcmd:
   - systemctl enable --now qemu-guest-agent
   - curl -fsSL https://get.docker.com | sudo sh
-  - wget -P komodo https://raw.githubusercontent.com/moghtech/komodo/main/compose/mongo.compose.yaml
-  - wget -P komodo https://raw.githubusercontent.com/moghtech/komodo/main/compose/compose.env
-  - docker compose -p komodo -f komodo/mongo.compose.yaml --env-file komodo/compose.env up -d
+  - mkdir /opt/komodo
+  # pour traefik
+  - docker network create proxy
+  # - docker compose -p /opt/komodo -f /opt/komodo/mongo.compose.yaml --env-file /opt/komodo/compose.conf up -d
+  # pour traefik

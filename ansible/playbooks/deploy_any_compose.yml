@@ -1,0 +1,48 @@
+# but de ce playbook : déployer n'importe quel compose tel que décrit dans la structure services
+# trame : on copie les fichiers dans /opt/{service}, on template les fichiers, et selon si ça a changé ou non on redémarre la stack
+- hosts: "{{ host }}"
+  become: true
+  vars_files:
+    - ../../settings.yml
+  vars:
+    target_remote_dir: "/opt"
+    target_local_dir: "{{ playbook_dir }}/../../services/{{ target_service }}"
+
+  tasks:
+    # TODO chargement des secrets openbao relatifs au service
+    
+    - name: S'assurer que le répertoire existe
+      ansible.builtin.file:
+        path: "{{ target_remote_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Copier l'ensemble du service vers le remote
+      ansible.builtin.copy:
+        src: "{{ target_local_dir }}"
+        dest: "{{ target_remote_dir }}"
+        mode: '0644'
+      register: target_remote_stack
+
+    - name: générer les éventuels templates (*.j2)
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ target_remote_dir }}/{{ target_service }}/{{ item.path | regex_replace('\\.j2$', '') }}"
+        mode: '0644'
+      loop: "{{ query('community.general.filetree', target_local_dir) }}"
+      when: item.state == 'file' and item.path.endswith('.j2')
+      register: target_templates
+
+    - name: S'assurer que la stack est présente et démarrée
+      community.docker.docker_compose_v2:
+        project_src: "{{ target_remote_dir }}/{{ target_service }}"
+        state: present
+      register: target_compose
+
+    - name: Redémarrer la stack si un fichier monté a changé
+      community.docker.docker_compose_v2:
+        project_src: "{{ target_remote_dir }}/{{ target_service }}"
+        state: restarted
+      when:
+        - target_remote_stack.changed or target_templates.changed
+        - not target_compose.changed
