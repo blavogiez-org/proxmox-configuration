@@ -9,8 +9,21 @@
     target_local_dir: "{{ playbook_dir }}/../../services/{{ target_service }}"
 
   tasks:
-    # TODO chargement des secrets openbao relatifs au service
-    
+    # cette tache évite la redondance pour la configuration des sites regardés en générant la configuration à partir des sites de Caddy
+    # j'ai essayé avec des spotters de certs (= surveiller les sous domaines d'un domaine) mais c'est en retard sur la réalité
+    - name: exclusif au service monitoring ; on charge les sites en variable pour générer le template des sites à surveiller le statut
+      ansible.builtin.shell:
+        # on recolte les domaines définis dans les labels Traefik d'un conteneur
+        # services/dummy-service/docker-compose.yml:      - "traefik.http.routers.kanboard.rule=Host(`apercu-site.blavogiez.fr`)"
+        cmd: !unsafe | 
+          find . -name 'docker*compose*.y*ml*' -exec grep "Host(" {} \; | cut -d '`' -f2
+          find services/caddy/sites -name '*.conf.j*' -exec grep '{{ domain }}' {} \; | grep -v '[#*]' 
+        # unsafe sert à ne pas interpreter les expressions jinja récoltées. Elles doivent etre interprétées plus tard, au moment du déploiement uniforme
+        # et on affiche tous les sites, en excluant ceux commentés et les wildcards
+        # chdir: "{{ playbook_dir }}/../.."
+      when: target_service == 'monitoring'
+      register: retrieved_websites
+
     - name: S'assurer que le répertoire existe
       ansible.builtin.file:
         path: "{{ target_remote_dir }}"
