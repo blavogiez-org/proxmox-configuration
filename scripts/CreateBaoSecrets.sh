@@ -27,6 +27,7 @@ SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 source "$SCRIPT_DIR/InitOpenBao.sh" < /dev/tty
 
 export BAO_ADDR="http://192.168.10.15:8200"
+export VAULT_ADDR="$BAO_ADDR" # Ajout pour la compatibilité Terraform
 
 echo -e "\n[INFO] Authentification OpenBao"
 echo "---------------------------------------------------"
@@ -34,11 +35,13 @@ echo "---------------------------------------------------"
 if [ -f "/tmp/bao_keys_raw.json" ]; then
     echo "[INFO] Récupération automatique du Token Root..."
     export BAO_TOKEN=$(jq -r '.root_token' /tmp/bao_keys_raw.json)
+    export VAULT_TOKEN="$BAO_TOKEN" # Ajout pour la compatibilité Terraform
 else
     # Si le fichier n'existe pas (serveur déjà initialisé avant), on le demande à l'utilisateur
     read -s -p "Veuillez entrer le Token Root : " user_token
     echo ""
     export BAO_TOKEN="$user_token"
+    export VAULT_TOKEN="$user_token" # Ajout pour la compatibilité Terraform
 fi
 
 echo -e "\n[INFO] Vérification du moteur de secrets"
@@ -51,6 +54,9 @@ if ! bao secrets list | grep -q "^secret/"; then
 else
     echo "[INFO] Le moteur de secrets est déjà actif."
 fi
+
+# On force le versioning v2 pour garantir le chemin secret/data/... attendu par Terraform
+bao kv enable-versioning secret/ > /dev/null 2>&1 || true
 
 echo -e "\n[INFO] Saisie des secrets pour OpenBao"
 echo "---------------------------------------------------"
@@ -70,8 +76,9 @@ echo "[INFO] Injection des secrets dans OpenBao en cours..."
 bao kv put secret/cloudflared/config \
     tunnel_token="$cloudflared_token" > /dev/null
 
+# Les noms de clés (secret_key et pg_pass) correspondent désormais au code Terraform
 bao kv put secret/authentik/config \
-    AUTHENTIK_SECRET_KEY="$authentik_secret" \
-    POSTGRES_PASSWORD="$authentik_db_pass" > /dev/null
+    secret_key="$authentik_secret" \
+    pg_pass="$authentik_db_pass" > /dev/null
 
 echo "[SUCCESS] Opération terminée. Tous les secrets ont été injectés."
