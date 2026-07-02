@@ -44,16 +44,19 @@ else
     export VAULT_TOKEN="$user_token" # Ajout pour la compatibilité Terraform
 fi
 
-echo -e "\n[INFO] Vérification du moteur de secrets"
+echo -e "\n[INFO] Vérification et configuration stricte du moteur KV-v2"
 echo "---------------------------------------------------"
-# On s'assure que le chemin "secret/" existe bien avant d'y injecter des données
-if ! bao secrets list | grep -q "^secret/"; then
-    echo "[INFO] Activation du moteur Key-Value (v2) sur le chemin 'secret/'..."
-    bao secrets enable -path=secret kv-v2 > /dev/null
-    echo "[SUCCESS] Moteur activé."
-else
-    echo "[INFO] Le moteur de secrets est déjà actif."
+
+# Si le chemin secret/ existe déjà (peu importe sa version), on le supprime pour repartir au propre
+if bao secrets list | grep -q "^secret/"; then
+    echo "[INFO] Ancien moteur détecté. Nettoyage en cours..."
+    bao secrets disable secret/ > /dev/null
 fi
+
+# On recrée le moteur en forçant explicitement la Version 2
+echo "[INFO] Activation du moteur Key-Value (v2) sur le chemin 'secret/'..."
+bao secrets enable -path=secret kv-v2 > /dev/null
+echo "[SUCCESS] Moteur KV-v2 activé et prêt."
 
 # On force le versioning v2 pour garantir le chemin secret/data/... attendu par Terraform
 bao kv enable-versioning secret/ > /dev/null 2>&1 || true
