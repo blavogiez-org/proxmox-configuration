@@ -1,5 +1,5 @@
 # --- CONFIGURATION GLOBALE ---
-domain: "blavogiez.fr"
+domain: "votredomaine.fr"
 timezone: "Europe/Paris"
 admin_user: "admin"
 
