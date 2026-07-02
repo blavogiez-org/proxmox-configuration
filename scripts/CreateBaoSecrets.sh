@@ -24,7 +24,7 @@ else
 fi
 
 SCRIPT_DIR="$(dirname "$0")"
-"$SCRIPT_DIR/InitOpenBao.sh" < /dev/tty
+source "$SCRIPT_DIR/InitOpenBao.sh" < /dev/tty
 
 export BAO_ADDR="http://192.168.10.15:8200"
 

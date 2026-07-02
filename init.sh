@@ -45,7 +45,7 @@ echo -e "\n[ÉTAPE 3/6] Déploiement de la couche 'bootstrap' (Terraform)..."
 
 echo -e "\n[ÉTAPE 4/6] Injection des secrets dans OpenBao..."
 read -p "Saisissez l'IP physique de votre Proxmox pour configurer le routage vers OpenBao (ex: 192.168.1.100) : " PROXMOX_IP < /dev/tty
-./scripts/CreateBaoSecrets.sh "$PROXMOX_IP" < /dev/tty
+source ./scripts/CreateBaoSecrets.sh "$PROXMOX_IP" < /dev/tty
 
 echo -e "\n[ÉTAPE 5/6] Génération de la configuration globale (settings.yml)..."
 ./scripts/CreateSettings.sh < /dev/tty
