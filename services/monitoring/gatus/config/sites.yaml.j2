@@ -1,0 +1,11 @@
+# https://github.com/TwiN/gatus#configuring-email-alerts
+endpoints: 
+  {% for site in retrieved_websites %}
+  {% set resolved_site = site | replace('{{ domain }}', domain) %}
+  - name: {{ site }}
+    url: "{{ site }}"
+    interval: 120s
+    conditions:
+      - "[STATUS] == any(200, 429)"
+  {% endfor %}
+      
