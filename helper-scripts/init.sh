@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# lance tous les scripts de setup
+
 # Interrompt le script au moindre échec d'une commande
 set -e
 
@@ -9,7 +11,7 @@ echo "==========================================================="
 
 REPO_URL="https://github.com/jobacogiez-org/proxmox-gitops.git"
 REPO_DIR="proxmox-gitops"
-BRANCH="26-remplissage-assisté-des-secrets-du-vault-openbao"
+BRANCH="main"
 
 echo -e "\n[ÉTAPE 0/6] Récupération du dépôt Git..."
 if [ -d "$REPO_DIR" ]; then
@@ -26,7 +28,7 @@ fi
 echo "[INFO] Configuration des permissions d'exécution..."
 chmod +x scripts/check_dependencies.sh scripts/create_tfvars_credentials.sh scripts/launch_terraform_by_layer.sh scripts/create_main_vault_secrets.sh scripts/create_repo_settings.sh scripts/initialize_vault.sh
 
-echo -e "\n[ÉTAPE 1/6] Vérification des dépendances..."
+echo -e "\n[ÉTAPE 1/6] Vérification des dépendances (outils CLI)..."
 ./scripts/check_dependencies.sh
 
 echo -e "\n[ÉTAPE 2/6] Création de la configuration Proxmox (tfvars)..."

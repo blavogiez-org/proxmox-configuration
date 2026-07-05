@@ -1,5 +1,13 @@
 #!/bin/bash
-export BAO_ADDR="http://192.168.10.15:8200"
+
+# toujours y accéder en TLS 
+export BAO_ADDR="https://192.168.10.15:8200"
+
+# total de clés
+KEY_SHARES=5
+
+# minimum de clés pour reconstruire la clé root
+KEY_THRESHOLD=3
 
 RAW_KEYS_FILE="/tmp/bao_keys_raw.json"
 USER_SECRETS_FILE="/tmp/secrets_openbao_utilisateur.txt"
@@ -15,7 +23,7 @@ if [ "$INIT_STATUS" == "false" ]; then
         [oO]|[yY]|oui|Oui|yes|Yes)
             echo "Initialisation d'OpenBao en cours..."
 
-            bao operator init -key-shares=5 -key-threshold=3 -format=json > "$RAW_KEYS_FILE"
+            bao operator init -key-shares=$KEY_SHARES -key-threshold=$KEY_THRESHOLD -format=json > "$RAW_KEYS_FILE"
             chmod 600 "$RAW_KEYS_FILE"
 
             ROOT_TOKEN=$(jq -r '.root_token' "$RAW_KEYS_FILE")
@@ -59,7 +67,7 @@ else
     # Verification du scellement si le serveur etait deja initialise
     SEALED_STATUS=$(bao status -format=json | jq -r '.sealed')
     if [ "$SEALED_STATUS" == "true" ]; then
-        echo "Le serveur est actuellement scelle. Un deverrouillage manuel est requis."
+        echo "Le serveur est actuellement scelle. Un deverrouillage manuel est requis (allez sur l'adresse $BAO_ADDR)."
     else
         echo "Le serveur est deja deverrouille."
     fi
