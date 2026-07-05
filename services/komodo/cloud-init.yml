@@ -1,3 +1,4 @@
+#cloud-config
 hostname: ${hostname}
 preserve_hostname: false
 

@@ -1,6 +1,6 @@
 
 module "nextcloud" {
-  source = "../../modules/vm"
+  source = "../../../modules/vm"
   name                = "nextcloud"
   username            = "admin"
   node_name           = "pve1"
@@ -24,7 +24,7 @@ module "nextcloud" {
 
 
 module "vaultwarden" {
-  source = "../../modules/vm"
+  source = "../../../modules/vm"
   name                = "vaultwarden"
   username            = "admin"
   node_name           = "pve1"
@@ -47,7 +47,7 @@ module "vaultwarden" {
 }
 
 module "ck-x" {
-  source = "../../modules/vm"
+  source = "../../../modules/vm"
   name                = "ck-x"
   username            = "admin"
   node_name           = "pve1"

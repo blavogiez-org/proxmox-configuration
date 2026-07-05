@@ -39,6 +39,14 @@
           }}
       # pour debug on peut enlever no log
       no_log: true
+      ignore_errors: true 
+      register: openbao_fetch
+
+    - name: avertir le cas de l'erreur openbao
+      ansible.builtin.debug:
+        msg: "avertissement : Aucun secret n'a pu être retrouvé (il peut ne pas y en avoir pour le service voulu)"
+      when: openbao_fetch is failed
+
       # si il y a un probleme de token, tenter .bao-token plutot que .vault-token
     # cette tache évite la redondance pour la configuration des sites regardés en générant la configuration à partir des sites de Caddy
     # j'ai essayé avec des spotters de certs (= surveiller les sous domaines d'un domaine) mais c'est en retard sur la réalité

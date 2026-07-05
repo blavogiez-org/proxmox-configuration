@@ -1,7 +1,7 @@
 # on a besoin que toutes les vm futures aient qemu guest agent
 
 #cloud-config
-hostname: debian13-test
+hostname: debian13-template
 package_update: true
 packages:
   - qemu-guest-agent

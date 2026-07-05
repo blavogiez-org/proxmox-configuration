@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # toujours y accéder en TLS 
-export BAO_ADDR="https://192.168.10.15:8200"
+export BAO_ADDR="https://192.168.10.15:80"
 
 # total de clés
 KEY_SHARES=5
@@ -74,4 +74,4 @@ else
 fi
 
 export VAULT_TOKEN=$(jq -r '.root_token' /tmp/bao_keys_raw.json)
-export VAULT_ADDR="http://192.168.10.15:8200"
+export VAULT_ADDR="http://192.168.10.15:80"
