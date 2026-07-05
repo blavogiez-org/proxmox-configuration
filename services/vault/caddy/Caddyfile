@@ -1,4 +1,19 @@
-# il faut pointer dessus avec un reverse proxy public https comme cloudflared/caddy
-http://vault.blavogiez.fr {
-  reverse_proxy openbao:8200
+{
+    default_sni 192.168.10.15
+}
+
+# le caddy du compose termine directement le HTTPS sans exposer le port 8200
+https://192.168.10.15 {
+    # tls internal en attendant, ensuite on fera des certificats publics
+    tls internal
+
+    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
+
+    handle @vpn_only {
+        reverse_proxy openbao:8200
+    }
+
+    handle {
+        respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
+    }
 }

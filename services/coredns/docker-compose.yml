@@ -2,7 +2,7 @@
 
 services:
   coredns:
-    image: coredns/coredns
+    image: coredns/coredns:1.14.4
     restart: unless-stopped
     command: "--conf /config/Corefile"
     volumes:

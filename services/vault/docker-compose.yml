@@ -1,6 +1,6 @@
 services:
   openbao:
-    image: openbao/openbao:latest
+    image: openbao/openbao:2.5.5
     container_name: openbao
     cap_add:
       - IPC_LOCK
@@ -8,11 +8,12 @@ services:
       - "8200"
     # il faut éviter de faire ça car ca ouvrirait le port 8200 sur la machine
     # ports:
-    #   - "8200:8200" # l'ui web, on peut pointer dessus
+    #   - "8200:8200" # l'ui web, on peut pointer dessus par caddy par le réseau interne
     volumes:
       - ./openbao/config:/etc/openbao
       - ./openbao/file:/openbao/file
     command: server -config=/etc/openbao/openbao.hcl
+
   caddy:
     image: caddy:2
     container_name: caddy

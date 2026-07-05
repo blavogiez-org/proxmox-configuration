@@ -1,3 +1,19 @@
+(site_rate_limit) {
+    rate_limit {
+        zone {args[0]} {
+            key {client_ip}
+            events {args[1]}
+            window 1m
+            ipv6_prefix 64
+        }
+    }
+}
+
+
+{
+  auto_https off
+}
+
 import /etc/caddy/sites/*.conf
 # TODO : configuration HTTPS même pour les sites locaux/privés pour être blindé niveau sécurité
 # j'ai deja une solution avec tls internal pour Caddy mais faut faire confiance au certificat sur chaque machine ce qui est bof

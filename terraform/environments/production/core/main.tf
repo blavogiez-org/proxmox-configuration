@@ -151,7 +151,7 @@ module "authentik" {
   bridge = "prvvnet1"
 
   # Injection de la clé secrète et du mot de passe DB pour Authentik
-  user_data_raw = templatefile("${path.root}/../../../../services/authentik/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
     hostname         = "authentik"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
