@@ -9,7 +9,3 @@ provider "proxmox" {
     private_key = file(pathexpand(var.proxmox_ssh_private_key_path))
   }
 }
-
-# Laissé vide !
-#Terraform ira chercher VAULT_ADDR et VAULT_TOKEN injectés par le script init.sh
-provider "vault" {}

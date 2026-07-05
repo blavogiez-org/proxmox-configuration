@@ -1,6 +1,5 @@
-# idée de todo : déduire que c'est prvvnet1 ou pubvnet1 selon l'ip voulue
-# repris de https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/sdn_vnet
-# les SDN proxmox exposent après leur créatione un bridge exploitable (meme nom que le vnet) avec le SNAT activé par défaut (sortie possible)
+# la couche "bootstrap" doit être appliquée auparavant, car comprenant les sous-réseaux, le vault OpenBao et la VM template pour accélerer les créations d'instances. Ce sont tant de composants dont a besoin cette couche pour être efficace/sécurisée
+
 module "minimal-backup" {
   source  = "../../../modules/backup"
   storage = var.backup_storage
@@ -27,12 +26,30 @@ module "gh-runner" {
 
   bridge = "prvvnet1"
 
-  # Pas de secrets Vault ici, juste les variables de base
   user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
     hostname       = "gh-runner"
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
 }
+
+# sert notamment aux accès privés / domaines arbitraires
+module "coredns" {
+  source = "../../../modules/lxc"
+  name                = "coredns"
+  node_name           = "pve1"
+  lxc_id               = 112
+  lxc_ip               = "192.168.10.12"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+  target_datastore_id = var.storage
+
+  cpu       = 1
+  memory    = 256
+  disk_size = 3
+
+  bridge = "prvvnet1"
+}
+
 
 # (wireguard se fait sur l'hôte proxmox pour fluidifier les accès réseau)
 
@@ -77,8 +94,7 @@ module "monitoring" {
 
   bridge = "prvvnet1"
 
-  # Pas de secrets Vault ici non plus
-  user_data_raw = templatefile("${path.root}/../../../../services/monitoring/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
     hostname       = "monitoring"
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
@@ -150,7 +166,6 @@ module "authentik" {
 
   bridge = "prvvnet1"
 
-  # Injection de la clé secrète et du mot de passe DB pour Authentik
   user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
     hostname         = "authentik"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
