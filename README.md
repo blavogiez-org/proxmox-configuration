@@ -51,7 +51,7 @@ Ce playbook va :
 Côté GitHub Actions, le système de matrix permet de paralléliser un job sur lequel est itéré une liste, en l'occurrence les services (obtenus par [cette action réutilisable](github.com/philips-labs/list-folder-action))
 
 Ces mises à jour sont appliquées sur les dépôts forks. En voici un exemple : 
-<img width="1015" height="360" alt="image" src="https://github.com/user-attachments/assets/7d6f38b0-80b4-43e2-9ed7-beff7349d92d" />
+<img width="1198" height="596" alt="image" src="https://github.com/user-attachments/assets/1bae44da-15ec-4ae2-846d-1de670e07528" />
 
 [Run correspondant](https://github.com/blavogiez-org/proxmox-configuration/actions/runs/28758799580)
 Il n'y a pas toujours de secrets Vault associés au service. Si il n'y en a pas, on met un avertissement.
