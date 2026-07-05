@@ -30,7 +30,7 @@ resource "proxmox_download_file" "debian13" {
   datastore_id = "local"
   content_type = "import"
 
-  url = "https://cloud.debian.org/cdimage/cloud/trixie/20260623-2518/debian-13-generic-amd64-20260623-2518.qcow2"
+  url       = "https://cloud.debian.org/cdimage/cloud/trixie/20260623-2518/debian-13-generic-amd64-20260623-2518.qcow2"
   file_name = "debian-13-genericcloud-amd64.qcow2"
 }
 
@@ -38,7 +38,7 @@ resource "proxmox_virtual_environment_vm" "debian13" {
   name      = "debian13-template"
   node_name = var.node_name
   vm_id     = 9000
-  template = true
+  template  = true
 
   started = true
 
@@ -101,7 +101,7 @@ module "vault" {
   vm_ip               = "192.168.10.15"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = var.storage
+  target_datastore_id = var.storage
   depends_on = [
     proxmox_virtual_environment_vm.debian13
   ]
@@ -110,9 +110,9 @@ module "vault" {
   memory    = 1024
   disk_size = 15
 
-  bridge                  = "prvvnet1"
+  bridge = "prvvnet1"
   user_data_raw = templatefile("${path.root}/../../../../services/vault/cloud-init.yml", {
-    hostname         = "vault"
-    ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    hostname       = "vault"
+    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
 }

@@ -106,7 +106,7 @@ jobs:
           ansible-galaxy collection install -r ansible/requirements.yml
 
       #https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations
-      # avec la matrix tous les services définis vont faire N déplooiements ansible
+      # La matrix permet d'itérer une tâche ci / cd sur une liste. Dans notre cas c'est particulièrement utile pour traiter chaque service
       - name: "Déploiement de ${{ matrix.service }}"
         run: |
           export PATH="$HOME/.local/bin:$PATH"

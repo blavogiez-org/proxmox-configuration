@@ -18,7 +18,7 @@ module "gh-runner" {
   vm_ip               = "192.168.10.11"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = var.storage
+  target_datastore_id = var.storage
 
   cpu       = 2
   memory    = 2048
@@ -34,11 +34,11 @@ module "gh-runner" {
 
 # sert notamment aux accès privés / domaines arbitraires
 module "coredns" {
-  source = "../../../modules/lxc"
+  source              = "../../../modules/lxc"
   name                = "coredns"
   node_name           = "pve1"
-  lxc_id               = 112
-  lxc_ip               = "192.168.10.12"
+  lxc_id              = 112
+  lxc_ip              = "192.168.10.12"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
   target_datastore_id = var.storage
@@ -64,7 +64,7 @@ module "caddy" {
   lxc_ip              = "192.168.10.13"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = var.storage
+  target_datastore_id = var.storage
 
   cpu       = 1
   memory    = 512
@@ -86,7 +86,7 @@ module "monitoring" {
   vm_ip               = "192.168.10.14"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = var.storage
+  target_datastore_id = var.storage
 
   cpu       = 1
   memory    = 1024
@@ -113,7 +113,7 @@ module "komodo" {
   vm_ip               = "172.16.10.11"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = var.storage
+  target_datastore_id = var.storage
 
   cpu       = 3
   memory    = 4096
@@ -136,7 +136,7 @@ module "cloudflared" {
   lxc_ip              = "172.16.10.12"
   network_gateway     = "172.16.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = var.storage
+  target_datastore_id = var.storage
 
   cpu       = 1
   memory    = 256
@@ -158,7 +158,7 @@ module "authentik" {
   vm_ip               = "192.168.10.16"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
-  target_datastore_id        = var.storage
+  target_datastore_id = var.storage
 
   cpu       = 1
   memory    = 2048
@@ -167,7 +167,7 @@ module "authentik" {
   bridge = "prvvnet1"
 
   user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
-    hostname         = "authentik"
-    ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    hostname       = "authentik"
+    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
 }
