@@ -1,4 +1,4 @@
-vpn.priv.{{ domain }}:80 {
+http://vpn.priv.{{ domain }} {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
@@ -14,7 +14,7 @@ vpn.priv.{{ domain }}:80 {
 
 # tester si le rate_limit à 5 se trigger à chaque connexion ou alors à chaque handshake (voir si il est applicable) 
 # pas encore on en public
-# vpn.{{ domain }}:80 {
+# vpn.{{ domain }} {
     # reverse_proxy 192.168.10.1:51820
 
     # import site_rate_limit zone 5

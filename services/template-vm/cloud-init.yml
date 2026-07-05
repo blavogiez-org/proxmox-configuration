@@ -1,0 +1,11 @@
+# on a besoin que toutes les vm futures aient qemu guest agent
+
+#cloud-config
+hostname: debian13-test
+package_update: true
+packages:
+  - qemu-guest-agent
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+# apres ce cloud init, il faut faire
+# root@pve1# qm template <vmid>
