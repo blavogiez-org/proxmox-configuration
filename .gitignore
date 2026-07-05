@@ -39,3 +39,5 @@ build/
 
 dummy-service/
 .env
+
+settings.yml

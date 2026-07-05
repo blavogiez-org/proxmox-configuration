@@ -22,6 +22,13 @@ variable "proxmox_ssh_username" {
   default     = "root"
 }
 
+variable "node_name" {
+  description = "Nom du PVE / hostname"
+  type = string 
+  # pas de défaut pour pas semer la confusion
+}
+
+
 variable "proxmox_ssh_private_key_path" {
   description = "Chemin de la cle privee SSH pour le node Proxmox."
   type        = string
@@ -33,6 +40,11 @@ variable "ssh_public_key_path" {
   type        = string
 }
 
-variable "storage" {
+variable "backup_storage" {
   type = string
+}
+
+variable "storage" {
+  description = "disque utilisé par la VM/LXC. Utiliser de préférence du ZFS raid1 avec redondance, et chiffré si possible"
+  type = string 
 }
