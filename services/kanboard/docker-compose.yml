@@ -1,4 +1,4 @@
-# il y a des vulnérabilités pour certaines anciennes versions
+# il y a des vulnérabilités pour certaines anciennes versions
 # https://nvd.nist.gov/vuln/detail/CVE-2025-52576
 
 # poc typique pour un déploiement automatisé Komodo
@@ -6,7 +6,7 @@ name: kanboard
 
 services:
   app:
-    image: ${KANBOARD_IMAGE:-kanboard/kanboard:latest}
+    image: kanboard/kanboard:v1.2.52
     container_name: kanboard
     restart: always
     volumes:

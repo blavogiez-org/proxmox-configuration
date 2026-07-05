@@ -18,19 +18,20 @@ variable "vm_id" {
   type = number
 }
 
-variable "user_data_template_path" {
-  type = string
+variable "user_data_raw" {
+  description = "Le contenu brut du fichier cloud-init généré par le parent"
+  type        = string
 }
 
-variable "datastore_id" {
+variable "target_datastore_id" {
   type=string
   default= "encrypted-zfs"
 }
 
-variable "hostname" {
-  type = string 
-  default = "hostname-a-remplacer-alloy-en-a-besoin"
-}
+# variable "hostname" {
+#   type = string 
+#   default = "hostname-a-remplacer-alloy-en-a-besoin"
+# }
 
 variable "network_gateway" {
   type = string

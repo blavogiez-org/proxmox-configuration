@@ -19,6 +19,6 @@ https://192.168.10.15 {
     }
 
     handle {
-        respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée. Pour l'autoriser, regardez services/vault/caddy/Caddyfile (A la configuration initiale)" 403
+        respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée (si on est au setup, on peut autoriser l'ip de la machine demandeuse temporairement, voir le caddyfile et redéployer.)" 403
     }
 }

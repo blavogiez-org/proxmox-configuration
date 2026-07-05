@@ -12,11 +12,11 @@ services:
       - MYSQL_USER=nextcloud
 
   redis:
-    image: redis:alpine
+    image: redis:8.8.0-alpine
     restart: always
 
   app:
-    image: nextcloud
+    image: nextcloud:32.0.12-apache
     restart: always
     ports:
       - 8080:80
