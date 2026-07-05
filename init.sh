@@ -24,28 +24,28 @@ else
 fi
 
 echo "[INFO] Configuration des permissions d'exécution..."
-chmod +x scripts/CheckDependences.sh scripts/CreateTfvars.sh scripts/LunchTerraform.sh scripts/CreateBaoSecrets.sh scripts/CreateSettings.sh scripts/InitOpenBao.sh
+chmod +x scripts/check_dependencies.sh scripts/create_tfvars_credentials.sh scripts/launch_terraform_by_layer.sh scripts/create_main_vault_secrets.sh scripts/create_repo_settings.sh scripts/initialize_vault.sh
 
 echo -e "\n[ÉTAPE 1/6] Vérification des dépendances..."
-./scripts/CheckDependences.sh
+./scripts/check_dependencies.sh
 
 echo -e "\n[ÉTAPE 2/6] Création de la configuration Proxmox (tfvars)..."
-./scripts/CreateTfvars.sh < /dev/tty
+./scripts/create_tfvars_credentials.sh < /dev/tty
 
 TFVARS_PATH="terraform/environments/production/terraform.tfvars"
 
 echo -e "\n[ÉTAPE 3/6] Déploiement de la couche 'bootstrap' (Terraform)..."
-./scripts/LunchTerraform.sh "$TFVARS_PATH" "bootstrap"
+./scripts/launch_terraform_by_layer.sh "$TFVARS_PATH" "bootstrap"
 
 echo -e "\n[ÉTAPE 4/6] Injection des secrets dans OpenBao..."
 read -r -p "Saisissez l'IP physique de votre Proxmox pour configurer le routage vers OpenBao (ex: 192.168.1.100) : " PROXMOX_IP < /dev/tty
-source ./scripts/CreateBaoSecrets.sh "$PROXMOX_IP" < /dev/tty
+source ./scripts/create_main_vault_secrets.sh "$PROXMOX_IP" < /dev/tty
 
 echo -e "\n[ÉTAPE 5/6] Génération de la configuration globale (settings.yml)..."
-./scripts/CreateSettings.sh < /dev/tty
+./scripts/create_repo_settings.sh < /dev/tty
 
 echo -e "\n[ÉTAPE 6/6] Déploiement de la couche 'core' (Terraform)..."
-./scripts/LunchTerraform.sh "$TFVARS_PATH" "core"
+./scripts/launch_terraform_by_layer.sh "$TFVARS_PATH" "core"
 
 echo -e "\n==========================================================="
 echo "[SUCCESS] L'initialisation de l'infrastructure est terminée."

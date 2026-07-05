@@ -34,7 +34,7 @@ else
 fi
 
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
-source "$SCRIPT_DIR/InitOpenBao.sh" < /dev/tty
+source "$SCRIPT_DIR/initialize_vault.sh" < /dev/tty
 
 export BAO_ADDR="http://192.168.10.15:8200"
 export VAULT_ADDR="$BAO_ADDR" # Ajout pour la compatibilité Terraform
