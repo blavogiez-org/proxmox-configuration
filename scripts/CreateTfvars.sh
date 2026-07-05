@@ -3,11 +3,16 @@
 set -e
 
 TFVARS_FILE="terraform/environments/production/terraform.tfvars"
+TFVARS_TEMPLATE="terraform/environments/production/terraform.tfvars.j2"
 
 echo "[INFO] Génération de la configuration Terraform pour Proxmox"
 echo "---------------------------------------------------"
 
-# Vérification si le fichier existe déjà
+if [ ! -f "$TFVARS_TEMPLATE" ]; then
+    echo "[ERROR] Template introuvable : $TFVARS_TEMPLATE"
+    exit 1
+fi
+
 if [ -f "$TFVARS_FILE" ]; then
     read -p "Le fichier '$TFVARS_FILE' existe déjà. Voulez-vous l'écraser ? (o/N) : " overwrite < /dev/tty
     if [[ ! "$overwrite" =~ ^[OoyY] ]]; then
@@ -17,43 +22,30 @@ if [ -f "$TFVARS_FILE" ]; then
     echo "[INFO] Écrasement du fichier confirmé."
 fi
 
-# Lecture des entrées utilisateur
-read -p "Adresse du host Proxmox (ex: https://192.168.1.10:8006) : " proxmox_host
-read -p "Utilisateur (ex: terraform) : " user
-read -p "Realm (ex: pve) : " realm
-read -p "Token ID (ex: tf) : " token_id
-read -s -p "Secret du token (champ masqué): " secret
-echo "" # Retour à la ligne après le mot de passe caché
-read -p "Chemin clé privée SSH (ex: ~/.ssh/id_rsa) : " ssh_priv
-read -p "Chemin clé publique SSH (ex: ~/.ssh/id_rsa.pub) : " ssh_pub
-read -p "Nom du stockage (ex: local-lvm) : " storage
-read -p "Nom du stockage pour las backup minimal (ex: local-lvm) : " backup_storage
-read -p "Nom du node (ex: pve) : " node_name
+read -r -p "Adresse du host Proxmox (ex: https://192.168.1.10:8006) : " proxmox_host
+read -r -p "Utilisateur (ex: terraform) : " proxmox_user
+read -r -p "Realm (ex: pve) : " proxmox_realm
+read -r -p "Token ID (ex: tf) : " proxmox_token_id
+read -r -s -p "Secret du token (champ masqué): " proxmox_token_secret
+echo ""
+read -r -p "Chemin clé privée SSH (ex: ~/.ssh/id_rsa) : " ssh_private_key_path
+read -r -p "Chemin clé publique SSH (ex: ~/.ssh/id_rsa.pub) : " ssh_public_key_path
+read -r -p "Nom du stockage (ex: local-lvm) : " storage
+read -r -p "Nom du stockage pour les backups minimaux (ex: local-lvm) : " backup_storage
+read -r -p "Nom du node (ex: pve) : " node_name
 
-# Création du répertoire de destination au cas où il n'existerait pas encore
 mkdir -p "$(dirname "$TFVARS_FILE")"
 
-# Création du fichier
-cat <<EOF > "$TFVARS_FILE"
-# Configuration Proxmox
-proxmox_endpoint  = "$proxmox_host/api2/json"
-proxmox_api_token = "$user@$realm!$token_id=$secret"
-
-# Sécurité TLS
-proxmox_insecure = true
-
-# Configuration SSH
-proxmox_ssh_username         = "root"
-proxmox_ssh_private_key_path = "$ssh_priv"
-ssh_public_key_path          = "$ssh_pub"
-
-# Infrastructure & Runner
-storage      = "$storage"
-backup_storage = "$backup_storage"
-
-# si il y a que un PVE qui sera utilisé pas besoin de le changer
-# si il y en a un autre, le préciser dans les appels de modules
-node_name = "$node_name"
-EOF
+TF_PROXMOX_HOST="${proxmox_host%/}" \
+TF_PROXMOX_USER="$proxmox_user" \
+TF_PROXMOX_REALM="$proxmox_realm" \
+TF_PROXMOX_TOKEN_ID="$proxmox_token_id" \
+TF_PROXMOX_TOKEN_SECRET="$proxmox_token_secret" \
+TF_PROXMOX_SSH_PRIVATE_KEY_PATH="$ssh_private_key_path" \
+TF_PROXMOX_SSH_PUBLIC_KEY_PATH="$ssh_public_key_path" \
+TF_STORAGE="$storage" \
+TF_BACKUP_STORAGE="$backup_storage" \
+TF_NODE_NAME="$node_name" \
+j2 "$TFVARS_TEMPLATE" > "$TFVARS_FILE"
 
 echo "[SUCCESS] Fichier terraform.tfvars généré avec succès !"

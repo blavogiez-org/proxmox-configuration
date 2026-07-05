@@ -11,12 +11,6 @@ REPO_URL="https://github.com/jobacogiez-org/proxmox-gitops.git"
 REPO_DIR="proxmox-gitops"
 BRANCH="26-remplissage-assisté-des-secrets-du-vault-openbao"
 
-# 1. Vérification de Git sur la machine hôte
-if ! command -v git >/dev/null 2>&1; then
-    echo "[ERROR] Git n'est pas installé sur cette machine. Installation requise."
-    exit 1
-fi
-
 echo -e "\n[ÉTAPE 0/6] Récupération du dépôt Git..."
 if [ -d "$REPO_DIR" ]; then
     echo "[INFO] Le dossier '$REPO_DIR' existe déjà. Mise à jour (git pull)..."
