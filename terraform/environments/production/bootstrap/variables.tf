@@ -17,7 +17,7 @@ variable "proxmox_insecure" {
 
 variable "node_name" {
   description = "Nom du PVE / hostname"
-  type = string 
+  type        = string
   # pas de défaut pour pas semer la confusion
 }
 
@@ -40,5 +40,5 @@ variable "ssh_public_key_path" {
 
 variable "storage" {
   description = "disque utilisé par la VM/LXC. Utiliser de préférence du ZFS raid1 avec redondance, et chiffré si possible"
-  type = string
+  type        = string
 }

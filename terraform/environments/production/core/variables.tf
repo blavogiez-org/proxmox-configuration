@@ -24,7 +24,7 @@ variable "proxmox_ssh_username" {
 
 variable "node_name" {
   description = "Nom du PVE / hostname"
-  type = string 
+  type        = string
   # pas de défaut pour pas semer la confusion
 }
 
@@ -46,5 +46,5 @@ variable "backup_storage" {
 
 variable "storage" {
   description = "disque utilisé par la VM/LXC. Utiliser de préférence du ZFS raid1 avec redondance, et chiffré si possible"
-  type = string 
+  type        = string
 }

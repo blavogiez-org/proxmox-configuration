@@ -5,10 +5,41 @@
   vars_files:
     - ../../settings.yml
   vars:
+    # target_service attendu en argument
     target_remote_dir: "/opt"
     target_local_dir: "{{ playbook_dir }}/../../services/{{ target_service }}"
 
   tasks:
+    # il faut la library python 'hvac' sur la machine qui lance le playbook (pas la machine cible) apt install python3-hvac
+    - name: vérifier si la machine qui lance a la library python 'hvac' ; c'est requis pour acceder au vault dans le playbook
+      ansible.builtin.apt:
+        name: python3-hvac
+        state: present
+        update_cache: true
+      delegate_to: localhost
+      become: true # donc lancer ansible avec l'option -K (ca va demander le mot de passe d'élévation)
+      run_once: true
+    
+    # actuellement on a du https interne car on a pas encore fait les certificats publics pour le réseau privé, d'où le validate_certs
+    - name: charger les secrets openbao relatifs au service (et uniquement ceux-là)
+      ansible.builtin.set_fact:
+        vault: >-
+          {{
+            {
+              target_service: lookup(
+                'community.hashi_vault.vault_kv2_get',
+                target_service,
+                engine_mount_point='secret',
+                url='https://192.168.10.15',
+                validate_certs=false,
+                token_path=lookup('env', 'HOME'),
+                token_file='.vault-token'
+              ).secret
+            }
+          }}
+      # pour debug on peut enlever no log
+      no_log: true
+      # si il y a un probleme de token, tenter .bao-token plutot que .vault-token
     # cette tache évite la redondance pour la configuration des sites regardés en générant la configuration à partir des sites de Caddy
     # j'ai essayé avec des spotters de certs (= surveiller les sous domaines d'un domaine) mais c'est en retard sur la réalité
     - name: exclusif au service monitoring ; on charge les sites en variable pour générer le template des sites à surveiller le statut (voir monitoring/gatus/config/sites.yaml.j2)
@@ -43,6 +74,7 @@
         mode: '0644'
       register: target_remote_stack
 
+    # pour lse secrets, le Jinja2 attend typiquement vault.{{ service }}.{{ nom clé }}
     - name: générer les éventuels templates (*.j2)
       ansible.builtin.template:
         src: "{{ item.src }}"
