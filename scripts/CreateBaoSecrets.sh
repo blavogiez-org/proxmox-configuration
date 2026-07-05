@@ -2,11 +2,21 @@
 
 set -e
 
+# --- NOUVELLE SÉCURITÉ ---
+# Vérification que le script est bien exécuté avec "source" pour conserver les "export"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    echo "[ERROR] Ce script DOIT être exécuté avec 'source' pour transmettre le Token à Terraform."
+    echo "Usage correct : source $0 <IP_PROXMOX>"
+    echo "Exemple       : source $0 192.168.1.100"
+    exit 1
+fi
+# -------------------------
+
 # Vérification du paramètre d'entrée
 if [ -z "$1" ]; then
     echo "[ERROR] L'adresse IP physique de Proxmox est requise en paramètre."
-    echo "Usage : $0 <IP_PROXMOX>"
-    echo "Exemple : $0 192.168.1.100"
+    echo "Usage : source $0 <IP_PROXMOX>"
+    echo "Exemple : source $0 192.168.1.100"
     exit 1
 fi
 
@@ -84,4 +94,4 @@ bao kv put secret/authentik/config \
     secret_key="$authentik_secret" \
     pg_pass="$authentik_db_pass" > /dev/null
 
-echo "[SUCCESS] Opération terminée. Tous les secrets ont été injectés."
+echo "[SUCCESS] Opération terminée. Tous les secrets ont été injectés. Terraform peut maintenant être lancé !"

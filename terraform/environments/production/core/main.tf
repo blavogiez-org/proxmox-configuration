@@ -154,7 +154,5 @@ module "authentik" {
   user_data_raw = templatefile("${path.root}/../../../../services/authentik/cloud-init.yml", {
     hostname         = "authentik"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
-    pg_pass          = data.vault_generic_secret.authentik_secrets.data["pg_pass"]
-    authentik_secret = data.vault_generic_secret.authentik_secrets.data["secret_key"]
   })
 }
