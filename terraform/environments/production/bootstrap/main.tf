@@ -92,7 +92,6 @@ resource "proxmox_virtual_environment_file" "cloud_init" {
 module "vault" {
   source = "../../../modules/vm"
 
-  hostname            = "vault"
   name                = "vault"
   username            = "admin"
   node_name           = var.node_name
