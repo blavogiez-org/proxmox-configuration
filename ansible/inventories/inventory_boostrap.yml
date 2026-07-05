@@ -5,7 +5,7 @@ all:
     ansible_user: root
     bootstrap_user: admin
   hosts:
-    wireguard:
+    coredns:
       ansible_host: 192.168.10.12
     caddy:
       ansible_host: 192.168.10.13

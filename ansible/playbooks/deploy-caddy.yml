@@ -1,5 +1,7 @@
 - hosts: caddy
   become: true
+  vars_files:
+    - ../../settings.yml
   vars:
     caddy_remote_dir: "/opt/caddy"
     caddy_local_dir: "{{ playbook_dir }}/../../services/caddy"
@@ -12,6 +14,7 @@
         mode: '0755'
       loop:
         - "{{ caddy_remote_dir }}"
+        - "{{ caddy_remote_dir }}/sites"
 
     - name: Copier les fichiers Docker (Dockerfile, compose)
       ansible.builtin.copy:
@@ -32,11 +35,19 @@
         - Caddyfile
       register: main_config
 
-    - name: Copier les sites Caddy
-      ansible.builtin.copy:
-        src: "{{ caddy_local_dir }}/sites"
-        dest: "{{ caddy_remote_dir }}/"
+    - name: supprimer le contenu des sites pour que le git soit vraiment la source de vérité (= pas de site supplémentaire en remote autorisé)
+      ansible.builtin.shell:
+        cmd: rm -rf {{ caddy_remote_dir }}/sites/*
+
+    # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/fileglob_lookup.html 
+    # ressource utile pour bien itérer dessus
+    - name: Générer les sites de template
+      ansible.builtin.template:
+        src: "{{ caddy_local_dir }}/sites/{{ item | basename }}"
+        dest: "{{ caddy_remote_dir }}/sites/{{ item | basename | regex_replace('\\.j2$', '') }}"
         mode: '0644'
+      with_fileglob: 
+        - "{{ caddy_local_dir }}/sites/*.conf.j2"
       register: sites_config
 
     - name: Vérifier si le conteneur Caddy est en cours d'exécution

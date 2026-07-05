@@ -1,13 +1,13 @@
-monitoring.{$DOMAIN}:80 {
+*.priv.{{ domain }}:80 {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
     handle @vpn_only {
-        reverse_proxy 192.168.10.14:3000
+        respond "requete locale qui est acceptée, trop bien"
     }
 
     # Bloqué pour tout le reste
     handle {
-        abort
+        respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
     }
 }
