@@ -38,7 +38,7 @@ echo -e "\n[ÉTAPE 3/6] Déploiement de la couche 'bootstrap' (Terraform)..."
 ./scripts/LunchTerraform.sh "$TFVARS_PATH" "bootstrap"
 
 echo -e "\n[ÉTAPE 4/6] Injection des secrets dans OpenBao..."
-read -p "Saisissez l'IP physique de votre Proxmox pour configurer le routage vers OpenBao (ex: 192.168.1.100) : " PROXMOX_IP < /dev/tty
+read -r -p "Saisissez l'IP physique de votre Proxmox pour configurer le routage vers OpenBao (ex: 192.168.1.100) : " PROXMOX_IP < /dev/tty
 source ./scripts/CreateBaoSecrets.sh "$PROXMOX_IP" < /dev/tty
 
 echo -e "\n[ÉTAPE 5/6] Génération de la configuration globale (settings.yml)..."

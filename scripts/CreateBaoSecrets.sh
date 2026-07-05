@@ -48,7 +48,7 @@ if [ -f "/tmp/bao_keys_raw.json" ]; then
     export VAULT_TOKEN="$BAO_TOKEN" # Ajout pour la compatibilité Terraform
 else
     # Si le fichier n'existe pas (serveur déjà initialisé avant), on le demande à l'utilisateur
-    read -s -p "Veuillez entrer le Token Root : " user_token
+    read -r -s -p "Veuillez entrer le Token Root : " user_token
     echo ""
     export BAO_TOKEN="$user_token"
     export VAULT_TOKEN="$user_token" # Ajout pour la compatibilité Terraform
@@ -75,13 +75,13 @@ echo -e "\n[INFO] Saisie des secrets pour OpenBao"
 echo "---------------------------------------------------"
 
 echo "--- Cloudflared ---"
-read -s -p "Tunnel Token : " cloudflared_token
+read -r -s -p "Tunnel Token : " cloudflared_token
 echo -e "\n"
 
 echo "--- Authentik ---"
-read -s -p "AUTHENTIK_SECRET_KEY : " authentik_secret
+read -r -s -p "AUTHENTIK_SECRET_KEY : " authentik_secret
 echo ""
-read -s -p "POSTGRES_PASSWORD : " authentik_db_pass
+read -r -s -p "POSTGRES_PASSWORD : " authentik_db_pass
 echo -e "\n"
 
 echo "[INFO] Injection des secrets dans OpenBao en cours..."

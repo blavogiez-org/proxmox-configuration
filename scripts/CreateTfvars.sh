@@ -14,7 +14,7 @@ if [ ! -f "$TFVARS_TEMPLATE" ]; then
 fi
 
 if [ -f "$TFVARS_FILE" ]; then
-    read -p "Le fichier '$TFVARS_FILE' existe déjà. Voulez-vous l'écraser ? (o/N) : " overwrite < /dev/tty
+    read -r -p "Le fichier '$TFVARS_FILE' existe déjà. Voulez-vous l'écraser ? (o/N) : " overwrite < /dev/tty
     if [[ ! "$overwrite" =~ ^[OoyY] ]]; then
         echo "[INFO] Conservation du fichier existant. Saisie ignorée."
         exit 0

@@ -9,7 +9,7 @@ INIT_STATUS=$(bao status -format=json | jq -r '.initialized')
 if [ "$INIT_STATUS" == "false" ]; then
     echo "Le serveur OpenBao n'est pas encore initialise."
 
-    read -p "Voulez-vous proceder a l'initialisation automatique maintenant ? (o/n) " user_choice
+    read -r -p "Voulez-vous proceder a l'initialisation automatique maintenant ? (o/n) " user_choice
 
     case "$user_choice" in
         [oO]|[yY]|oui|Oui|yes|Yes)
