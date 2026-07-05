@@ -1,4 +1,4 @@
-komodo.priv.{{ domain }}:80 {
+http://komodo.priv.{{ domain }} {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
@@ -16,7 +16,7 @@ komodo.priv.{{ domain }}:80 {
     }
 }
 
-komodo.{{ domain }}:80 {
+http://komodo.{{ domain }} {
     reverse_proxy 172.16.10.11:9120 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}

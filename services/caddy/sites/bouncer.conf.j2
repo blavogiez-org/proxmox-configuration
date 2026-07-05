@@ -1,7 +1,7 @@
 # tool pour voir son ip
 
 # bouncer qui montre l'ip de la requête (sympa pour voir l'ip utilisée pour debug le vpn)
-bouncer.priv.{{ domain }}:80 {
+http://bouncer.priv.{{ domain }} {
     respond "IP de la requête : {remote_host}" 200
 }
 

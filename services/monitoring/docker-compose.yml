@@ -47,6 +47,20 @@ services:
       PVE_TOKEN_VALUE: ${PVE_TOKEN_VALUE:?PVE_TOKEN_VALUE must be set}
       PVE_VERIFY_SSL: "false"
 
+  gatus:
+    image: ghcr.io/twin/gatus:stable
+    container_name: gatus
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      GATUS_CONFIG_PATH: /config
+      GATUS_LOG_LEVEL: INFO
+    volumes:
+      - ./gatus/config:/config:ro
+      - ./gatus/data:/data
+
+
 volumes:
   grafana_data:
   loki_data:

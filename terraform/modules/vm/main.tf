@@ -14,11 +14,11 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   clone {
     vm_id = var.vm_template_id
-    datastore_id = var.datastore_id
+    datastore_id = var.target_datastore_id
   }
 
   disk {
-    datastore_id = var.datastore_id
+    datastore_id = var.target_datastore_id
     interface    = "scsi0"
     size         = var.disk_size
     iothread     = true
@@ -42,7 +42,7 @@ resource "proxmox_virtual_environment_vm" "this" {
         gateway = var.network_gateway
       }
     }
-    datastore_id = var.datastore_id
+    datastore_id = var.target_datastore_id
 
     user_account {
       keys     = [trimspace(file(pathexpand(var.ssh_public_key_path)))]
@@ -66,14 +66,12 @@ resource "proxmox_virtual_environment_vm" "this" {
 
 resource "proxmox_virtual_environment_file" "boostrap_user_data" {
   content_type = "snippets"
-  datastore_id = "local" # encrypted-zfs ne peut pas supporter autre chose que des vm
+  datastore_id = "local" # encrypted-zfs ne peut pas supporter autre chose que des vm, ne pas changer ça. ca va stocker les fichiers de cloud init
   node_name    = var.node_name
 
   source_raw {
     file_name = "${var.name}-user-data.yaml"
-    data = templatefile(var.user_data_template_path, {
-      ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path))),
-      hostname       = var.hostname
-    })
+    # On passe directement la string générée par le parent
+    data      = var.user_data_raw
   }
 }

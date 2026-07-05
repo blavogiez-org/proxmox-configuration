@@ -1,6 +1,6 @@
 # raccourci de liens vers le contenu brut du dépôt proxmox-gitops
 
-get.{{ domain }}:80 {
+http://get.{{ domain }} {
 	rewrite * /jobacogiez-org/proxmox-gitops/main{uri}
 
 	reverse_proxy https://raw.githubusercontent.com {
