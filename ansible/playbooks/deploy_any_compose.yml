@@ -44,7 +44,7 @@
 
     - name: avertir le cas de l'erreur openbao
       ansible.builtin.debug:
-        msg: "avertissement : Aucun secret n'a pu être retrouvé (il peut ne pas y en avoir pour le service voulu)"
+        msg: "AVERTISSEMENT : Aucun secret n'a pu être retrouvé (c'est peut etre normal, il peut ne pas y en avoir pour le service voulu)"
       when: openbao_fetch is failed
 
       # si il y a un probleme de token, tenter .bao-token plutot que .vault-token

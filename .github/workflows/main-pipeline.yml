@@ -93,6 +93,7 @@ jobs:
           - service: rasdaemon
           - service: template-vm
           - service: wgeasy
+          - service: gh-runner
     steps:
       - uses: actions/checkout@v4
 
@@ -108,15 +109,13 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
-      - name: Setup Ansible
+      - name: Vérifier l'environnement Ansible
         run: |
-          pipx install ansible-core || echo "Ansible déjà installé"
-          pipx inject ansible-core hvac
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          ansible-playbook --version
+          python -c "from importlib.metadata import version; print('hvac', version('hvac'))"
 
       - name: Install Ansible Collections(on a du docker compose community)
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           ansible-galaxy collection install -r ansible/requirements.yml
 
       #https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations
@@ -125,7 +124,6 @@ jobs:
         env:
           VAULT_TOKEN: ${{ secrets.BAO_TOKEN }}
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
             -i ansible/inventories/inventory.yml \
             ansible/playbooks/deploy_any_compose.yml \
