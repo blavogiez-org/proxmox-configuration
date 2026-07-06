@@ -36,57 +36,72 @@ jobs:
           dockerfile: Dockerfile
           recursive: true
 
-  terraform:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
+  list-services:
     runs-on: self-hosted
+    outputs:
+      services: ${{ steps.services.outputs.folders }}
     steps:
       - uses: actions/checkout@v4
+      - name: Liste des services
+        id: services
+        uses: philips-labs/list-folder-action@v3.0
+        with:
+          path: ./services
+
+  # terraform:
+  #   if: ${{ github.event_name == 'workflow_dispatch' }}
+  #   needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
+  #   runs-on: self-hosted
+  #   steps:
+  #     - uses: actions/checkout@v4
       
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        run: terraform -chdir=terraform/environments/production init
+  #     - name: Terraform Init
+  #       run: terraform -chdir=terraform/environments/production init
 
-      - name: Terraform Validate
-        run: terraform -chdir=terraform/environments/production validate
+  #     - name: Terraform Validate
+  #       run: terraform -chdir=terraform/environments/production validate
 
-      - name: setup du secret terraform tfvars (evite d'avoir trop de variables)
-        run: |
-          umask 077
-          cat > terraform/environments/production/ci.auto.tfvars <<'EOF'
-          ${{ secrets.TERRAFORM_TFVARS }}
-          EOF
+  #     - name: setup du secret terraform tfvars (evite d'avoir trop de variables)
+  #       run: |
+  #         umask 077
+  #         cat > terraform/environments/production/ci.auto.tfvars <<'EOF'
+  #         ${{ secrets.TERRAFORM_TFVARS }}
+  #         EOF
 
-      # un plan, pas encore de apply ou quoi, ce serait plus complexe et sera géré après, avec backend distant et étude d'autres outils
-      - name: Terraform Plan
-        run: |
-          terraform -chdir=terraform/environments/production plan -no-color
-      # dans tous les cas même après ça fonctionnera par un principe de PR, jamais de apply
+  #     # un plan, pas encore de apply ou quoi, ce serait plus complexe et sera géré après, avec backend distant et étude d'autres outils
+  #     - name: Terraform Plan
+  #       run: |
+  #         terraform -chdir=terraform/environments/production plan -no-color
+  #     # dans tous les cas même après ça fonctionnera par un principe de PR, jamais de apply
 
   ansible:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     # temporairement desac pour pas que les changements soient mix entre les deux infra, a faire post fork perso propre if: ${{ github.event_name == 'push' }}
-    needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
+    needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint, list-services ]
     runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - service: caddy
-            playbook: ansible/playbooks/deploy-caddy.yml
-            ssh_key_secret: CADDY_SSH_KEY
-          - service: cloudflared
-            playbook: ansible/playbooks/deploy-cloudflared.yml
-            ssh_key_secret: CLOUDFLARED_SSH_KEY
+        service: ${{ fromJSON(needs.list-services.outputs.services) }}
+        exclude:
+          - service: authentik
+          - service: base-vm
+          - service: kanboard
+          - service: nextcloud
+          - service: rasdaemon
+          - service: template-vm
+          - service: wgeasy
+          - service: gh-runner
     steps:
       - uses: actions/checkout@v4
 
       - name: "Setup SSH pour ${{ matrix.service }}"
         uses: webfactory/ssh-agent@v0.7.0
         with:
-          ssh-private-key: ${{ secrets[matrix.ssh_key_secret] }}
+          ssh-private-key: ${{ secrets.ANSIBLE_SSH_KEY }}
           log-public-key: false
 
       - name: Désactiver HostKeyChecking
@@ -95,19 +110,23 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
-      - name: Setup Ansible
+      - name: Vérifier l'environnement Ansible
         run: |
-          pipx install ansible-core || echo "Ansible déjà installé"
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          ansible-playbook --version
+          python -c "from importlib.metadata import version; print('hvac', version('hvac'))"
 
       - name: Install Ansible Collections(on a du docker compose community)
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
           ansible-galaxy collection install -r ansible/requirements.yml
 
       #https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations
-      # La matrix permet d'itérer une tâche ci / cd sur une liste. Dans notre cas c'est particulièrement utile pour traiter chaque service
+      # avec la matrix tous les services définis vont faire N déplooiements ansible
       - name: "Déploiement de ${{ matrix.service }}"
+        env:
+          VAULT_TOKEN: ${{ secrets.BAO_TOKEN }}
         run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventories/inventory.yml "${{ matrix.playbook }}"
+          ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
+            -i ansible/inventories/inventory.yml \
+            ansible/playbooks/deploy_any_compose.yml \
+            -e "host=${{ matrix.service }} target_service=${{ matrix.service }}"
+
