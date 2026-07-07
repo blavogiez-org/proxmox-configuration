@@ -9,7 +9,6 @@ module "minimal-backup" {
 module "gh-runner" {
   source = "../../../modules/vm"
 
-  hostname            = "gh-runner"
   name                = "gh-runner"
   username            = "admin"
   node_name           = var.node_name
@@ -77,7 +76,6 @@ module "caddy" {
 module "monitoring" {
   source = "../../../modules/vm"
 
-  hostname            = "monitoring"
   name                = "monitoring"
   username            = "admin"
   node_name           = var.node_name
@@ -104,7 +102,6 @@ module "monitoring" {
 module "komodo" {
   source = "../../../modules/vm"
 
-  hostname            = "komodo"
   name                = "komodo"
   username            = "admin"
   node_name           = var.node_name
@@ -149,7 +146,6 @@ module "cloudflared" {
 module "authentik" {
   source = "../../../modules/vm"
 
-  hostname            = "authentik"
   name                = "authentik"
   username            = "admin"
   node_name           = var.node_name
