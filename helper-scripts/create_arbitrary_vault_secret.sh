@@ -44,44 +44,22 @@ else
 fi
 
 
+while true 
+do
+    echo "nouveau tour de boucle (sortir avec ctrl c): "
+    read -r -p "Chemin du secret/service associé : " wished_path
+    echo ""
+    read -r -p "Clé : " wished_key
+    echo ""
+    read -r -s -p "Valeur : " wished_value
+    echo -e "\n"
+    echo "[INFO] Injection des secrets dans OpenBao en cours..."
 
-echo "--- Komodo Database ---"
-read -p "POSTGRES_USER : " komodo_db_user
-read -p "POSTGRES_DB : " komodo_db_name
-read -s -p "POSTGRES_PASSWORD : " komodo_db_pass
-echo -e "\n"
-
-echo "--- Komodo API ---"
-read -s -p "API_KEY : " komodo_api_key
-echo -e "\n"
-
-echo "--- Cloudflared ---"
-read -s -p "Tunnel Token : " cloudflared_token
-echo -e "\n"
-
-echo "--- Authentik ---"
-read -s -p "AUTHENTIK_SECRET_KEY : " authentik_secret
-echo ""
-read -s -p "POSTGRES_PASSWORD : " authentik_db_pass
-echo -e "\n"
-
-echo "[INFO] Injection des secrets dans OpenBao en cours..."
-
-bao kv put -mount=secret komodo \
-    POSTGRES_USER="$komodo_db_user" \
-    POSTGRES_DB="$komodo_db_name" \
-    POSTGRES_PASSWORD="$komodo_db_pass" \
-    API_KEY="$komodo_api_key" > /dev/null
-    
-
-bao kv put -mount=secret cloudflared \
-    tunnel_token="$cloudflared_token" > /dev/null
-
-bao kv put -mount=secret authentik \
-    AUTHENTIK_SECRET_KEY="$authentik_secret" \
-    POSTGRES_PASSWORD="$authentik_db_pass" > /dev/null
-
+    bao kv put -mount=secret "$wished_path" \
+        "${wished_key}=${wished_value}"
+done
 echo "[SUCCESS] Opération terminée. Tous les secrets ont été injectés."
 echo "quelques tests qu'on fait à la fin, commenter pour désactiver"
 bao secrets list 
+
 echo "si ca ne va pas, regardez dans l'ui à $BAO_ADDR"
