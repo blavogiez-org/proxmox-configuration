@@ -28,10 +28,10 @@ variable "target_datastore_id" {
   default= "encrypted-zfs"
 }
 
-variable "hostname" {
-  type = string 
-  default = "hostname-a-remplacer-alloy-en-a-besoin"
-}
+# variable "hostname" {
+#   type = string 
+#   default = "hostname-a-remplacer-alloy-en-a-besoin"
+# }
 
 variable "network_gateway" {
   type = string

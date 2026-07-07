@@ -41,3 +41,4 @@ dummy-service/
 .env
 
 settings.yml
+*fork_addition*

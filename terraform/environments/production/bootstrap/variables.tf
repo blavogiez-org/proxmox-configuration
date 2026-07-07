@@ -17,15 +17,9 @@ variable "proxmox_insecure" {
 
 variable "node_name" {
   description = "Nom du PVE / hostname"
-  type = string 
+  type        = string
   # pas de défaut pour pas semer la confusion
 }
-
-variable "target_datastore_id" {
-  description = "disque utilisé par la VM/LXC. Utiliser de préférence du ZFS raid1 avec redondance, et chiffré si possible"
-  type = string 
-}
-
 
 variable "proxmox_ssh_username" {
   description = "Utilisateur SSH sur le node Proxmox. Requis pour uploader les snippets/hook scripts."
@@ -46,5 +40,5 @@ variable "ssh_public_key_path" {
 
 variable "storage" {
   description = "disque utilisé par la VM/LXC. Utiliser de préférence du ZFS raid1 avec redondance, et chiffré si possible"
-  type = string
+  type        = string
 }
