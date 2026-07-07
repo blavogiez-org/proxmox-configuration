@@ -7,7 +7,7 @@ https://192.168.10.15 {
     # tls internal en attendant, ensuite on fera des certificats publics
     tls internal
 
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
+    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24 192.168.1.139
 
     handle @vpn_only {
         reverse_proxy openbao:8200

@@ -29,7 +29,7 @@ export BAO_ADDR="https://192.168.10.15"
 export BAO_SKIP_VERIFY=true
 
 echo "--- connectez vous à openbao avec le token qui est demandé ---"
-bao login 
+bao login -no-print 
 # il affiche le token ce qui est un peu chiant, on peut faire ça aussi
 # bao login no-print
 # et éventuellement no store 

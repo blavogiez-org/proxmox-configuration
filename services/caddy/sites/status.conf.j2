@@ -1,13 +1,13 @@
-http://status.{{ domain }} {
-    reverse_proxy 192.168.10.14:3000 {
+https://status.{{ domain }} {
+    reverse_proxy 192.168.10.14:8080 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-Proto https
     }
 }
 
-http://gatus.{{ domain }} {
-    reverse_proxy 192.168.10.14:3000 {
+https://gatus.{{ domain }} {
+    reverse_proxy 192.168.10.14:8080 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-Proto https
