@@ -21,6 +21,18 @@
         rcode NOERROR
     }
 
+    template IN HTTPS priv.{{ domain }} {
+        # les navigateurs modernes utilisent HTTPS/SVCB et peuvent sinon récupérer les hints Cloudflare
+        match .*
+        rcode NOERROR
+    }
+
+    template IN SVCB priv.{{ domain }} {
+        # idem HTTPS : on évite de forwarder ces hints publics pour les noms privés
+        match .*
+        rcode NOERROR
+    }
+
     # 1.1.1.1 = cloudflare et 8.8.8.8 = google 
     forward . 1.1.1.1 1.0.0.1 8.8.8.8
     cache 30

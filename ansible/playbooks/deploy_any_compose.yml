@@ -39,6 +39,7 @@
           }}
       # pour debug on peut enlever no log
       no_log: true
+      ignore_errors: true
       # si il y a un probleme de token, tenter .bao-token plutot que .vault-token
     # cette tache évite la redondance pour la configuration des sites regardés en générant la configuration à partir des sites de Caddy
     # j'ai essayé avec des spotters de certs (= surveiller les sous domaines d'un domaine) mais c'est en retard sur la réalité
@@ -96,4 +97,3 @@
         state: restarted
       when:
         - target_remote_stack.changed or target_templates.changed
-        - not target_compose.changed

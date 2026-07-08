@@ -1,6 +1,6 @@
 # Infrastructure d'administration du PVE
 
-## 1. Sous-réseaux de machines virtuelles
+## 1. Sous-réseaux de machines virtuelles
 
 Ces sous-réseaux seront le coeur des services hébergés sur Proxmox. Ils sont isolés et injoignables par le reste du réseau privé.
 Ils sont [décrits dans le dossier terraform](terraform/environments/production/main.tf) sous forme de SDN Proxmox (en gros, un framework/abstraction réseau)
@@ -18,7 +18,7 @@ Ce sont ces bridges qui une fois associés aux VMs permettent le trafic réseau
 
 Ce découpage en sous-réseau permet de protéger facilement les plages par pare-feu/VPN.
 
-## 2. VPN Wireguard
+## 2. VPN Wireguard
 
 Une fois les sous-réseaux créés/compris, l'objectif sera d'y avoir accès, depuis n'importe où, de façon sécurisée. 
 
@@ -28,7 +28,7 @@ Voir les liens suivants pour l'installation :
 - https://wg-easy.github.io/wg-easy/latest/examples/tutorials/basic-installation/
 - https://github.com/wg-easy/wg-easy
 
-## Variables utilisées
+## Variables utilisées
 
 Dans cette procédure d'installation de Wireguard, les variables suivantes représentent :
 - `192.168.1.100` le root PVE central, accessible en réseau domestique
@@ -44,21 +44,21 @@ Dans le dépôt est décrit une configuration `docker-compose` paramétrée pour
 Cf [Docker compose](../services/wgeasy/docker-compose.yml)
 
 
-### Création d'un Client
+### Création d'un Client
 
 #### Configuration Wireguard
 
 Se rendre sur "http://192.168.1.100:51821", et créer un compte admin.
 
-##### Configuration globale
+##### Configuration globale
 
 ![Configuration globale admin](assets/infra/image-3.png)
 
-##### Configuration spécifique
+##### Configuration spécifique
 
 ![Configuration client](assets/infra/image-2.png)
 
-### Accès public
+### Accès public
 
 L'objectif est ici d'accéder aux réseaux isolés depuis un PC connecté sur n'importe quel réseau dans le mode.
 
@@ -76,15 +76,15 @@ Ensuite, on met l'adresse de notre box avec le port, par exemple `12.34.56.78:28
 
 **Attention, il faut uniquement exposer le port 51820 qui est en UDP et aucun autre port, surtout pas le port 51821 qui est l'UI Wireguard. Et de façon plus large, il faut exposer le moins de ports en public.**
 
-### Chaîne finale
+### Chaîne finale
 
 Le VPN contacterait alors `12.34.56.78:28820`, qui contacte le root PVE central.
 
-### Connexion par un client
+### Connexion par un client
 
 Le client ajoutera son VPN, soit graphiquement, soit par CLI
 
-#### Télécharger la configuration fichier
+#### Télécharger la configuration fichier
 
 Du panneau Admin, on télécharge la configuration, puis on la transmet à la personne voulue.
 La transmission doit être sécurisée car la configuration contient une clé privée.
@@ -92,7 +92,7 @@ La transmission doit être sécurisée car la configuration contient une clé pr
 
 ![Téléchargement configuration Fichier](assets/infra/image-6.png)
 
-#### Soit graphiquement
+#### Soit graphiquement
 
 Ici réalisé sur Debian qui l'intègre nativement, configuration universelle avec Wireguard.
 
@@ -106,7 +106,7 @@ nmcli connection import type wireguard file ~/Downloads/PVE1-blavogiez.conf
 nmcli connection up PVE1-blavogiez
 ```
 
-#### Résultat
+#### Résultat
 
 ![Détail après ajout](assets/infra/image-5.png)
 

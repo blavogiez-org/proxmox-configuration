@@ -8,7 +8,7 @@ http://get.{{ domain }} {
 	}
 }
 
-http://get.priv.{{ domain }} {
+https://get.priv.{{ domain }} {
 	rewrite * /jobacogiez-org/proxmox-gitops/main{uri}
 
 	reverse_proxy https://raw.githubusercontent.com {
