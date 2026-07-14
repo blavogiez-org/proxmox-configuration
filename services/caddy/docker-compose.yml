@@ -1,7 +1,7 @@
 services:
   caddy:
     container_name: caddy
-    image: caddy-ratelimit:local
+    image: caddy-ratelimit-cloudflare:local
     build:
       context: .
     restart: unless-stopped

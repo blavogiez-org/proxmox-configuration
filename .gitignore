@@ -50,7 +50,10 @@ settings.yml
 services/kanboard
 services/nextcloud
 services/vaultwarden
-# soit leur config terraform, nommée comme ci :
+# soit leur config terraform / ansible, nommée comme ci :
 additions_fork.tf
+additions_fork.yml
 # le reste des modifications est censé être utile au dépôt commun, sinon l'ignorer ici :
 
+settings.yml
+*fork_addition*

@@ -1,4 +1,4 @@
-http://komodo.priv.{{ domain }} {
+https://komodo.priv.{{ domain }} {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
@@ -16,7 +16,7 @@ http://komodo.priv.{{ domain }} {
     }
 }
 
-http://komodo.{{ domain }} {
+https://komodo.{{ domain }} {
     reverse_proxy 172.16.10.11:9120 {
         header_up Host {host}
         header_up X-Real-IP {remote_host}
@@ -24,7 +24,7 @@ http://komodo.{{ domain }} {
     }
 }
 
-http://*.{{ domain }} {
+https://*.{{ domain }} {
     # Catch-all pour toutes les applications déployées sur Komodo
     # Ce bloc reste public pour permettre l'accès aux sites web
     reverse_proxy 172.16.10.11:80 {
