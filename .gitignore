@@ -37,8 +37,23 @@ Thumbs.db
 build/
 .vscode/
 
+# test temporaire
 dummy-service/
 .env
+tmp.txt
+tmpdir/
+
+# pour commit, on va généralement sur les dépôts fork (notamment car les runners sont actifs, c'est les fork qui font la vérité d'une infra personnelle) et on revient merge sur le dépôt commun les changements utiles
+# ici va  donc ignorer les additions personnelles du fork pour faciliter les merge. Les ajouts d'un fork suivent une norme :
+settings.yml
+# soit des nouveaux services qui ne doivent pas être dans la base commune ;
+services/kanboard
+services/nextcloud
+services/vaultwarden
+# soit leur config terraform / ansible, nommée comme ci :
+additions_fork.tf
+additions_fork.yml
+# le reste des modifications est censé être utile au dépôt commun, sinon l'ignorer ici :
 
 settings.yml
 *fork_addition*

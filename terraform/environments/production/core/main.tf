@@ -19,9 +19,9 @@ module "gh-runner" {
   ssh_public_key_path = var.ssh_public_key_path
   target_datastore_id = var.storage
 
-  cpu       = 2
-  memory    = 2048
-  disk_size = 10
+  cpu       = 4
+  memory    = 8192
+  disk_size = 40
 
   bridge = "prvvnet1"
 

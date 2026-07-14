@@ -12,7 +12,7 @@ all:
       ansible_host: 192.168.10.14
     vault:
       ansible_host: 192.168.10.15
-    vaultwarden:
-      ansible_host: 192.168.10.17
     komodo: 
       ansible_host: 172.16.10.11
+    cloudflared:
+      ansible_host: 172.16.10.12

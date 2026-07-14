@@ -36,6 +36,7 @@ jobs:
           dockerfile: Dockerfile
           recursive: true
 
+  # on a besoin d'une liste au format JSON pour la matrix github actions, et cette action déjà faite le permet
   list-services:
     runs-on: self-hosted
     outputs:
@@ -129,4 +130,3 @@ jobs:
             -i ansible/inventories/inventory.yml \
             ansible/playbooks/deploy_any_compose.yml \
             -e "host=${{ matrix.service }} target_service=${{ matrix.service }}"
-
