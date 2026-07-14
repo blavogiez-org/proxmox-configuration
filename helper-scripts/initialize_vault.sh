@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# alternative au script et bien pour comprendre : aller dans l'UI
+
 # toujours y accéder en TLS 
 export BAO_ADDR="https://192.168.10.15:80"
 

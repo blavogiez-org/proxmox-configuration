@@ -1,4 +1,6 @@
-# approche bourrin avec 3 conteneurs en attendant de déployer le helm clean
+# approche bourrin avec 3 conteneurs en attendant de déployer le helm clean. 
+# C'est peut etre une approche à privilégier pour les machines peu puissantes / pour déployer rapidement avec un compose simple 
+# pour obtenir un GH Token allez sur (pour le depot voulu, nous c'est) : https://github.com/jobacogiez-org/proxmox-gitops/settings/actions/runners puis "new self-hosted runner "
 services:
   containerized-runner-1:
     image: local/github-runner:ubuntu-noble-ansible
