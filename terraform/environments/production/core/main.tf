@@ -9,7 +9,6 @@ module "minimal-backup" {
 module "gh-runner" {
   source = "../../../modules/vm"
 
-  hostname            = "gh-runner"
   name                = "gh-runner"
   username            = "admin"
   node_name           = var.node_name
@@ -20,9 +19,9 @@ module "gh-runner" {
   ssh_public_key_path = var.ssh_public_key_path
   target_datastore_id = var.storage
 
-  cpu       = 2
-  memory    = 2048
-  disk_size = 10
+  cpu       = 4
+  memory    = 8192
+  disk_size = 40
 
   bridge = "prvvnet1"
 
@@ -77,7 +76,6 @@ module "caddy" {
 module "monitoring" {
   source = "../../../modules/vm"
 
-  hostname            = "monitoring"
   name                = "monitoring"
   username            = "admin"
   node_name           = var.node_name
@@ -104,7 +102,6 @@ module "monitoring" {
 module "komodo" {
   source = "../../../modules/vm"
 
-  hostname            = "komodo"
   name                = "komodo"
   username            = "admin"
   node_name           = var.node_name
@@ -149,7 +146,6 @@ module "cloudflared" {
 module "authentik" {
   source = "../../../modules/vm"
 
-  hostname            = "authentik"
   name                = "authentik"
   username            = "admin"
   node_name           = var.node_name

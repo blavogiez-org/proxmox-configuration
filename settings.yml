@@ -1,0 +1,9 @@
+domain: "blavogiez.fr"
+timezone: "Europe/Paris"
+admin_user: "admin"
+
+proxmox:
+  endpoint: "https://192.168.1.100:8006/api2/json"
+  node: "pve1"
+  storage: "encrypted-zfs"
+  ssh_user: "root"

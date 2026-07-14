@@ -55,6 +55,10 @@ echo "--- Komodo API ---"
 read -s -p "API_KEY : " komodo_api_key
 echo -e "\n"
 
+echo "--- Proxmox GitOps ---"
+read -s -p "Token API Proxmox complet (user@realm!token-id=secret) : " proxmox_api_token
+echo -e "\n"
+
 echo "--- Cloudflared ---"
 read -s -p "Tunnel Token : " cloudflared_token
 echo -e "\n"
@@ -65,6 +69,14 @@ echo ""
 read -s -p "POSTGRES_PASSWORD : " authentik_db_pass
 echo -e "\n"
 
+echo "--- Grafana ---"
+read -s -p "Mot de passe administrateur : " grafana_admin_password
+echo -e "\n"
+
+echo "--- Prometheus PVE Exporter ---"
+read -s -p "Valeur du token API Proxmox : " pve_exporter_token_value
+echo -e "\n"
+
 echo "[INFO] Injection des secrets dans OpenBao en cours..."
 
 bao kv put -mount=secret komodo \
@@ -72,17 +84,28 @@ bao kv put -mount=secret komodo \
     POSTGRES_DB="$komodo_db_name" \
     POSTGRES_PASSWORD="$komodo_db_pass" \
     API_KEY="$komodo_api_key" > /dev/null
-    
+
+bao kv put -mount=secret proxmox-gitops \
+    proxmox_api_token="$proxmox_api_token" > /dev/null
 
 bao kv put -mount=secret cloudflared \
     tunnel_token="$cloudflared_token" > /dev/null
 
 bao kv put -mount=secret authentik \
-    AUTHENTIK_SECRET_KEY="$authentik_secret" \
-    POSTGRES_PASSWORD="$authentik_db_pass" > /dev/null
+    secret_key="$authentik_secret" \
+    pg_pass="$authentik_db_pass" > /dev/null
+
+bao kv put -mount=secret grafana \
+    admin_password="$grafana_admin_password" > /dev/null
+
+bao kv put -mount=secret pve_exporter \
+    token_value="$pve_exporter_token_value" > /dev/null
 
 echo "[SUCCESS] Opération terminée. Tous les secrets ont été injectés."
 echo "quelques tests qu'on fait à la fin, commenter pour désactiver"
 bao secrets list 
-bao kv get -mount=secret authentik
+for secret_path in komodo proxmox-gitops cloudflared authentik grafana pve_exporter; do
+    bao kv metadata get -mount=secret "$secret_path" > /dev/null
+    echo "[SUCCESS] secret/$secret_path"
+done
 echo "si ca ne va pas, regardez dans l'ui à $BAO_ADDR"
