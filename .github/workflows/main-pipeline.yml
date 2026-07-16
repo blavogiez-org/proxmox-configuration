@@ -2,8 +2,7 @@ name: "Mise à jour de l'infra"
 
 on:
   push:
-    branches:
-      - main
+  pull_request:
   workflow_dispatch:
 
 
@@ -36,19 +35,6 @@ jobs:
           dockerfile: Dockerfile
           recursive: true
 
-  # on a besoin d'une liste au format JSON pour la matrix github actions, et cette action déjà faite le permet
-  list-services:
-    runs-on: self-hosted
-    outputs:
-      services: ${{ steps.services.outputs.folders }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Liste des services
-        id: services
-        uses: philips-labs/list-folder-action@v3.0
-        with:
-          path: ./services
-
   # terraform:
   #   if: ${{ github.event_name == 'workflow_dispatch' }}
   #   needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
@@ -78,11 +64,26 @@ jobs:
   #         terraform -chdir=terraform/environments/production plan -no-color
   #     # dans tous les cas même après ça fonctionnera par un principe de PR, jamais de apply
 
+  # on a besoin d'une liste au format JSON pour la matrix github actions, et cette action déjà faite le permet
+  list-services:
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/perso'
+    runs-on: self-hosted
+    outputs:
+      services: ${{ steps.services.outputs.folders }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Liste des services
+        id: services
+        uses: philips-labs/list-folder-action@v3.0
+        with:
+          path: ./services
+
   ansible:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/perso'
     # temporairement desac pour pas que les changements soient mix entre les deux infra, a faire post fork perso propre if: ${{ github.event_name == 'push' }}
     needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint, list-services ]
     runs-on: self-hosted
+
     strategy:
       fail-fast: false
       matrix:
