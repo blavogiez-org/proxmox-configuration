@@ -1,18 +1,42 @@
-# Dans komodo, on crée une description de dépôt git, puis resource sync qui se base sur ce dépôt et on copie le lien webhook "sync" dans Github (avec le payload format json)
-# Ensuite tout se déploit automatiquement selon ce fichier. pour les domaines dynamiques, on peut le décrire dans les labels du conteneur et traefik va le chercher
+[[procedure]]
+name = "automatic-sync"
+
+[procedure.config]
+schedule_format = "Cron"
+schedule = "0 * * * * ?"
+schedule_enabled = true
+schedule_timezone = "Europe/Paris"
+schedule_alert = false
+failure_alert = true
+webhook_enabled = false
+
+[[procedure.config.stage]]
+name = "sync le depot"
+enabled = true
+
+executions = [
+  {
+    execution.type = "RunSync",
+    execution.params.sync = "proxmox-configuration-sync",
+    enabled = true
+  }
+]
+
 [[stack]]
-# faire gaffe au nommage des stacks, les "." se transforment en "_", donc mieux vaut éviter
 name = "kanboard"
 deploy = true
 
 [stack.config]
 server = "Local"
 git_provider = "github.com"
+git_account = ""
 repo = "blavogiez-org/proxmox-configuration"
 branch = "perso"
 clone_path = "/etc/komodo/stacks/kanboard"
 run_directory = "/etc/komodo/stacks/kanboard/services/kanboard"
 file_paths = ["docker-compose.yml"]
+webhook_enabled = false
+auto_pull = true
 
 [stack.config.pre_deploy]
 command = """
