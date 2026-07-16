@@ -60,8 +60,10 @@ read -s -p "Token API Proxmox complet (user@realm!token-id=secret) : " proxmox_a
 echo -e "\n"
 
 echo "--- Cloudflared ---"
-read -s -p "Tunnel Token : " cloudflared_token
-echo -e "\n"
+read -r -p "Tunnel UUID : " cloudflared_tunnel_id
+read -r -p "Chemin du fichier de credentials (<UUID>.json) : " cloudflared_credentials_file
+cloudflared_credentials_json="$(< "$cloudflared_credentials_file")"
+echo
 
 echo "--- Authentik ---"
 read -s -p "AUTHENTIK_SECRET_KEY : " authentik_secret
@@ -89,7 +91,8 @@ bao kv put -mount=secret proxmox-gitops \
     proxmox_api_token="$proxmox_api_token" > /dev/null
 
 bao kv put -mount=secret cloudflared \
-    tunnel_token="$cloudflared_token" > /dev/null
+    tunnel_id="$cloudflared_tunnel_id" \
+    credentials_json="$cloudflared_credentials_json" > /dev/null
 
 bao kv put -mount=secret authentik \
     secret_key="$authentik_secret" \

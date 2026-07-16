@@ -1,8 +1,0 @@
-tunnel: ${TUNNEL_ID}
-credentials-file: /etc/cloudflared/credentials.json
-
-ingress:
-  - hostname: "*.${DOMAIN}"
-    service: https://192.168.10.13
-
-  - service: http_status:404
