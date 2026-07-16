@@ -1,10 +1,13 @@
-# prive, n'interagit pas avec l'exterieur (no webhook)
-https://komodo.priv.{{ domain }} {
+https://blavogiez.fr {
+    reverse_proxy https://blavogiez.github.io
+}
+
+https://vaultwarden.priv.{{ domain }} {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
     handle @vpn_only {
-        reverse_proxy 172.16.10.11:9120
+        reverse_proxy http://192.168.10.17:8000
     }
 
     # Bloqué pour tout le reste
@@ -13,25 +16,17 @@ https://komodo.priv.{{ domain }} {
     }
 }
 
-https://*.{{ domain }} {
-    # Catch-all pour toutes les applications déployées sur Komodo
-    # Ce bloc reste public pour permettre l'accès aux sites web
-    reverse_proxy 172.16.10.11:80
-}
-
-https://*.priv.{{ domain }} {
+https://nextcloud.priv.{{ domain }} {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
     handle @vpn_only {
-        reverse_proxy 172.16.10.11:80
+        reverse_proxy 172.16.10.13:8080
     }
 
-    # Bloqué pour tout le reste (même si de toute façon le dns priv modifié est meme pas dispo au public)
+    # Bloqué pour tout le reste
     handle {
         respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
     }
 }
-
-
 

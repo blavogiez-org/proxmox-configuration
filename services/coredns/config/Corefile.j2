@@ -2,7 +2,7 @@
 # réalisé selon
 # https://coredns.io/plugins/
 # https://coredns.io/plugins/template/
-# Tout ce qui est priv.DOMAIN ira à Caddy, et cela permettra de ne pas utiliser Internet pour que l'IP VPN soit gardée, et donc pour restreindre l'accès à des sites comme vault.priv.blavogiez.fr par exemple
+# Tout ce qui est priv.DOMAIN ira à Caddy, et cela permettra de ne pas utiliser Internet (impliquant NAT) pour que l'IP VPN soit gardée, et donc pour restreindre l'accès à des sites comme vault.priv.blavogiez.fr par exemple
 
 .:53 {
     errors

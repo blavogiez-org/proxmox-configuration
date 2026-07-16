@@ -92,7 +92,6 @@ jobs:
           - service: authentik
           - service: base-vm
           - service: kanboard
-          - service: nextcloud
           - service: rasdaemon
           - service: template-vm
           - service: wgeasy
