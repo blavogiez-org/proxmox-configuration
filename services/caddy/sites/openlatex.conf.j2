@@ -1,4 +1,14 @@
-https://openlatex-api.priv.{{ domain }} {
+https://openlatex.{{ domain }} {
+    reverse_proxy 172.16.10.51:80
+}
+
+# (le meme que openlatex.domain c'est juste plus équivoque)
+https://openlatex-prod.{{ domain }} {
+    reverse_proxy 172.16.10.51:80
+}
+
+# redirige vers le namespace kubernetes openlatex-dev (branches de features) pour test. L'ingress kube absorbera ce domaine spécifique et redirigera vers le service namespace dev
+https://openlatex-dev.priv.{{ domain }} {
     # Whitelist : VPN + Réseau Admin local
     @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
     
