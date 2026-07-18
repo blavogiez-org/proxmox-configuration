@@ -1,0 +1,15 @@
+tunnel: {{ vault.cloudflared.tunnel_id }}
+credentials-file: /etc/cloudflared/credentials.json
+
+ingress:
+  - hostname: "{{ domain }}"
+    service: https://192.168.10.13
+    originRequest:
+      originServerName: "{{ domain }}"
+  
+  - hostname: "*.{{ domain }}"
+    service: https://192.168.10.13
+    originRequest:
+      originServerName: "{{ domain }}"
+
+  - service: http_status:404

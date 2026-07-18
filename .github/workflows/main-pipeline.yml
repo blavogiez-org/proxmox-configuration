@@ -78,15 +78,43 @@ jobs:
   #         terraform -chdir=terraform/environments/production plan -no-color
   #     # dans tous les cas même après ça fonctionnera par un principe de PR, jamais de apply
 
+  # que sur branche perso(fork)
+  services-to-deploy:
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso'
+    runs-on: self-hosted
+    needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
+    outputs:
+      services: ${{ github.event_name == 'workflow_dispatch' && steps.services.outputs.folders || steps.changed.outputs.all_changed_files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      # cas du déclenchement à la main (= prend meme ce qui a pas changé)
+      - name: Liste des services
+        id: services
+        uses: philips-labs/list-folder-action@v3.0
+        with:
+          path: ./services
+      - id: changed
+        if: github.event_name != 'workflow_dispatch'
+        uses: tj-actions/changed-files@v47
+        with:
+          path: services
+          dir_names: true
+          dir_names_max_depth: 1
+          matrix: true
+
+  # que sur branche perso(fork)
   ansible:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    # temporairement desac pour pas que les changements soient mix entre les deux infra, a faire post fork perso propre if: ${{ github.event_name == 'push' }}
-    needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint, list-services ]
+    if: ${{ (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso') && needs.services-to-deploy.outputs.services != '[]' }}
+    # donc need indirectement Checkov tflint hadolint
+    needs: [ services-to-deploy ]
     runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:
-        service: ${{ fromJSON(needs.list-services.outputs.services) }}
+        # itération sur tous les services qui ont changé dans le dernier commit (ou tous si le workflow est lancé à la main). ca déploie que ce qui a changé, ça accélère grandement
+        service: ${{ fromJSON(needs.services-to-deploy.outputs.services) }}
         exclude:
           - service: authentik
           - service: base-vm
@@ -95,7 +123,7 @@ jobs:
           - service: rasdaemon
           - service: template-vm
           - service: wgeasy
-          - service: gh-runner
+          - service: gh-runner-compose
     steps:
       - uses: actions/checkout@v4
 
