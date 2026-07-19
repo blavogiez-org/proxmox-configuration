@@ -11,21 +11,21 @@ permissions:
   
 jobs:
   static-analysis-checkov:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest 
     steps:
       - uses: actions/checkout@v4
       - name: Analyse checkov
         run: docker run --rm -v "$PWD:/repo" bridgecrew/checkov:2 -d /repo --quiet
 
   static-analysis-tflint:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Analyse TFLint
         run: docker run --rm -v "$PWD:/repo" -w /repo ghcr.io/terraform-linters/tflint:latest --recursive
 
   static-analysis-hadolint:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Analyse Hadolint
