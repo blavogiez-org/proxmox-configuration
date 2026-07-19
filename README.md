@@ -8,6 +8,8 @@ Notre projet commun a vocation à être la source commune de nos infrastructures
 
 Puisque le dépôt doit être public, et pour que les workflows le soient aussi, nous restons sur GitHub par simplicité. 
 
+**Pour des raisons de sécurité vis-à-vis des runners auto-hébergés, les dépôts fork n'autorisent pas de PR (un run non autorisé pourrait être une introduction sur le réseau privé au PVE). Pour faire une PR en n'étant pas membre, il faut la faire sur le dépôt commun (il n'a aucun runner privé rattaché).** 
+
 Ce projet privilégie une approche Infrastructure as Code et similaire aux principes GitOps.
 
 ### Réalisé par
