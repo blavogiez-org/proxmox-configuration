@@ -131,12 +131,13 @@ module "terraform-backend" {
   ssh_public_key_path = var.ssh_public_key_path
   target_datastore_id = var.storage
 
-  cpu       = 2
-  memory    = 2048
-  disk_size = 50
+  cpu       = 1
+  # +500Mi pour etre large
+  memory    = 2560
+  disk_size = 15
 
   bridge = "prvvnet1"
-  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/terraform-backend/cloud-init.yml", {
     hostname       = "terraform-backend"
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
