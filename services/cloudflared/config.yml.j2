@@ -1,7 +1,14 @@
 tunnel: {{ vault.cloudflared.tunnel_id }}
 credentials-file: /etc/cloudflared/credentials.json
+protocol: http2
 
 ingress:
+  - hostname: "priv.{{ domain }}"
+    service: http_status:403
+
+  - hostname: "*.priv.{{ domain }}"
+    service: http_status:403
+
   - hostname: "{{ domain }}"
     service: https://192.168.10.13
     originRequest:
