@@ -12,12 +12,12 @@ module "vmtropbien" {
   target_datastore_id = var.storage
 
   cpu       = 1
-  memory    = 1024
+  memory    = 2560
   disk_size = 10
 
   bridge = "prvvnet1"
   user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
     hostname       = "vmtropbien"
-    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
+    ssh_public_key = trimspace(file(pathexpand("/tmp/urandomhead2")))
   })
 }
