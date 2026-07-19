@@ -18,6 +18,6 @@ module "vmtropbien" {
   bridge = "prvvnet1"
   user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
     hostname       = "vmtropbien"
-    ssh_public_key = trimspace(file(pathexpand("/tmp/urandomhead2")))
+    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
 }
