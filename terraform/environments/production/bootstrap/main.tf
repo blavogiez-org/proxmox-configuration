@@ -115,3 +115,29 @@ module "vault" {
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
 }
+
+# backend distant pour terraform notamment (Le state ne sera plus stocké en local)
+# https://github.com/Clivern/Lynx
+module "terraform-backend" {
+  source = "../../../modules/vm"
+
+  name                = "terraform-backend"
+  username            = "admin"
+  node_name           = var.node_name
+  vm_id               = 118
+  vm_template_id      = 9000
+  vm_ip               = "192.168.10.18"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+  target_datastore_id = var.storage
+
+  cpu       = 2
+  memory    = 2048
+  disk_size = 50
+
+  bridge = "prvvnet1"
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
+    hostname       = "terraform-backend"
+    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
+  })
+}
