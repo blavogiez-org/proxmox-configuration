@@ -2,7 +2,6 @@ name: "Linters (ce dépôt commun ne déploie rien + runners publics)"
 
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 
@@ -34,3 +33,113 @@ jobs:
         with:
           dockerfile: Dockerfile
           recursive: true
+
+  # terraform:
+  #   if: ${{ github.event_name == 'workflow_dispatch' }}
+  #   needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
+  #   runs-on: self-hosted
+  #   steps:
+  #     - uses: actions/checkout@v4
+      
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v3
+
+  #     - name: Terraform Init
+  #       run: terraform -chdir=terraform/environments/production init
+
+  #     - name: Terraform Validate
+  #       run: terraform -chdir=terraform/environments/production validate
+
+  #     - name: setup du secret terraform tfvars (evite d'avoir trop de variables)
+  #       run: |
+  #         umask 077
+  #         cat > terraform/environments/production/ci.auto.tfvars <<'EOF'
+  #         ${{ secrets.TERRAFORM_TFVARS }}
+  #         EOF
+
+  #     # un plan, pas encore de apply ou quoi, ce serait plus complexe et sera géré après, avec backend distant et étude d'autres outils
+  #     - name: Terraform Plan
+  #       run: |
+  #         terraform -chdir=terraform/environments/production plan -no-color
+  #     # dans tous les cas même après ça fonctionnera par un principe de PR, jamais de apply
+
+  # que sur branche perso(fork)
+  services-to-deploy:
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso'
+    runs-on: self-hosted
+    needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
+    outputs:
+      services: ${{ github.event_name == 'workflow_dispatch' && steps.services.outputs.folders || steps.changed.outputs.all_changed_files }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      # cas du déclenchement à la main (= prend meme ce qui a pas changé)
+      - name: Liste des services
+        id: services
+        uses: philips-labs/list-folder-action@v3.0
+        with:
+          path: ./services
+      - id: changed
+        if: github.event_name != 'workflow_dispatch'
+        uses: tj-actions/changed-files@v47
+        with:
+          path: services
+          dir_names: true
+          dir_names_max_depth: 1
+          matrix: true
+
+  # que sur branche perso(fork)
+  ansible:
+    if: ${{ (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso') && needs.services-to-deploy.outputs.services != '[]' }}
+    # donc need indirectement Checkov tflint hadolint
+    needs: [ services-to-deploy ]
+    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        # itération sur tous les services qui ont changé dans le dernier commit (ou tous si le workflow est lancé à la main). ca déploie que ce qui a changé, ça accélère grandement
+        service: ${{ fromJSON(needs.services-to-deploy.outputs.services) }}
+        exclude:
+          - service: authentik
+          - service: base-vm
+          - service: kanboard
+          - service: nextcloud
+          - service: rasdaemon
+          - service: template-vm
+          - service: wgeasy
+          - service: gh-runner-compose
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Setup SSH pour ${{ matrix.service }}"
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.ANSIBLE_SSH_KEY }}
+          log-public-key: false
+
+      - name: Désactiver HostKeyChecking
+        run: |
+          mkdir -p ~/.ssh
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      - name: Vérifier l'environnement Ansible
+        run: |
+          ansible-playbook --version
+          python -c "from importlib.metadata import version; print('hvac', version('hvac'))"
+
+      - name: Install Ansible Collections(on a du docker compose community)
+        run: |
+          ansible-galaxy collection install -r ansible/requirements.yml
+
+      #https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations
+      # avec la matrix tous les services définis vont faire N déplooiements ansible
+      - name: "Déploiement de ${{ matrix.service }}"
+        env:
+          VAULT_TOKEN: ${{ secrets.BAO_TOKEN }}
+        run: |
+          ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
+            -i ansible/inventories/inventory.yml \
+            ansible/playbooks/deploy_any_compose.yml \
+            -e "host=${{ matrix.service }} target_service=${{ matrix.service }}"
