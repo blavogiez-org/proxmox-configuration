@@ -16,9 +16,8 @@ https://openlatex-dev.{{ domain }} {
 
 # redirige vers le namespace kubernetes openlatex-dev (branches de features) pour test. L'ingress kube absorbera ce domaine spécifique et redirigera vers le service namespace dev
 https://openlatex-dev.priv.{{ domain }} {
-    # Whitelist : VPN + Réseau Admin local
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
-    
+
+    @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
         reverse_proxy 172.16.10.51:80
     }

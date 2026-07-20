@@ -3,9 +3,8 @@ https://blavogiez.fr {
 }
 
 https://vaultwarden.priv.{{ domain }} {
-    # Whitelist : VPN + Réseau Admin local
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
-    
+
+    @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
         reverse_proxy http://192.168.10.17:8000
     }
@@ -17,9 +16,8 @@ https://vaultwarden.priv.{{ domain }} {
 }
 
 https://nextcloud.priv.{{ domain }} {
-    # Whitelist : VPN + Réseau Admin local
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
-    
+
+    @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
         reverse_proxy 172.16.10.13:8080
     }
@@ -31,9 +29,8 @@ https://nextcloud.priv.{{ domain }} {
 }
 
 https://authentik.priv.{{ domain }} {
-    # Whitelist : VPN + Réseau Admin local
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
-    
+
+    @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
         reverse_proxy 192.168.10.16:9000
     }
@@ -45,9 +42,8 @@ https://authentik.priv.{{ domain }} {
 }
 
 https://ck-x.priv.{{ domain }} {
-    # Whitelist : VPN + Réseau Admin local
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
-    
+
+    @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
         reverse_proxy 172.16.10.91:30080
     }
@@ -57,4 +53,3 @@ https://ck-x.priv.{{ domain }} {
         respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
     }
 }
-

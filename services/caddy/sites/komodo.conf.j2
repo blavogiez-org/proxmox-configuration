@@ -1,8 +1,7 @@
 # prive, n'interagit pas avec l'exterieur (no webhook)
 https://komodo.priv.{{ domain }} {
-    # Whitelist : VPN + Réseau Admin local
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
-    
+
+    @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
         reverse_proxy 172.16.10.11:9120
     }
@@ -20,9 +19,8 @@ https://*.{{ domain }} {
 }
 
 https://*.priv.{{ domain }} {
-    # Whitelist : VPN + Réseau Admin local
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
-    
+
+    @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
         reverse_proxy 172.16.10.11:80
     }

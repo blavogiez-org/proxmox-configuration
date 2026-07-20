@@ -1,22 +1,22 @@
   all:
-  vars:
-    ansible_user: admin
-  hosts:
-    actions-runner: 
-      ansible_host: 192.168.10.11
-    coredns:
-      ansible_host: 192.168.10.12
-    caddy:
-      ansible_host: 192.168.10.13
-    monitoring:
-      ansible_host: 192.168.10.14
-    vault:
-      ansible_host: 192.168.10.15
-    vaultwarden:
-      ansible_host: 192.168.10.17
-    terraform-backend:
-      ansible_host: 192.168.10.18
-    komodo: 
-      ansible_host: 172.16.10.11
-    cloudflared:
-      ansible_host: 172.16.10.12
+    vars:
+      ansible_user: admin
+    hosts:
+      actions-runner:
+        ansible_host: 192.168.10.11
+      coredns:
+        ansible_host: 192.168.10.12
+      caddy:
+        ansible_host: 192.168.10.13
+      monitoring:
+        ansible_host: 192.168.10.14
+      vault:
+        ansible_host: 192.168.10.15
+      vaultwarden:
+        ansible_host: 192.168.10.17
+      terraform-backend:
+        ansible_host: 192.168.10.18
+      komodo:
+        ansible_host: 172.16.10.11
+      cloudflared:
+        ansible_host: 172.16.10.12
