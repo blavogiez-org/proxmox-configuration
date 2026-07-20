@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    image: clivern/lynx:0.13.0
+    env_file:
+    # credentials internes générés au cloud init
+    - .env
+    environment:
+      APP_NAME: Lynx
+      APP_PORT: 4000
+      APP_SECRET: ${APP_SECRET}
+      APP_HOST: localhost
+      # (reverse proxy caddy derriere)
+      APP_HTTP_SCHEMA: http
+      DB_USERNAME: root
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOSTNAME: db
+      DB_DATABASE: lynx
+      DB_PORT: 5432
+      DB_SSL: null
+      DB_CA_CERTFILE_PATH: null
+      MIX_ENV: prod
+    command: sh -c "/app/bin/migrate && /app/bin/server"
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:4000/_health"]
+      interval: 30s
+      retries: 3
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16.10
+    environment:
+      POSTGRES_DB: lynx
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:
+    driver: local
