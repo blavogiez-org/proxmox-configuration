@@ -12,6 +12,8 @@ all:
       ansible_host: 192.168.10.14
     vault:
       ansible_host: 192.168.10.15
+    terraform-backend:
+      ansible_host: 192.168.10.18
     komodo: 
       ansible_host: 172.16.10.11
     cloudflared:
