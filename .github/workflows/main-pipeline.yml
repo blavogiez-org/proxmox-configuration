@@ -89,7 +89,6 @@ jobs:
           dir_names_max_depth: 1
           matrix: true
 
-  # que sur branche perso(fork)
   ansible:
     if: ${{ (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso') && needs.services-to-deploy.outputs.services != '[]' }}
     # donc need indirectement Checkov tflint hadolint

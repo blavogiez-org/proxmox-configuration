@@ -1,8 +1,7 @@
 # vault se fait en Caddy interne sur 192.168.10.15 pour avoir du https interne en attendant
 https://vault.priv.{{ domain }} {
-    # Whitelist : VPN + Réseau Admin local
-    @vpn_only remote_ip 10.8.0.0/24 192.168.10.0/24
-    
+
+    @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
         reverse_proxy 192.168.10.15:80
     }
