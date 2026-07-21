@@ -70,3 +70,8 @@ variable "nesting" {
   type    = bool
   default = true
 }
+
+variable "tags" {
+  type = list(string)
+  default = ["untagged"]
+}

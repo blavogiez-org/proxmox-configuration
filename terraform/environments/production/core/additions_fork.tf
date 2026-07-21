@@ -70,6 +70,7 @@ module "ck-x" {
 }
 
 module "k8s-arbitrary-control-plane-1" {
+  tags = ["kube-control-plane", "temp"]
   source = "../../../modules/vm"
   name                = "k8s-arbitrary-control-plane-1"
   username            = "admin"
@@ -93,6 +94,7 @@ module "k8s-arbitrary-control-plane-1" {
 }
 
 module "k8s-arbitrary-worker-1" {
+  tags = ["kube-worker", "temp"]
   source = "../../../modules/vm"
   name                = "k8s-arbitrary-worker-1"
   username            = "admin"
@@ -116,6 +118,7 @@ module "k8s-arbitrary-worker-1" {
 }
 
 module "k8s-arbitrary-worker-2" {
+  tags = ["kube-worker", "temp"]
   source = "../../../modules/vm"
   name                = "k8s-arbitrary-worker-2"
   username            = "admin"
