@@ -1,4 +1,5 @@
 resource "proxmox_virtual_environment_vm" "this" {
+  tags = var.tags
   vm_id     = var.vm_id
   name      = var.name
   node_name = var.node_name

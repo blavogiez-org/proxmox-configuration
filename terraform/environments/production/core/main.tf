@@ -145,7 +145,6 @@ module "cloudflared" {
 # https://docs.goauthentik.io/install-config/install/docker-compose/
 module "authentik" {
   source = "../../../modules/vm"
-
   name                = "authentik"
   username            = "admin"
   node_name           = var.node_name

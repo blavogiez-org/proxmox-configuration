@@ -3,6 +3,7 @@ locals {
 }
 
 resource "proxmox_virtual_environment_container" "this" {
+  tags = var.tags
   vm_id        = var.lxc_id
   node_name    = var.node_name
   started      = true

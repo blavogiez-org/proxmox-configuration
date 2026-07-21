@@ -69,3 +69,8 @@ variable "vlan_id" {
   type    = number
   default = null
 }
+
+variable "tags" {
+  type = list(string)
+  default = ["untagged"]
+}
