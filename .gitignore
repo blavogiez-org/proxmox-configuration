@@ -9,6 +9,8 @@ terraform/tfplan
 .gitops/
 *lock*hcl*
 *state*lock*
+remote-backend-init.sh
+
 
 # Secrets
 *.key
