@@ -1,4 +1,4 @@
-name: "Linters (ce dépôt commun ne déploie rien + runners publics)"
+name: "Mise à jour de l'infra (ce dépôt fork déploie, avec runner privé)"
 
 on:
   push:
@@ -67,7 +67,7 @@ jobs:
   # que sur branche perso(fork)
   services-to-deploy:
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso'
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
     outputs:
       services: ${{ github.event_name == 'workflow_dispatch' && steps.services.outputs.folders || steps.changed.outputs.all_changed_files }}
