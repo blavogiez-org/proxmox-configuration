@@ -86,9 +86,9 @@ module "monitoring" {
   ssh_public_key_path = var.ssh_public_key_path
   target_datastore_id = var.storage
 
-  cpu       = 1
-  memory    = 1024
-  disk_size = 25
+  cpu       = 2
+  memory    = 2048
+  disk_size = 35
 
   bridge = "prvvnet1"
 

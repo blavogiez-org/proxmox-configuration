@@ -9,7 +9,7 @@
       ansible.builtin.include_role:
         name: grafana.grafana.alloy
       vars:
-        alloy_config: "{{ lookup('ansible.builtin.file', playbook_dir ~ '/../../services/monitoring/alloy/instance.alloy') }}"
+        alloy_config: "{{ lookup('ansible.builtin.file', playbook_dir ~ '/../../services/monitoring/alloy/config.alloy') }}"
         alloy_env_file_vars:
           CUSTOM_ARGS: "--server.http.listen-addr=127.0.0.1:12345"
         alloy_user_groups:

@@ -34,7 +34,7 @@ prometheus.scrape "docker" {
 
 prometheus.remote_write "default" {
   endpoint {
-    # URL de l'instance monitoring dans notre cas 
+    // URL de l'instance monitoring dans notre cas 
     url = "http://192.168.10.14:9090/api/v1/write"
   }
 }

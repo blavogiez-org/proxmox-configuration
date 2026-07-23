@@ -12,6 +12,8 @@
         ansible_host: 192.168.10.14
       vault:
         ansible_host: 192.168.10.15
+      authentik:
+        ansible_host: 192.168.10.16
       vaultwarden:
         ansible_host: 192.168.10.17
       terraform-backend:
