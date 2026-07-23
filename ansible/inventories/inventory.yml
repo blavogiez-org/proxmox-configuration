@@ -12,6 +12,13 @@
         ansible_host: 192.168.10.14
       vault:
         ansible_host: 192.168.10.15
+<<<<<<< HEAD
+=======
+      authentik:
+        ansible_host: 192.168.10.16
+      vaultwarden:
+        ansible_host: 192.168.10.17
+>>>>>>> 45baa49 (feat(monitoring): Remontée sur toutes vm, en incluant firewall vers Prometheus et Loki (Reverse proxy à faire pour maximiser))
       terraform-backend:
         ansible_host: 192.168.10.18
       komodo:

@@ -56,14 +56,36 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
 
   rule {
     type    = "forward"
+    action  = "ACCEPT"
+    source  = "172.16.10.0/24"
+    dest    = "192.168.10.14/32"
+    dport = "9090"
+    proto   = "tcp"
+    log     = "info"
+    comment = "V pubvnet1 vers monitoring (Prometheus)"
+    enabled = true
+  }
+
+  rule {
+    type    = "forward"
+    action  = "ACCEPT"
+    source  = "172.16.10.0/24"
+    dest    = "192.168.10.14/32"
+    dport = "3100"
+    proto   = "tcp"
+    log     = "info"
+    comment = "V pubvnet1 vers monitoring (Loki)"
+    enabled = true
+  }
+
+  rule {
+    type    = "forward"
     action  = "DROP"
     source  = "172.16.10.0/24"
     dest    = "192.168.10.0/24"
     log     = "info"
-    comment = "X pubvnet1 vers prvvnet1"
+    comment = "X pubvnet1 vers prvvnet1 en général"
     enabled = true
-
-    # protocole absent = tous les protocoles
   }
 
   rule {
@@ -77,7 +99,6 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
     log     = "info"
     comment = "V réseau local vers VPN"
     enabled = true
-
   }
 
   rule {
@@ -91,7 +112,6 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
     log     = "info"
     comment = "V caddy vers UI wireguard (réseau privé, site privé vpn.priv.{{ domain }})"
     enabled = true
-
   }
 
 
