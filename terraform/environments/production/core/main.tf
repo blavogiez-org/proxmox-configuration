@@ -43,8 +43,8 @@ module "coredns" {
   target_datastore_id = var.storage
 
   cpu       = 1
-  memory    = 256
-  disk_size = 3
+  memory    = 512
+  disk_size = 5
 
   bridge = "prvvnet1"
 }
@@ -74,14 +74,12 @@ module "caddy" {
 
 # cf dossier monitoring
 module "monitoring" {
-  source = "../../../modules/vm"
+  source = "../../../modules/lxc"
 
   name                = "monitoring"
-  username            = "admin"
   node_name           = var.node_name
-  vm_id               = 114
-  vm_template_id      = 9000
-  vm_ip               = "192.168.10.14"
+  lxc_id              = 114
+  lxc_ip              = "192.168.10.14"
   network_gateway     = "192.168.10.1"
   ssh_public_key_path = var.ssh_public_key_path
   target_datastore_id = var.storage
@@ -91,11 +89,6 @@ module "monitoring" {
   disk_size = 35
 
   bridge = "prvvnet1"
-
-  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
-    hostname       = "monitoring"
-    ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
-  })
 }
 
 # https://komo.do/docs/setup
