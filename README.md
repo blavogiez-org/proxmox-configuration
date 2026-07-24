@@ -50,11 +50,16 @@ Ce playbook va :
 - injecter les variables et secrets dans les templates Jinja2 ;
 - redémarrer la stack docker compose si l'ensemble a changé.
 
+### Optimisation
+
+Nous utilisons une [action réutilisable](https://github.com/tj-actions/changed-files) qui détecte si un fichier du service a changé dans le dernier commit (configuration conteneur / fichier monté). Ainsi, seuls les services qui ont changé (= ayant besoin d'être redéployés) sont redéployés. C'est dans notre cas plus rapide et optimisé que de faire le playbook ansible sur tous les hôtes car nos services changent rarement, et dans le cas d'une "vérification de changement" uniquement par Ansible on perdrait le temps à contacter tous les hôtes, alors qu'en réalité on peut savoir qui a besoin d'être redéployé avec le dernier commit.
+
 Côté GitHub Actions, le système de matrix permet de paralléliser un job sur lequel est itéré une liste, en l'occurrence les services (obtenus par [cette action réutilisable](github.com/philips-labs/list-folder-action))
 
-Ces mises à jour sont appliquées sur les dépôts forks. En voici un exemple : 
+Ces mises à jour sont appliquées sur les dépôts forks. En voici un exemple (déclenchement manuel, avec tout de déployé) : 
 <img width="1198" height="596" alt="image" src="https://github.com/user-attachments/assets/1bae44da-15ec-4ae2-846d-1de670e07528" />
 
 [Run correspondant](https://github.com/blavogiez-org/proxmox-configuration/actions/runs/28758799580)
+
 Il n'y a pas toujours de secrets Vault associés au service. Si il n'y en a pas, on met un avertissement.
 Pour voir le cas où il y en a un, voir le service `cloudflared` et [son itération](https://github.com/blavogiez-org/proxmox-configuration/actions/runs/28758799580/job/85270533716).
