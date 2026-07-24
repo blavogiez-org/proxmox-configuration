@@ -61,11 +61,6 @@ variable "vlan_id" {
   default = null
 }
 
-variable "unprivileged" {
-  type    = bool
-  default = true
-}
-
 variable "nesting" {
   type    = bool
   default = true

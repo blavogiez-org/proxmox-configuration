@@ -14,14 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Analyse checkov
-        run: docker run --rm -v "$PWD:/repo" bridgecrew/checkov:2 -d /repo --quiet
+        run: make lint-checkov
 
   static-analysis-tflint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Analyse TFLint
-        run: docker run --rm -v "$PWD:/repo" -w /repo ghcr.io/terraform-linters/tflint:latest --recursive
+        run: make lint-tflint
 
   static-analysis-hadolint:
     runs-on: ubuntu-latest
@@ -138,7 +138,4 @@ jobs:
         env:
           VAULT_TOKEN: ${{ secrets.BAO_TOKEN }}
         run: |
-          ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
-            -i ansible/inventories/inventory.yml \
-            ansible/playbooks/deploy_any_compose.yml \
-            -e "host=${{ matrix.service }} target_service=${{ matrix.service }}"
+          make deploy-compose SERVICE=${{ matrix.service }}
