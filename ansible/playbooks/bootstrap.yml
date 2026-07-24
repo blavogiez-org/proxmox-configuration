@@ -99,10 +99,10 @@
         enabled: true
         state: started
 
-    - name: Installer docker
+    - name: Installer docker si absent
       ansible.builtin.shell:
         cmd: |
-          curl -fsSl https://get.docker.com | sh
+          docker --version || (curl -fsSl https://get.docker.com | sh)
 
     # ou alors faire podman
     - name: Ajouter l'utilisateur admin au groupe docker

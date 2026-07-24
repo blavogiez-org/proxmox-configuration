@@ -1,5 +1,7 @@
 # sert à centraliser les commandes récurrentes et définir une convention courante (qu'on utilise de notre côté ou en CI)
 TF_DIR := terraform/environments/production
+ANSIBLE_INVENTORIES := ansible/inventories
+
 ANSIBLE_INVENTORY := ansible/inventories/inventory.yml
 
 # qq exemples : 
@@ -9,10 +11,10 @@ ANSIBLE_INVENTORY := ansible/inventories/inventory.yml
 # make deploy-compose SERVICE=monitoring
 
 lint-checkov: 
-	(docker run --rm -v "$PWD:/repo" bridgecrew/checkov:2 -d /repo --quiet && echo TOUT BON) || echo PAS BON
+	docker run --rm -v "$${PWD}:/repo" bridgecrew/checkov:2 -d /repo --quiet
 
 lint-tflint:
-	(docker run --rm -v "$PWD:/repo" -w /repo ghcr.io/terraform-linters/tflint:latest --recursive && echo TOUT BON) || echo PAS BON
+	docker run --rm -v "$${PWD}:/repo" -w /repo ghcr.io/terraform-linters/tflint:latest --recursive
 
 
 # défaut
@@ -41,3 +43,9 @@ deploy-compose-ci:
 deploy-compose:
 	$(MAKE) deploy-compose-ci EXTRA_ARGS="-K"
 
+
+deploy-alloy:
+	ANSIBLE_STRICT_HOST_KEY_CHECKING=false ansible-playbook ansible/playbooks/install_alloy.yml -i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
+
+deploy-lxc: 
+	ANSIBLE_STRICT_HOST_KEY_CHECKING=false ansible-playbook ansible/playbooks/bootstrap.yml -i $(ANSIBLE_INVENTORIES)/lxc_inventory.yml $(EXTRA_ARGS)
