@@ -7,7 +7,9 @@ resource "proxmox_virtual_environment_container" "this" {
   vm_id        = var.lxc_id
   node_name    = var.node_name
   started      = true
-  unprivileged = var.unprivileged
+  # toujours à true, il faut généralement éviter de mettre ça à false
+  # assez important pour que les LXC soient plus sécurisées (elles partagent le noyau de l'hôte)
+  unprivileged = true 
 
   initialization {
     hostname = var.name
