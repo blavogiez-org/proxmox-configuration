@@ -21,6 +21,24 @@ module "vaultwarden" {
   })
 }
 
+module "harbor" {
+  source = "../../../modules/lxc"
+
+  name                = "harbor"
+  node_name           = var.node_name
+  lxc_id              = 119
+  lxc_ip              = "192.168.10.19"
+  network_gateway     = "192.168.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+  target_datastore_id = var.storage
+
+  cpu       = 3
+  memory    = 5012
+  disk_size = 50
+
+  bridge = "prvvnet1"
+}
+1
 module "ck-x" {
   source = "../../../modules/vm"
   name                = "ck-x"
