@@ -11,7 +11,7 @@ ANSIBLE_INVENTORY := ansible/inventories/inventory.yml
 # make deploy-compose SERVICE=monitoring
 
 lint-checkov: 
-	docker run --rm -v "$${PWD}:/repo" dhi.io/bridgecrew/checkov:2 -d /repo --quiet
+	docker run --rm -v "$${PWD}:/repo" bridgecrew/checkov:2 -d /repo --quiet
 
 lint-tflint:
 	docker run --rm -v "$${PWD}:/repo" -w /repo ghcr.io/terraform-linters/tflint:latest --recursive

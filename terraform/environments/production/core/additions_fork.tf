@@ -38,7 +38,7 @@ module "harbor" {
 
   bridge = "prvvnet1"
 }
-1
+
 module "ck-x" {
   source = "../../../modules/vm"
   name                = "ck-x"
