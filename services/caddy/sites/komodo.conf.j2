@@ -1,25 +1,14 @@
+# prive, n'interagit pas avec l'exterieur (no webhook)
 https://komodo.priv.{{ domain }} {
 
-    @vpn_only remote_ip 10.8.0.0/24    
+    @vpn_only remote_ip 10.8.0.0/24 192.168.10.11    
     handle @vpn_only {
-        reverse_proxy 172.16.10.11:80 {
-            header_up Host {host}
-            header_up X-Real-IP {remote_host}
-            header_up X-Forwarded-Proto https
-        }
+        reverse_proxy 172.16.10.11:9120
     }
 
     # Bloqué pour tout le reste
     handle {
         respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
-    }
-}
-
-https://komodo.{{ domain }} {
-    reverse_proxy 172.16.10.11:9120 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-Proto https
     }
 }
 
@@ -41,5 +30,4 @@ https://*.priv.{{ domain }} {
         respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
     }
 }
-
 
