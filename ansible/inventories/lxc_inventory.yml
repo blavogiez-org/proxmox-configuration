@@ -11,5 +11,7 @@ all:
       ansible_host: 192.168.10.13
     monitoring:
       ansible_host: 192.168.10.14
+    zot:
+      ansible_host: 192.168.10.19
     cloudflared:
       ansible_host: 172.16.10.12

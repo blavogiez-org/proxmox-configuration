@@ -1,0 +1,19 @@
+# https://github.com/project-zot/zot
+services:
+  zot:
+    image: ghcr.io/project-zot/zot:v2.1.18
+    restart: unless-stopped
+    ports:
+      - "192.168.10.19:5000:5000"
+    volumes:
+      - ./config.json:/etc/zot/config.json:ro
+      - /srv/zot:/var/lib/registry
+    configs:
+      - source: htpasswd
+        target: /etc/zot/htpasswd
+
+configs:
+  htpasswd:
+    content: |
+      # zot veut un bcrypt spécifique au format http. Jinja le permet
+      admin:{{ vault.zot.password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}

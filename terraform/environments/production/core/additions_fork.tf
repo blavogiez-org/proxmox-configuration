@@ -21,10 +21,10 @@ module "vaultwarden" {
   })
 }
 
-module "harbor" {
+module "zot" {
   source = "../../../modules/lxc"
 
-  name                = "harbor"
+  name                = "zot"
   node_name           = var.node_name
   lxc_id              = 119
   lxc_ip              = "192.168.10.19"

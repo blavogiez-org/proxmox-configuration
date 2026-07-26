@@ -17,5 +17,4 @@ terraform {
     lock_method = "POST"
     unlock_method = "POST"
   }
-
 }
