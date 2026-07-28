@@ -40,6 +40,12 @@ prometheus.remote_write "default" {
   }
 }
 
+prometheus.scrape "alloy_self" {
+  targets    = [{"__address__" = "127.0.0.1:12345", "cluster" = "homelab", "namespace" = "alloy", "instance" = constants.hostname}]
+  job_name   = "integrations/alloy"
+  forward_to = [prometheus.remote_write.default.receiver]
+}
+
 // ###############################
 // #### Logging Configuration ####
 // ###############################
