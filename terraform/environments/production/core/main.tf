@@ -16,7 +16,7 @@ module "gh-runner" {
   vm_template_id      = 9000
   vm_ip               = "192.168.10.11"
   network_gateway     = "192.168.10.1"
-  dns_servers = ["192.168.10.12", "1.1.1.1", "8.8.8.8"]
+  dns_servers         = ["192.168.10.12", "1.1.1.1", "8.8.8.8"]
   ssh_public_key_path = var.ssh_public_key_path
   target_datastore_id = var.storage
 

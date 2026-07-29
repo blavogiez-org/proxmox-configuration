@@ -77,6 +77,6 @@ variable "tags" {
 }
 
 variable "dns_servers" {
-  type = list(string)
+  type    = list(string)
   default = ["1.1.1.1", "8.8.8.8"]
 }
