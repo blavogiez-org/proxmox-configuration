@@ -14,6 +14,11 @@ services:
 
 configs:
   htpasswd:
+    # zot veut un bcrypt spécifique au format http. Jinja le permet
+    # PS le salt doit faire 22 caractères (faire openssl -rand hex 11) sinon bcrypt aimera pas
+    # publisher = runner et consumer = VM en gros. Les droits sont définis dans le json
     content: |
-      # zot veut un bcrypt spécifique au format http. Jinja le permet
-      admin:{{ vault.zot.password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}
+      admin:{{ vault.zot.admin_password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}
+      publisher:{{ vault.zot.publisher_password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}
+      consumer_password:{{ vault.zot.consumer_password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}
+

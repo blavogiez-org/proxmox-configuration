@@ -19,6 +19,20 @@
       "failDelay": 3
     },
     "accessControl": {
+      "repositories": {
+        "apps/**": {
+          "policies": [
+            {
+              "users": ["publisher"],
+              "actions": ["read", "create", "update"]
+            },
+            {
+              "users": ["consumer"],
+              "actions": ["read"]
+            }
+          ]
+        }
+      },
       "adminPolicy": {
         "users": ["admin"],
         "actions": ["read", "create", "update", "delete"]
