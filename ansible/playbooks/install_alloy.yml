@@ -4,6 +4,9 @@
   hosts: all
   become: true
 
+  handlers:
+    - name: Restart containerd
+      ansible.builtin.systemd_service: { name: containerd, state: restarted }
   tasks:
     - name: Install Alloy
       ansible.builtin.include_role:
@@ -16,3 +19,9 @@
           - systemd-journal
           - adm
           - docker
+    # acces aux logs docker
+    - name: Read Docker group
+      ansible.builtin.getent: { database: group, key: docker }
+    - name: Give Docker group access to containerd
+      community.general.ini_file: { path: /etc/containerd/config.toml, section: grpc, option: gid, value: "{{ getent_group.docker[1] }}" }
+      notify: Restart containerd

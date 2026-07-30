@@ -24,3 +24,11 @@
         ansible_host: 172.16.10.11
       cloudflared:
         ansible_host: 172.16.10.12
+      openlatex-main-api:
+        ansible_host: 172.16.10.51
+      openlatex-kube-control-plane:
+        ansible_host: 172.16.10.52
+      openlatex-kube-worker-2:
+        ansible_host: 172.16.10.53
+      openlatex-kube-worker-2:
+        ansible_host: 172.16.10.54
