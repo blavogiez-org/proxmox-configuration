@@ -1,4 +1,4 @@
-name: Construire + pousser une image sur cr.priv.blavogiez.fr
+name: Construire + pousser une image sur cr.priv.blavogiez.fr (action appelable)
 
 on:
   workflow_call:
