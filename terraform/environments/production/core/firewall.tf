@@ -78,7 +78,7 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
   rule {
     type    = "in"
     action  = "ACCEPT"
-    # par exemple c'est une plage d'ip 4g 
+    # par exemple c'est une plage d'ip 4g
     source  = "80.0.0.0/0"
     dport   = "51820"
     proto   = "udp"
