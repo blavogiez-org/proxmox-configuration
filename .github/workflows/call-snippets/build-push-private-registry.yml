@@ -1,0 +1,9 @@
+# sample d'appel de construction d'image sur le Container registry hébergé sur une LXC sur proxmox
+jobs:
+  build-push-image:
+    uses: blavogiez-org/proxmox-configuration/.github/workflows/callable-build-push-image.yml@6-container-registry-harbor
+    with:
+      context: services/caddy
+      tag: cr.priv.blavogiez.fr/apps/caddy-acme-ratelimit:latest
+    secrets:
+      BAO_CR_TOKEN: ${{ secrets.BAO_CR_TOKEN }}
