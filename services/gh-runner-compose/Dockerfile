@@ -4,7 +4,9 @@ FROM myoung34/github-runner:ubuntu-noble
 RUN python3 -m venv /opt/ansible-venv \
     && /opt/ansible-venv/bin/pip install --no-cache-dir \
         "ansible-core==2.20.7" \
-        "hvac==2.4.0"
+        "hvac==2.4.0" \
+        "passlib==1.7.4" \
+        "bcrypt==4.3.0"
 
 ENV PATH="/opt/ansible-venv/bin:${PATH}"
 

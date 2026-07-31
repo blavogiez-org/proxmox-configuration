@@ -108,7 +108,6 @@ jobs:
           - service: rasdaemon
           - service: template-vm
           - service: wgeasy
-          - service: gh-runner-compose
     steps:
       - uses: actions/checkout@v4
 
