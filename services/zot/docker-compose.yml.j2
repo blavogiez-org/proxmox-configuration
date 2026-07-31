@@ -20,5 +20,4 @@ configs:
     content: |
       admin:{{ vault.zot.admin_password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}
       publisher:{{ vault.zot.publisher_password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}
-      consumer_password:{{ vault.zot.consumer_password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}
-
+      consumer:{{ vault.zot.consumer_password | password_hash(hashtype='bcrypt', salt=vault.zot.salt, rounds=12) | replace('$', '$$') }}
