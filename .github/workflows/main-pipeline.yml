@@ -77,6 +77,7 @@ jobs:
           fetch-depth: 2
       # cas du déclenchement à la main (= prend meme ce qui a pas changé)
       - name: Liste des services
+        if: github.event_name == 'workflow_dispatch'
         id: services
         uses: philips-labs/list-folder-action@v3.0
         with:
