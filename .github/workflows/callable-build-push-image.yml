@@ -1,0 +1,51 @@
+name: Construire + pousser une image sur cr.priv.blavogiez.fr (action appelable)
+
+on:
+  workflow_call:
+    inputs:
+      # dossier de build
+      context:
+        required: true
+        type: string
+      # tag commencant par cr.priv.blavogiez.fr/apps/....
+      tag:
+        required: true
+        type: string
+    secrets:
+      BAO_CR_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  login-build-push:
+    runs-on: self-hosted
+    steps:
+      # CF https://github.com/hashicorp/vault-action
+      - name: Import Secrets
+        id: import-secrets
+        uses: hashicorp/vault-action@v4
+        with:
+          url: https://vault.priv.blavogiez.fr
+          token: ${{ secrets.BAO_CR_TOKEN }}
+          secrets: |
+            secret/data/zot publisher_password | CR_PUBLISHER_PASSWORD ;
+
+      # CF https://github.com/docker/login-action
+      - name: login sur cr.priv.blavogiez.fr avec publisher, user limité
+        uses: docker/login-action@v4
+        with:
+          registry: cr.priv.blavogiez.fr
+          username: publisher
+          password: ${{ env.CR_PUBLISHER_PASSWORD }}
+
+      - uses: actions/checkout@v4
+
+      # CF https://github.com/docker/build-push-action
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: ${{ inputs.context }}
+          push: true
+          tags: ${{ inputs.tag }}

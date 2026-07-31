@@ -1,0 +1,60 @@
+{
+  "distSpecVersion": "1.1.1",
+  "storage": {
+    "rootDirectory": "/var/lib/registry",
+    "dedupe": true,
+    "gc": true,
+    "gcDelay": "1h",
+    "gcInterval": "24h"
+  },
+  "http": {
+    "address": "0.0.0.0",
+    "port": "5000",
+    "externalUrl": "https://cr.priv.{{ domain }}",
+    "compat": ["docker2s2"],
+    "auth": {
+      "htpasswd": {
+        "path": "/etc/zot/htpasswd"
+      },
+      "failDelay": 3
+    },
+    "accessControl": {
+      "repositories": {
+        "apps/**": {
+          "policies": [
+            {
+              "users": ["publisher"],
+              "actions": ["read", "create", "update"]
+            },
+            {
+              "users": ["consumer"],
+              "actions": ["read"]
+            }
+          ]
+        }
+      },
+      "adminPolicy": {
+        "users": ["admin"],
+        "actions": ["read", "create", "update", "delete"]
+      }
+    }
+  },
+  "log": {
+    "level": "info"
+  },
+  "extensions": {
+    "search": {
+      "enable": true,
+      "cve": {
+        "updateInterval": "2h"
+      }
+    },
+    "ui": {
+      "enable": true
+    },
+    "scrub": {
+      "enable": true,
+      "interval": "24h"
+    }
+  }
+}
