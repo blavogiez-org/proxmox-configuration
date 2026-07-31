@@ -2,7 +2,7 @@
 # POur ça on a le playbook sync_vault_caddy_ca.yml , le consulter
 https://vault.priv.{{ domain }} {
 
-    @vpn_only remote_ip 10.8.0.0/24    
+    @vpn_only remote_ip 10.8.0.0/24 192.168.10.11    
     handle @vpn_only {
         reverse_proxy https://192.168.10.15:443 {
             transport http {

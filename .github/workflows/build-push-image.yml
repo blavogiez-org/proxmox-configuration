@@ -1,0 +1,31 @@
+name: Construire + pousser une image sur le registre privé 
+
+
+
+on:
+  push:
+#    branches: main
+  workflow_dispatch:
+
+jobs:
+  login:
+    runs-on: self-hosted
+    steps: 
+    # CF https://github.com/hashicorp/vault-action
+    -   name: Import Secrets
+        id: import-secrets
+        uses: hashicorp/vault-action@v2
+        with:
+            url: https://vault.priv.blavogiez.fr
+            token: ${{ secrets.BAO_CR_TOKEN }}
+            secrets: |
+                secret/data/zot publisher_password | CR_PUBLISHER_PASSWORD ;
+      
+        
+    # CF https://github.com/docker/login-action
+    -   name: login sur cr.priv.blavogiez.fr
+        uses: docker/login-action@v4
+        with:
+          registry: cr.priv.blavogiez.fr
+          username: publisher
+          password: ${{ env.CR_PUBLISHER_PASSWORD }}
