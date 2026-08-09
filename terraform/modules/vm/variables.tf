@@ -70,6 +70,12 @@ variable "vlan_id" {
   default = null
 }
 
+variable "firewall" {
+  description = "Active le pare-feu Proxmox sur l'interface réseau de la VM"
+  type        = bool
+  default     = false
+}
+
 
 variable "tags" {
   type = list(string)
@@ -77,6 +83,6 @@ variable "tags" {
 }
 
 variable "dns_servers" {
-  type    = list(string)
-  default = ["1.1.1.1", "8.8.8.8"]
+  type = list(string)
+  default = ["192.168.10.12", "1.1.1.1", "8.8.8.8"]
 }

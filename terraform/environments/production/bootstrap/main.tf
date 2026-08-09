@@ -110,6 +110,7 @@ module "terraform-backend" {
   disk_size = 15
 
   bridge = "prvvnet1"
+  firewall = true
   user_data_raw = templatefile("${path.root}/../../../../services/terraform-backend/cloud-init.yml", {
     hostname       = "terraform-backend"
     ssh_public_key = trimspace(file(pathexpand(var.ssh_public_key_path)))
