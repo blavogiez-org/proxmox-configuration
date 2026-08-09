@@ -70,7 +70,13 @@ variable "vlan_id" {
   default = null
 }
 
+
 variable "tags" {
   type = list(string)
   default = ["untagged"]
+}
+
+variable "dns_servers" {
+  type    = list(string)
+  default = ["1.1.1.1", "8.8.8.8"]
 }
