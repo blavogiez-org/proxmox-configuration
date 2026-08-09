@@ -61,6 +61,12 @@ variable "vlan_id" {
   default = null
 }
 
+variable "firewall" {
+  description = "Active le pare-feu Proxmox sur l'interface réseau du conteneur"
+  type        = bool
+  default     = false
+}
+
 variable "nesting" {
   type    = bool
   default = true

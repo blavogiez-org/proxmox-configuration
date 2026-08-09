@@ -90,6 +90,7 @@ module "monitoring" {
   disk_size = 35
 
   bridge = "prvvnet1"
+  firewall = true
 }
 
 # https://komo.do/docs/setup
@@ -111,6 +112,7 @@ module "komodo" {
   disk_size = 50
 
   bridge = "pubvnet1"
+  firewall = true
 
   user_data_raw = templatefile("${path.root}/../../../../services/komodo/cloud-init.yml", {
     hostname       = "komodo"
@@ -154,6 +156,7 @@ module "authentik" {
   disk_size = 10
 
   bridge = "prvvnet1"
+  firewall = true
 
   user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
     hostname       = "authentik"
