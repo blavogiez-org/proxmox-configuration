@@ -81,6 +81,8 @@
         src: "{{ target_local_dir }}"
         dest: "{{ target_remote_dir }}"
         mode: '0644'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
       register: target_remote_stack
 
     # pour lse secrets, le Jinja2 attend typiquement vault.{{ service }}.{{ nom clé }}
@@ -89,7 +91,8 @@
         src: "{{ item.src }}"
         dest: "{{ target_remote_dir }}/{{ target_service }}/{{ item.path | regex_replace('\\.j2$', '') }}"
         mode: "{{ '0600' if (item.path | basename) == '.env.j2' else '0644' }}"
-        owner: "{{ host }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
       loop: "{{ query('community.general.filetree', target_local_dir) }}"
       when: item.state == 'file' and item.path.endswith('.j2')
       register: target_templates
