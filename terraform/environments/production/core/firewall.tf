@@ -162,27 +162,17 @@ locals {
       guest_id   = module.authentik.vm_id
       ports      = ["9000"]
     }
-    vaultwarden = {
-      guest_type = "vm"
-      guest_id   = module.vaultwarden.vm_id
-      ports      = ["8000"]
-    }
     terraform_backend = {
       guest_type = "vm"
       guest_id   = one(data.proxmox_virtual_environment_vms.terraform_backend.vms).vm_id
       ports      = ["4000"]
-    }
-    zot = {
-      guest_type = "lxc"
-      guest_id   = module.zot.lxc_id
-      ports      = ["5000"]
     }
   }
 
 }
 
 resource "proxmox_virtual_environment_firewall_rules" "caddy_backends" {
-  for_each = local.caddy_backends
+  for_each = merge(local.caddy_backends, local.fork_caddy_backends)
 
   node_name    = var.node_name
   vm_id        = each.value.guest_type == "vm" ? each.value.guest_id : null
