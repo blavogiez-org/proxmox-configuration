@@ -33,6 +33,7 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   network_device {
     bridge  = var.bridge
+    firewall = var.firewall
     vlan_id = var.vlan_id
   }
 
@@ -71,6 +72,17 @@ resource "proxmox_virtual_environment_vm" "this" {
       vga,
     ]
   }
+}
+
+resource "proxmox_virtual_environment_firewall_options" "this" {
+  count = var.firewall ? 1 : 0
+
+  node_name = proxmox_virtual_environment_vm.this.node_name
+  vm_id     = proxmox_virtual_environment_vm.this.vm_id
+
+  enabled       = true
+  input_policy  = "ACCEPT"
+  output_policy = "ACCEPT"
 }
 
 resource "proxmox_virtual_environment_file" "boostrap_user_data" {

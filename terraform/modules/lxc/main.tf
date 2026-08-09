@@ -29,6 +29,7 @@ resource "proxmox_virtual_environment_container" "this" {
   network_interface {
     name    = "eth0"
     bridge  = var.bridge
+    firewall = var.firewall
     vlan_id = var.vlan_id
   }
 
@@ -64,4 +65,15 @@ resource "proxmox_virtual_environment_container" "this" {
       ipv6,
     ]
   }
+}
+
+resource "proxmox_virtual_environment_firewall_options" "this" {
+  count = var.firewall ? 1 : 0
+
+  node_name    = proxmox_virtual_environment_container.this.node_name
+  container_id = proxmox_virtual_environment_container.this.vm_id
+
+  enabled       = true
+  input_policy  = "ACCEPT"
+  output_policy = "ACCEPT"
 }

@@ -19,6 +19,27 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
   node_name = var.node_name
 
   rule {
+    type    = "in"
+    action  = "ACCEPT"
+    source  = "10.8.0.0/24"
+    dest    = "192.168.1.100/32"
+    log     = "info"
+    comment = "V vpn wireguard vers ui proxmox"
+    enabled = true
+  }
+
+  rule {
+    type    = "in"
+    action  = "ACCEPT"
+    source  = "0.0.0.0/0"
+    dport   = "51820"
+    proto   = "udp"
+    log     = "info"
+    comment = "vpn wireguard public"
+    enabled = true
+  }
+
+  rule {
     type    = "forward"
     action  = "ACCEPT"
     source  = "172.16.10.12/32"
@@ -107,5 +128,77 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
   depends_on = [
     proxmox_virtual_environment_cluster_firewall.cluster,
     proxmox_node_firewall.pve1
+  ]
+}
+
+# La VM du backend Terraform appartient à la couche bootstrap donc on recherche son nom dans l'existant
+data "proxmox_virtual_environment_vms" "terraform_backend" {
+  node_name = var.node_name
+
+  filter {
+    name   = "name"
+    values = ["terraform-backend"]
+  }
+}
+
+# services d'administration à protéger
+# tout est isolé, le seul trafic autorisé sera de caddy vers leurs ports
+locals {
+  caddy_source = "192.168.10.13/32"
+
+  caddy_backends = {
+    komodo = {
+      guest_type = "vm"
+      guest_id   = module.komodo.vm_id
+      ports      = ["80", "9120"]
+    }
+    monitoring = {
+      guest_type = "lxc"
+      guest_id   = module.monitoring.lxc_id
+      ports      = ["3000", "8080"]
+    }
+    authentik = {
+      guest_type = "vm"
+      guest_id   = module.authentik.vm_id
+      ports      = ["9000"]
+    }
+    terraform_backend = {
+      guest_type = "vm"
+      guest_id   = one(data.proxmox_virtual_environment_vms.terraform_backend.vms).vm_id
+      ports      = ["4000"]
+    }
+  }
+
+}
+
+resource "proxmox_virtual_environment_firewall_rules" "caddy_backends" {
+  for_each = merge(local.caddy_backends, local.fork_caddy_backends)
+
+  node_name    = var.node_name
+  vm_id        = each.value.guest_type == "vm" ? each.value.guest_id : null
+  container_id = each.value.guest_type == "lxc" ? each.value.guest_id : null
+
+  rule {
+    type    = "in"
+    action  = "ACCEPT"
+    source  = local.caddy_source
+    dport   = join(",", each.value.ports)
+    proto   = "tcp"
+    comment = "V caddy vers ${each.key}"
+    enabled = true
+  }
+
+  rule {
+    type    = "in"
+    action  = "DROP"
+    dport   = join(",", each.value.ports)
+    proto   = "tcp"
+    comment = "X tout vers ${each.key}"
+    enabled = true
+  }
+
+  depends_on = [
+    proxmox_virtual_environment_cluster_firewall.cluster,
+    proxmox_node_firewall.pve1,
   ]
 }
