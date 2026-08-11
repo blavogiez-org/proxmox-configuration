@@ -96,6 +96,13 @@
       loop: "{{ query('community.general.filetree', target_local_dir) }}"
       when: item.state == 'file' and item.path.endswith('.j2')
       register: target_templates
+    
+    - name: supprimer les *.j2 à la fin après les avoir templaté (= pas de doublon)
+      ansible.builtin.file:
+        state: absent
+        path: "{{ target_remote_dir }}/{{ target_service }}/{{ item.path }}"
+      loop: "{{ query('community.general.filetree', target_local_dir) }}"
+      when: item.state == 'file' and item.path.endswith('.j2')
 
     - name: S'assurer que la stack est présente et démarrée
       community.docker.docker_compose_v2:
