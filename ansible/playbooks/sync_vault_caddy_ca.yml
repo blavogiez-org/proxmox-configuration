@@ -23,16 +23,16 @@
       ansible.builtin.file:
         path: /opt/caddy/certs
         state: directory
-        owner: root
-        group: root
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0755'
 
     - name: Copier le certificat racine du Caddy Vault
       ansible.builtin.copy:
         src: /tmp/vault-caddy-root.crt
         dest: /opt/caddy/certs/vault-caddy-root.crt
-        owner: root
-        group: root
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
         mode: '0644'
       register: cert_on_caddy
 

@@ -40,11 +40,13 @@ tf-destroy:
 	$(MAKE) tf $(TF_LAYER) ACTION=destroy
 
 deploy-compose-ci:
-	ANSIBLE_STRICT_HOST_KEY_CHECKING=false ansible-playbook ansible/playbooks/deploy_any_compose.yml -e "host=$(SERVICE) target_service=$(SERVICE)" -i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
+	ANSIBLE_STRICT_HOST_KEY_CHECKING=false \
+	ansible-playbook ansible/playbooks/deploy_any_compose.yml \
+	-e '{"host":"$(SERVICE)","target_service":"$(SERVICE)","ansible_become_flags":"-H -S -n","ansible_become_password":null}' \
+	-i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
 
-# -K en option ansible pcq il va demander à become sudo pour verif les library
 deploy-compose:
-	$(MAKE) deploy-compose-ci EXTRA_ARGS="-K"
+	$(MAKE) deploy-compose-ci
 
 
 deploy-alloy:

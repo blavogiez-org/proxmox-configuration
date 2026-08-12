@@ -6,7 +6,10 @@ services:
       context: .
     restart: unless-stopped
     network_mode: host
-    user: root
+    dns:
+      - 192.168.10.12
+      - 1.1.1.1
+      - 8.8.8.8
     env_file:
       - .env
     volumes:

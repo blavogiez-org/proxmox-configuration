@@ -1,7 +1,7 @@
 # but de ce playbook : déployer n'importe quel compose tel que décrit dans la structure services
 # trame : on copie les fichiers dans /opt/{service}, on template les fichiers, et selon si ça a changé ou non on redémarre la stack
 - hosts: "{{ host }}"
-  become: true
+  become: false
   vars_files:
     - ../../settings.yml
   vars:
@@ -10,18 +10,7 @@
     target_remote_dir: "/opt"
     target_local_dir: "{{ playbook_dir }}/../../services/{{ target_service }}"
 
-  tasks:
-    # il faut la library python 'hvac' sur la machine qui lance le playbook (pas la machine cible) apt install python3-hvac
-    - name: vérifier si la machine qui lance a la library python 'hvac' ; c'est requis pour acceder au vault dans le playbook
-      ansible.builtin.apt:
-        name: python3-hvac
-        state: present
-        update_cache: true
-      delegate_to: localhost
-      become: true # donc lancer ansible avec l'option -K (ca va demander le mot de passe d'élévation)
-      run_once: true
-    
-    # actuellement on a du https interne car on a pas encore fait les certificats publics pour le réseau privé, d'où le validate_certs
+  tasks: 
     - name: charger les secrets openbao relatifs au service (et uniquement ceux-là)
       ansible.builtin.set_fact:
         vault: >-
@@ -31,15 +20,15 @@
                 'community.hashi_vault.vault_kv2_get',
                 target_service,
                 engine_mount_point='secret',
-                url='https://192.168.10.15',
-                validate_certs=false,
+                url='https://vault.priv.blavogiez.fr',
+                validate_certs=true,
                 token_path=lookup('env', 'HOME'),
                 token_file='.vault-token'
               ).secret
             }
           }}
       # pour debug on peut enlever no log
-      no_log: true
+      # no_log: true
       ignore_errors: true 
       register: openbao_fetch
 
@@ -72,9 +61,12 @@
 
     - name: S'assurer que le répertoire existe
       ansible.builtin.file:
-        path: "{{ target_remote_dir }}"
+        path: "{{ target_remote_dir }}/{{ target_service }}"
         state: directory
         mode: '0755'
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+      become: true
 
     - name: Copier l'ensemble du service vers le remote
       ansible.builtin.copy:

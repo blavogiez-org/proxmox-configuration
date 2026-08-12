@@ -11,7 +11,7 @@ https://openlatex-api.{{ domain }} {
     reverse_proxy 172.16.10.51:80
 }
 https://openlatex-dev.{{ domain }} {
-    reverse_proxy 172.16.10.51:80 
+    reverse_proxy 172.16.10.52:8000 
 }
 
 # redirige vers le namespace kubernetes openlatex-dev (branches de features) pour test. L'ingress kube absorbera ce domaine spécifique et redirigera vers le service namespace dev
@@ -19,7 +19,8 @@ https://openlatex-dev.priv.{{ domain }} {
 
     @vpn_only remote_ip 10.8.0.0/24    
     handle @vpn_only {
-        reverse_proxy 172.16.10.51:80
+    	# temp : traefik ecoute port différent (sinon il override le ingress)
+        reverse_proxy 172.16.10.52:8000
     }
 
     # Bloqué pour tout le reste
