@@ -1,14 +1,14 @@
 https://openlatex.{{ domain }} {
-    reverse_proxy 172.16.10.51:80
+    reverse_proxy 172.16.10.52:8000
 }
 
 # (le meme que openlatex.domain c'est juste plus équivoque)
 https://openlatex-prod.{{ domain }} {
-    reverse_proxy 172.16.10.51:80
+    reverse_proxy 172.16.10.52:8000
 }
 
 https://openlatex-api.{{ domain }} {
-    reverse_proxy 172.16.10.51:80
+    reverse_proxy 172.16.10.52:8000  
 }
 https://openlatex-dev.{{ domain }} {
     reverse_proxy 172.16.10.52:8000 
