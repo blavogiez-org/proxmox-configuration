@@ -25,19 +25,19 @@ TF_LAYER ?=core
 tf: 
 	cd $(TF_DIR)/$(TF_LAYER) && \
 	. ./remote-backend-init.sh && \
-	terraform $(ACTION)
+	terraform $(ACTION) $(EXTRA_ARGS)
 
 tf-init: 
-	$(MAKE) tf $(TF_LAYER) ACTION=init
+	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=init EXTRA_ARGS="$(EXTRA_ARGS)"
 
 tf-plan: 
-	$(MAKE) tf $(TF_LAYER) ACTION=plan
+	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=plan EXTRA_ARGS="$(EXTRA_ARGS)"
 
 tf-apply: 
-	$(MAKE) tf $(TF_LAYER) ACTION=apply
+	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=apply EXTRA_ARGS="$(EXTRA_ARGS)"
 
 tf-destroy: 
-	$(MAKE) tf $(TF_LAYER) ACTION=destroy
+	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=destroy EXTRA_ARGS="$(EXTRA_ARGS)"
 
 deploy-compose-ci:
 	ANSIBLE_STRICT_HOST_KEY_CHECKING=false \
@@ -46,7 +46,7 @@ deploy-compose-ci:
 	-i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
 
 deploy-compose:
-	$(MAKE) deploy-compose-ci
+	$(MAKE) deploy-compose-ci $(EXTRA_ARGS)
 
 
 deploy-alloy:
