@@ -11,6 +11,8 @@ spec:
     targetRevision: 34.0.0
     helm:
       values: |
+        deployment:
+          kind: DaemonSet
         providers:
           kubernetesGateway:
             enabled: true

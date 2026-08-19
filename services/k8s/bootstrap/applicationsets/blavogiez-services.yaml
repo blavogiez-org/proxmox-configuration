@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: blavogiez-services
+  name: blavogiez-services-helm
   namespace: argocd
 spec:
   goTemplate: true 
@@ -9,19 +9,29 @@ spec:
   generators:
     - list:
         elements:
-          - subPath: test-poc
+          - subPath: vaultwarden
   template: 
     metadata: 
-      name: '{{ .subPath }}-service'
+      name: '{{ .subPath }}'
+      namespace: argocd
     spec:
       project: default
-      source:
-        repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
-        targetRevision: 11-passage-de-services-en-argocd
-        path: services/k8s/apps/{{ .subPath }}
+      sources:
+        # cf https://argo-cd.readthedocs.io/en/latest/user-guide/multiple_sources/
+        # En gros la source git nous donne les valeurs helm, et on itère dessus pour les appels du helm chart
+        - repoURL: https://bjw-s-labs.github.io/helm-charts
+          chart: app-template 
+          targetRevision: 3.7.2
+          helm:
+            valueFiles:
+              - $gitRepo/services/k8s/apps/{{ .subPath }}/values.yaml
+
+        - repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
+          targetRevision: 11-passage-de-services-en-argocd
+          ref: gitRepo
       destination:
         server: https://kubernetes.default.svc
-        namespace: blavogiez-services
+        namespace: blavogiez-services-helm
       syncPolicy:
         automated:
           prune: true
