@@ -21,6 +21,7 @@ config/proxmox-bootstrap.local.yml
 config/proxmox-bootstrap.local.yaml
 config/proxmox-bootstrap.env
 
+docs/KUBERNETES.md
 *.tar.zst
 # Ansible
 .ansible/

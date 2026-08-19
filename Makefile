@@ -40,20 +40,20 @@ tf-destroy:
 	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=destroy EXTRA_ARGS="$(EXTRA_ARGS)"
 
 deploy-compose-ci:
-	ANSIBLE_STRICT_HOST_KEY_CHECKING=false \
+	ANSIBLE_HOST_KEY_CHECKING=False \
 	ansible-playbook ansible/playbooks/deploy_any_compose.yml \
 	-e '{"host":"$(SERVICE)","target_service":"$(SERVICE)","ansible_become_flags":"-H -S -n","ansible_become_password":null}' \
 	-i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
 
 deploy-compose:
-	$(MAKE) deploy-compose-ci $(EXTRA_ARGS)
+	$(MAKE) deploy-compose-ci SERVICE=$(SERVICE) EXTRA_ARGS="$(EXTRA_ARGS)"
 
 
 deploy-alloy:
-	ANSIBLE_STRICT_HOST_KEY_CHECKING=false ansible-playbook ansible/playbooks/install_alloy.yml -i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
+	ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ansible/playbooks/install_alloy.yml -i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
 
 deploy-lxc: 
-	ANSIBLE_STRICT_HOST_KEY_CHECKING=false ansible-playbook ansible/playbooks/bootstrap.yml -i $(ANSIBLE_INVENTORIES)/lxc_inventory.yml $(EXTRA_ARGS)
+	ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ansible/playbooks/bootstrap.yml -i $(ANSIBLE_INVENTORIES)/lxc_inventory.yml $(EXTRA_ARGS)
 
 input-vault:
 	@if bao kv get -mount=$(VAULT_MOUNT) $(VAULT_PATH) >/dev/null 2>&1; then \

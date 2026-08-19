@@ -1,25 +1,39 @@
 # utilisation de https://bjw-s-labs.github.io/helm-charts 
 # c'est un template de helm chart fait pour décrire n'importe quelle application.
+defaultPodOptions:
+  securityContext:
+    runAsUser: 10000
+    runAsGroup: 10000
+    runAsNonRoot: true
+    fsGroup: 10000
+    fsGroupChangePolicy: OnRootMismatch
+
 controllers:
   vaultwarden:
     strategy: Recreate
     containers:
       main:
-        securityContext:
-          runAsUser: 10000
-          runAsGroup: 10000
-          runAsNonRoot: true
         image:
           repository: vaultwarden/server
           tag: latest
         env:
-          DATA_FOLDER: "config"
+          DATA_FOLDER: "/config"
 service:
   vaultwarden:
     controller: vaultwarden
     ports:
       http:
         port: 80
+
+persistence:
+  config:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 2Gi
+    advancedMounts:
+      vaultwarden:
+        main:
+          - path: /config
 
 route:
   vaultwarden:
@@ -29,7 +43,7 @@ route:
       - name: traefik-gateway
         namespace: traefik
     hostnames: 
-      - vaultwarden-vide-poc.blavogiez.fr 
+      - vaultwarden-vide-poc.priv.blavogiez.fr 
     rules: 
       - matches:
           - path: 
@@ -38,3 +52,4 @@ route:
         backendRefs:
           - name: vaultwarden 
             port: 80
+
