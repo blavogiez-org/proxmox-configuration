@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pocargocd
-  namespace: blavogiez-services
-data:
-  ARGOCD: SYMPA

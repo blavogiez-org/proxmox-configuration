@@ -9,22 +9,29 @@ spec:
   generators:
     - list:
         elements:
-          - subPath: vaultwarden
+          - name: vaultwarden
+            repoURL: https://bjw-s-labs.github.io/helm-charts
+            chart: app-template
+            targetRevision: 3.7.2
+          - name: openlatex
+            repoURL: ghcr.io/openlatex
+            chart: openlatex-compile
+            targetRevision: 0.2.0
   template: 
     metadata: 
-      name: '{{ .subPath }}'
+      name: '{{ .name }}'
       namespace: argocd
     spec:
       project: default
       sources:
         # cf https://argo-cd.readthedocs.io/en/latest/user-guide/multiple_sources/
-        # En gros la source git nous donne les valeurs helm, et on itère dessus pour les appels du helm chart
-        - repoURL: https://bjw-s-labs.github.io/helm-charts
-          chart: app-template 
-          targetRevision: 3.7.2
+        # En gros la source git nous donne les valeurs helm, et on les utilise pour les itérations / appels du helm chart 
+        - repoURL: '{{ .repoURL }}'
+          chart: '{{ .chart }}' 
+          targetRevision: '{{ .targetRevision }}'
           helm:
             valueFiles:
-              - $gitRepo/services/k8s/apps/{{ .subPath }}/values.yaml
+              - $gitRepo/services/k8s/apps/{{ .name }}/values.yaml
 
         - repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
           targetRevision: 11-passage-de-services-en-argocd
