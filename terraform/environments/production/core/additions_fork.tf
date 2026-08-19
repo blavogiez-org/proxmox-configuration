@@ -85,7 +85,7 @@ module "k8s-control-plane-1" {
   disk_size = 80
 
   bridge = "pubvnet1"
-  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/kubernetes-cloud-init.yml", {
     hostname         = "k8s-control-plane-1"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
@@ -109,7 +109,7 @@ module "k8s-control-plane-2" {
   disk_size = 80
 
   bridge = "pubvnet1"
-  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/kubernetes-cloud-init.yml", {
     hostname         = "k8s-control-plane-2"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
@@ -133,7 +133,7 @@ module "k8s-worker-1" {
   disk_size = 80
 
   bridge = "pubvnet1"
-  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/kubernetes-cloud-init.yml", {
     hostname         = "k8s-worker-1"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
@@ -157,7 +157,7 @@ module "k8s-worker-2" {
   disk_size = 80
 
   bridge = "pubvnet1"
-  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/kubernetes-cloud-init.yml", {
     hostname         = "k8s-worker-2"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
@@ -181,7 +181,7 @@ module "k8s-worker-3" {
   disk_size = 80
 
   bridge = "pubvnet1"
-  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/cloud-init.yml", {
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/kubernetes-cloud-init.yml", {
     hostname         = "k8s-worker-3"
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
