@@ -39,6 +39,8 @@ Thumbs.db
 build/
 .vscode/
 
+services/k8s/cluster/
+
 # test temporaire
 dummy-service/
 .env

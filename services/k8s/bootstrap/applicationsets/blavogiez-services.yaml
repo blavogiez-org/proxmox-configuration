@@ -21,7 +21,7 @@ spec:
         path: services/k8s/apps/{{ .subPath }}
       destination:
         server: https://kubernetes.default.svc
-        namespace: blavogiez
+        namespace: blavogiez-services
       syncPolicy:
         automated:
           prune: true

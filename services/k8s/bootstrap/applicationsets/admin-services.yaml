@@ -1,0 +1,21 @@
+# déploie les applications propres au cluster (Gateway API par exemple)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: admin-services
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
+    targetRevision: 11-passage-de-services-en-argocd
+    path: services/k8s/apps/cluster
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: admin-services
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true 
+    syncOptions:
+      - CreateNamespace=true
