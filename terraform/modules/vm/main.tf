@@ -66,6 +66,7 @@ resource "proxmox_virtual_environment_vm" "this" {
       network_device[0].mac_address,
       boot_order,
       vga,
+      clone
     ]
   }
 }
