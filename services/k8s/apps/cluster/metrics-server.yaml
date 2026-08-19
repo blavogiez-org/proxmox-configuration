@@ -1,23 +1,23 @@
-# cf https://artifacthub.io/packages/helm/longhorn/longhorn
+# cf https://artifacthub.io/packages/helm/metrics-server/metrics-server
+# tiré du helm chart
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: longhorn
+  name: metrics-server
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://charts.longhorn.io
-    chart: longhorn
-    targetRevision: 1.7.2
+    repoURL: https://kubernetes-sigs.github.io/metrics-server/
+    chart: metrics-server
+    targetRevision: 3.12.2
     helm:
       values: |
-        persistence:
-          defaultClass: true
-          defaultClassReplicaCount: 3
+        args:
+          - --kubelet-insecure-tls
   destination:
     server: https://kubernetes.default.svc
-    namespace: longhorn-system
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true
