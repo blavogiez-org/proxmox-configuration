@@ -1,8 +1,6 @@
-# k create configmap pocargocd -n uneconfigmap --dry-run=client -o yaml --from-literal ARGOCD=SYMPA
 apiVersion: v1
-data:
-  ARGOCD: SYMPAETJAICHANGE
 kind: ConfigMap
 metadata:
   name: pocargocd
-  namespace: uneconfigmap
+data:
+  ARGOCD: SYMPA
