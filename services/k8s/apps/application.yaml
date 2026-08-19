@@ -1,0 +1,22 @@
+# cf https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blavogiez-services
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
+    targetRevision: 11-passage-de-services-en-argocd
+    path: services/k8s/apps/test-poc
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: blavogiez
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true 
+    syncOptions:
+      - CreateNamespace=true
