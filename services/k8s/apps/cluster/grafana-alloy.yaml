@@ -1,0 +1,31 @@
+# cf https://grafana.com/docs/alloy/latest/set-up/install/kubernetes/
+# cf https://grafana.com/docs/alloy/latest/configure/kubernetes/
+# tiré du helm chart
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy-daemonset
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    # config.alloy utilisé en values + desactivation de l'envoi des métriques anonymes à Grafana labs
+    - repoURL: https://grafana.github.io/helm-charts
+      chart: alloy
+      targetRevision: 1.11.1
+      helm:
+        valueFiles:
+          - $gitRepo/services/k8s/apps/cluster/alloy/values.yaml
+
+    - repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
+      targetRevision: 11-passage-de-services-en-argocd
+      ref: gitRepo
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: alloy-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
