@@ -1,0 +1,23 @@
+deployment:
+  kind: DaemonSet
+
+providers:
+  kubernetesGateway:
+    enabled: true
+
+gateway:
+  enabled: true
+  name: traefik-gateway
+  listeners:
+    http:
+      port: 8000
+      protocol: HTTP
+      hostname: "*.blavogiez.fr"
+      namespacePolicy:
+        from: All
+
+ports:
+  web:
+    port: 8000
+    hostPort: 80
+    exposedPort: 80
