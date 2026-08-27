@@ -28,14 +28,16 @@ spec:
           chart: '{{ .chart }}' 
           targetRevision: '{{ .targetRevision }}'
           helm:
+            # values spécifiques + network policies injectées par défaut pour n'importe quel app avec argo (app qui a donc son propre namespace, et ça évite d'avoir un seul namespace avec uniquement ces network polciies)
             valueFiles:
+              - $gitRepo/services/k8s/apps/cluster/default-network-policies/values.yaml
               - $gitRepo/services/k8s/apps/{{ .name }}/values.yaml
         - repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
           targetRevision: 11-passage-de-services-en-argocd
           ref: gitRepo
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ .name }}'
+        namespace: 'blavogiez-{{ .name }}'
       syncPolicy:
         automated:
           prune: true

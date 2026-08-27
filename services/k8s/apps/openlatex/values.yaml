@@ -1,4 +1,4 @@
-namespace: "openlatex-temp"
+namespace: "blavogiez-openlatex"
 namespacedUrl: openlatex-temp.priv.blavogiez.fr
 workerHpa:
   minReplicas: 8
