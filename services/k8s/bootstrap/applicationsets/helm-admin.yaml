@@ -29,6 +29,12 @@ spec:
             repoURL: https://traefik.github.io/charts
             chart: traefik
             targetRevision: 34.0.0
+          # exposition de l'ui argocd par domaine (pour éviter de "kubectl port-forward svc/argocd-server --address 0.0.0.0 -n argocd 8080:443")
+          - name: priv-httproute-argocd 
+            namespace: argocd 
+            repoURL: https://bjw-s-labs.github.io/helm-charts
+            chart: app-template
+            targetRevision: 3.7.2
   template:
     metadata:
       name: '{{ .name }}'

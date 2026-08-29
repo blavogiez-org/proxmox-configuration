@@ -1,0 +1,17 @@
+route:
+  priv-httproute-argocd:
+    enabled: true
+    kind: HTTPRoute
+    parentRefs:
+      - name: traefik-gateway
+        namespace: traefik
+    hostnames: 
+      - argocd.priv.blavogiez.fr
+    rules: 
+      - matches:
+          - path: 
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - name: argocd-server
+            port: 80
