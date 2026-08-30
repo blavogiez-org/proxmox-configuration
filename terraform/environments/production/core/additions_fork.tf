@@ -186,3 +186,27 @@ module "k8s-worker-3" {
     ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
   })
 }
+
+module "k8s-control-plane-3" {
+  tags = ["kube-control-plane", "temp"]
+  source = "../../../modules/vm"
+  name                = "k8s-control-plane-3"
+  username            = "admin"
+  node_name           = "pve1"
+  vm_id               = 266
+  vm_template_id      = 9000
+  vm_ip               = "172.16.10.66"
+  network_gateway     = "172.16.10.1"
+  ssh_public_key_path = var.ssh_public_key_path
+  target_datastore_id = var.storage
+
+  cpu       = 8
+  memory    = 16384
+  disk_size = 80
+
+  bridge = "pubvnet1"
+  user_data_raw = templatefile("${path.root}/../../../../services/base-vm/kubernetes-cloud-init.yml", {
+    hostname         = "k8s-control-plane-3"
+    ssh_public_key   = trimspace(file(pathexpand(var.ssh_public_key_path)))
+  })
+}
