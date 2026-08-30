@@ -1,17 +1,17 @@
 route:
-  argocd:
+  longhorn:
     enabled: true
     kind: HTTPRoute
     parentRefs:
       - name: traefik-gateway
         namespace: traefik
     hostnames: 
-      - argocd.priv.blavogiez.fr
+      - longhorn.priv.blavogiez.fr
     rules: 
       - matches:
           - path: 
               type: PathPrefix
               value: /
         backendRefs:
-          - name: argocd-server
+          - name: longhorn-frontend
             port: 80

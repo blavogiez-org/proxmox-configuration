@@ -12,9 +12,7 @@ gateway:
     http:
       port: 8000
       protocol: HTTP
-      hostname: "*.blavogiez.fr"
-      namespacePolicy:
-        from: All
+      namespacePolicy: All
 
 ports:
   web:

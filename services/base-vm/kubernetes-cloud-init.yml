@@ -37,6 +37,8 @@ write_files:
 
 packages:
   - qemu-guest-agent
+  - open-iscsi
+  - nfs-common
   - libicu76
   - git
   - curl
@@ -48,6 +50,7 @@ packages:
 
 runcmd:
   - systemctl enable --now qemu-guest-agent
+  - systemctl enable --now iscsid
   - modprobe overlay
   - modprobe br_netfilter
   - sysctl --system
