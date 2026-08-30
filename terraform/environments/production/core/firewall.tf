@@ -135,6 +135,17 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
   }
 
   rule {
+    type    = "in"
+    action  = "ACCEPT"
+    source  = "::/0"
+    dport   = "51820"
+    proto   = "udp"
+    log     = "info"
+    comment = "V Internet vers VPN WireGuard public IPv6"
+    enabled = true
+  }
+
+  rule {
     type   = "in"
     action = "ACCEPT"
     source = "192.168.10.13/32"
