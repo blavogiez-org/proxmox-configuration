@@ -9,7 +9,7 @@ gateway:
   enabled: true
   name: traefik-gateway
   listeners:
-    http:
+    web:
       port: 8000
       protocol: HTTP
       namespacePolicy: All
