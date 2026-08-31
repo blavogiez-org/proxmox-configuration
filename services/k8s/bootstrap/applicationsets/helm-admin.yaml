@@ -18,7 +18,7 @@ spec:
             namespace: longhorn-system
             repoURL: https://charts.longhorn.io
             chart: longhorn
-            targetRevision: 1.7.2
+            targetRevision: 1.12.1
           - name: metrics-server
             namespace: kube-system
             repoURL: https://kubernetes-sigs.github.io/metrics-server/
