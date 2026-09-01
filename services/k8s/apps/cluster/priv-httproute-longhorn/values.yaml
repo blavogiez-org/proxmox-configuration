@@ -1,0 +1,17 @@
+route:
+  longhorn:
+    enabled: true
+    kind: HTTPRoute
+    parentRefs:
+      - name: traefik-gateway
+        namespace: traefik
+    hostnames: 
+      - longhorn.priv.blavogiez.fr
+    rules: 
+      - matches:
+          - path: 
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - name: longhorn-frontend
+            port: 80

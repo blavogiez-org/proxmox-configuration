@@ -12,24 +12,10 @@ https://komodo.priv.{{ domain }} {
     }
 }
 
-https://*.{{ domain }} {
+https://kanban.{{ domain }}, https://openlatex-compose-only.{{ domain }} {
     # Catch-all pour toutes les applications déployées sur Komodo
     # Ce bloc reste public pour permettre l'accès aux sites web
     reverse_proxy 172.16.10.11:80
 }
-
-https://*.priv.{{ domain }} {
-
-    @vpn_only remote_ip 10.8.0.0/24    
-    handle @vpn_only {
-        reverse_proxy 172.16.10.11:80
-    }
-
-    # Bloqué pour tout le reste (même si de toute façon le dns priv modifié est meme pas dispo au public)
-    handle {
-        respond "Accès privé uniquement en local. Votre ip {remote_host} a été refusée" 403
-    }
-}
-
 
 

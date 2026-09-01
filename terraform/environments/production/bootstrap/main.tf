@@ -12,8 +12,7 @@ resource "proxmox_virtual_environment_vm" "debian13" {
   node_name = var.node_name
   vm_id     = 9000
   template  = true
-
-  started = true
+  started   = false
 
   cpu {
     cores = 2
@@ -23,22 +22,16 @@ resource "proxmox_virtual_environment_vm" "debian13" {
     dedicated = 2048
   }
 
+  agent {
+    enabled = true
+  }
+
   disk {
     datastore_id = "local"
     file_id      = proxmox_download_file.debian13.id
+    file_format  = "raw"
     interface    = "scsi0"
     discard      = "on"
-  }
-
-  initialization {
-    datastore_id      = "local"
-    user_data_file_id = proxmox_virtual_environment_file.cloud_init.id
-
-    ip_config {
-      ipv4 {
-        address = "dhcp"
-      }
-    }
   }
 
   network_device {

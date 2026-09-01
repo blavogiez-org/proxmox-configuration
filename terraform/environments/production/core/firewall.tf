@@ -75,6 +75,30 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
 
   rule {
     type    = "forward"
+    action  = "ACCEPT"
+    source  = "172.16.10.0/24"
+    dest    = "192.168.10.12/32"
+    dport   = "53"
+    proto   = "udp"
+    log     = "info"
+    comment = "V pubvnet1 vers coredns DNS UDP"
+    enabled = true
+  }
+
+  rule {
+    type    = "forward"
+    action  = "ACCEPT"
+    source  = "172.16.10.0/24"
+    dest    = "192.168.10.12/32"
+    dport   = "53"
+    proto   = "tcp"
+    log     = "info"
+    comment = "V pubvnet1 vers coredns DNS TCP"
+    enabled = true
+  }
+
+  rule {
+    type    = "forward"
     action  = "DROP"
     source  = "172.16.10.0/24"
     dest    = "192.168.10.0/24"
@@ -98,9 +122,8 @@ resource "proxmox_virtual_environment_firewall_rules" "pve1" {
 
   rule {
     type    = "in"
-    action  = "ACCEPT"
-    # par exemple c'est une plage d'ip 4g 
-    source  = "80.0.0.0/0"
+    action  = "ACCEPT" 
+    source  = "0.0.0.0/0"
     dport   = "51820"
     proto   = "udp"
     log     = "info"

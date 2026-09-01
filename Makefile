@@ -19,41 +19,48 @@ lint-checkov:
 lint-tflint:
 	docker run --rm -v "$${PWD}:/repo" -w /repo ghcr.io/terraform-linters/tflint:latest --recursive
 
+lint-kube-conform:
+	docker run --rm -v "$${PWD}:/repo" -w /repo ghcr.io/yannh/kubeconform:latest \
+		-schema-location default \
+		-schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+		-ignore-filename-pattern '.*values\.yaml' \
+		-summary services/k8s
+
 
 # défaut
 TF_LAYER ?=core
 tf: 
 	cd $(TF_DIR)/$(TF_LAYER) && \
 	. ./remote-backend-init.sh && \
-	terraform $(ACTION)
+	terraform $(ACTION) $(EXTRA_ARGS)
 
 tf-init: 
-	$(MAKE) tf $(TF_LAYER) ACTION=init
+	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=init EXTRA_ARGS="$(EXTRA_ARGS)"
 
 tf-plan: 
-	$(MAKE) tf $(TF_LAYER) ACTION=plan
+	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=plan EXTRA_ARGS="$(EXTRA_ARGS)"
 
 tf-apply: 
-	$(MAKE) tf $(TF_LAYER) ACTION=apply
+	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=apply EXTRA_ARGS="$(EXTRA_ARGS)"
 
 tf-destroy: 
-	$(MAKE) tf $(TF_LAYER) ACTION=destroy
+	$(MAKE) tf TF_LAYER=$(TF_LAYER) ACTION=destroy EXTRA_ARGS="$(EXTRA_ARGS)"
 
 deploy-compose-ci:
-	ANSIBLE_STRICT_HOST_KEY_CHECKING=false \
+	ANSIBLE_HOST_KEY_CHECKING=False \
 	ansible-playbook ansible/playbooks/deploy_any_compose.yml \
 	-e '{"host":"$(SERVICE)","target_service":"$(SERVICE)","ansible_become_flags":"-H -S -n","ansible_become_password":null}' \
 	-i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
 
 deploy-compose:
-	$(MAKE) deploy-compose-ci
+	$(MAKE) deploy-compose-ci SERVICE=$(SERVICE) EXTRA_ARGS="$(EXTRA_ARGS)"
 
 
 deploy-alloy:
-	ANSIBLE_STRICT_HOST_KEY_CHECKING=false ansible-playbook ansible/playbooks/install_alloy.yml -i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
+	ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ansible/playbooks/install_alloy.yml -i $(ANSIBLE_INVENTORY) $(EXTRA_ARGS)
 
 deploy-lxc: 
-	ANSIBLE_STRICT_HOST_KEY_CHECKING=false ansible-playbook ansible/playbooks/bootstrap.yml -i $(ANSIBLE_INVENTORIES)/lxc_inventory.yml $(EXTRA_ARGS)
+	ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook ansible/playbooks/bootstrap.yml -i $(ANSIBLE_INVENTORIES)/lxc_inventory.yml $(EXTRA_ARGS)
 
 input-vault:
 	@if bao kv get -mount=$(VAULT_MOUNT) $(VAULT_PATH) >/dev/null 2>&1; then \

@@ -1,0 +1,49 @@
+# policies injectées par défaut pour n'importe quel app avec argo (app qui a donc son propre namespace, et ça évite d'avoir un seul namespace avec uniquement ces network polciies)
+# cf https://github.com/openlatex/openlatex.github.io/blob/main/deploy/kubernetes/charts/openlatex/templates/default-networking.yaml
+
+networkpolicies:
+  # https://github.com/openlatex/openlatex.github.io/blob/main/deploy/kubernetes/charts/openlatex/templates/default-networking.yaml#L4-L13
+  default-deny:
+    enabled: true
+    podSelector: {}
+    policyTypes:
+      - Ingress
+      - Egress
+    rules: {}
+
+  # https://github.com/openlatex/openlatex.github.io/blob/main/deploy/kubernetes/charts/openlatex/templates/default-networking.yaml#L15-L41
+  allow-traefik:
+    enabled: true
+    podSelector: {}
+    policyTypes:
+      - Ingress
+    rules:
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: traefik
+              podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: traefik
+
+  # https://github.com/openlatex/openlatex.github.io/blob/main/deploy/kubernetes/charts/openlatex/templates/default-networking.yaml#L42-L65
+  allow-dns:
+    enabled: true
+    podSelector: {}
+    policyTypes:
+      - Egress
+    rules:
+      egress:
+        - to:
+            - namespaceSelector:
+                matchLabels:
+                  kubernetes.io/metadata.name: kube-system
+              podSelector:
+                matchLabels:
+                  k8s-app: kube-dns
+          ports:
+            - protocol: UDP
+              port: 53
+            - protocol: TCP
+              port: 53

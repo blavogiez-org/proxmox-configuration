@@ -24,12 +24,18 @@ jobs:
       - name: Analyse TFLint
         run: make lint-tflint
 
+  static-analysis-kube-conform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Analyse Kube-conform
+        run: make lint-kube-conform
+
   static-analysis-hadolint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Analyse Hadolint
-        # Suppression de continue-on-error et no-fail pour rendre le job bloquant
         uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: Dockerfile
@@ -68,7 +74,7 @@ jobs:
   services-to-deploy:
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso'
     runs-on: ubuntu-latest
-    needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint ]
+    needs: [ static-analysis-checkov, static-analysis-tflint, static-analysis-hadolint, static-analysis-kube-conform ]
     outputs:
       services: ${{ github.event_name == 'workflow_dispatch' && steps.services.outputs.folders || steps.changed.outputs.all_changed_files }}
     steps:
@@ -109,6 +115,7 @@ jobs:
           - service: rasdaemon
           - service: template-vm
           - service: wgeasy
+          - service: k8s
     steps:
       - uses: actions/checkout@v4
 
