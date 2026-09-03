@@ -1,0 +1,5 @@
+# https://github.com/getsops/sops
+# clé publique de chiffrement
+creation_rules:
+  - path_regex: .*\.enc\.ya?ml$
+    age: "age1e3s582qyex8rek06cjqsn8ft2r98anhrn9nc7axd7vyz3zx9tycqurnuce"
