@@ -116,6 +116,7 @@ jobs:
           - service: template-vm
           - service: wgeasy
           - service: k8s
+          - service: gh-runner-compose
     steps:
       - uses: actions/checkout@v4
 
@@ -131,19 +132,22 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
+      - name: Setup SOPS
+        uses: nhedger/setup-sops@v2
+
       - name: Vérifier l'environnement Ansible
         run: |
           ansible-playbook --version
-          python -c "from importlib.metadata import version; print('hvac', version('hvac'))"
+          sops --version
 
       - name: Install Ansible Collections(on a du docker compose community)
         run: |
           ansible-galaxy collection install -r ansible/requirements.yml
 
       #https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations
-      # avec la matrix tous les services définis vont faire N déplooiements ansible
+      # avec la matrix tous les services définis vont faire N déplooiements ansible
       - name: "Déploiement de ${{ matrix.service }}"
         env:
-          VAULT_TOKEN: ${{ secrets.BAO_TOKEN }}
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
         run: |
           make deploy-compose-ci SERVICE=${{ matrix.service }}
