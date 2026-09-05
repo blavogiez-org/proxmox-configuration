@@ -1,0 +1,55 @@
+# projet scolaire, cf https://github.com/blavogiez/ecodrop-api-rest-Semestre4
+# api rest sur le thème d'une déchetterie, qui permet du CRUD avec les bons codes de retour http 
+# c'est une api sans vraiment d'utilité, la persistence de données est inutile, un endpoint permet le reset
+controllers:
+  ecodrop:
+    strategy: Recreate
+    containers:
+      app:
+        image:
+          repository: ghcr.io/blavogiez/ecodrop
+          tag: latest
+        env:
+          DB_HOST: "127.0.0.1"
+      db:
+        image:
+          repository: postgres
+          tag: 15-alpine
+        envFrom:
+          - secretRef:
+              name: ecodrop-secret
+
+service:
+  ecodrop:
+    controller: ecodrop
+    ports:
+      http:
+        port: 8080
+
+persistence:
+  init-sql:
+    type: configMap
+    name: ecodrop-init-sql
+    advancedMounts:
+      ecodrop:
+        db:
+          - path: /docker-entrypoint-initdb.d/init.sql
+            subPath: init.sql
+
+route:
+  ecodrop:
+    enabled: true
+    kind: HTTPRoute
+    parentRefs:
+      - name: traefik-gateway
+        namespace: traefik
+    hostnames:
+      - ecodrop.blavogiez.fr
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - name: ecodrop
+            port: 8080

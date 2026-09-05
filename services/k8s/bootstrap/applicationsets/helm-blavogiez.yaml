@@ -17,11 +17,16 @@ spec:
             repoURL: ghcr.io/openlatex
             chart: openlatex-compile
             targetRevision: 0.2.0
+          # cf https://github.com/blavogiez/ecodrop-api-rest-Semestre4
+          - name: ecodrop
+            repoURL: https://bjw-s-labs.github.io/helm-charts
+            chart: app-template
+            targetRevision: 3.7.2
   template: 
     metadata: 
       name: '{{ .name }}'
       namespace: argocd
-    spec:
+    spec: 
       project: default
       sources:
         - repoURL: '{{ .repoURL }}'
@@ -33,8 +38,11 @@ spec:
               - $gitRepo/services/k8s/apps/cluster/default-network-policies/values.yaml
               - $gitRepo/services/k8s/apps/{{ .name }}/values.yaml
         - repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
-          targetRevision: 11-passage-de-services-en-argocd
+          targetRevision: perso
           ref: gitRepo
+        - repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
+          targetRevision: perso
+          path: services/k8s/apps/{{ .name }}/manifests
       destination:
         server: https://kubernetes.default.svc
         namespace: 'blavogiez-{{ .name }}'

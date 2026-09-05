@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
-    targetRevision: 11-passage-de-services-en-argocd
+    targetRevision: perso
     path: services/k8s/bootstrap/applicationsets
   destination:
     server: https://kubernetes.default.svc

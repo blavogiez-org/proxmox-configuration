@@ -29,6 +29,11 @@ spec:
             repoURL: https://traefik.github.io/charts
             chart: traefik
             targetRevision: 34.0.0
+          - name: sops-operator
+            namespace: sops
+            repoURL: https://isindir.github.io/sops-secrets-operator/
+            chart: sops-secrets-operator
+            targetRevision: 0.28.1
           # exposition des ui admin par domaine privé par ex : argocd.priv.blavogiez.fr (pour éviter de par exemple "kubectl port-forward svc/argocd-server --address 0.0.0.0 -n argocd 8080:443")
           - name: priv-httproute-argocd
             namespace: argocd
@@ -40,6 +45,7 @@ spec:
             repoURL: https://bjw-s-labs.github.io/helm-charts
             chart: app-template
             targetRevision: 3.7.2
+
   template:
     metadata:
       name: '{{ .name }}'
@@ -54,7 +60,7 @@ spec:
             valueFiles:
               - $gitRepo/services/k8s/apps/cluster/{{ .name }}/values.yaml
         - repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
-          targetRevision: 11-passage-de-services-en-argocd
+          targetRevision: perso
           ref: gitRepo
       destination:
         server: https://kubernetes.default.svc

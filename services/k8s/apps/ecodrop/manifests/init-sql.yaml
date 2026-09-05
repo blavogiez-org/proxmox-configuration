@@ -1,0 +1,156 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ecodrop-init-sql
+  annotations:
+    checkov.io/skip1: CKV_K8S_21=namespace dynamically set by argocd
+data:
+  init.sql: |
+    --- Création de la base avec idempotence
+    CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+    DROP TABLE IF EXISTS Accepts CASCADE;
+    DROP TABLE IF EXISTS WasteType CASCADE;
+    DROP TABLE IF EXISTS CollectionPoint CASCADE;
+    DROP TABLE IF EXISTS Users CASCADE ;
+    DROP TABLE IF EXISTS Deposit CASCADE ;
+
+    create table WasteType (
+        id serial primary key,
+        nom varchar(30) not null,
+        pointsPerKilo float
+    );
+
+    CREATE TABLE CollectionPoint (
+        id SERIAL PRIMARY KEY,
+        adresse VARCHAR(30) NOT NULL,
+        capaciteMax FLOAT NOT NULL
+    );
+
+    CREATE TABLE Accepts (
+        pointid INT REFERENCES CollectionPoint(id) ON UPDATE CASCADE ON DELETE CASCADE,
+        wastetypeid INT REFERENCES WasteType(id) ON UPDATE CASCADE ON DELETE CASCADE,
+        CONSTRAINT pk_ids PRIMARY KEY (pointid, wastetypeid)
+    );
+
+    CREATE TABLE Users (
+        id SERIAL PRIMARY KEY,
+        login VARCHAR(50) NOT NULL UNIQUE,
+        --- sha 256 passwords
+        password VARCHAR(64) NOT NULL CHECK (char_length(password) > 10),
+        role VARCHAR(10) NOT NULL CHECK (role IN ('USER','ADMIN'))
+    );
+
+
+    create table Deposit (
+        id serial primary key,
+        userId int references Users(id) on update cascade on delete cascade,
+        pointId int references CollectionPoint(id) on update cascade on delete cascade,
+        wasteTypeId int references WasteType(id) on update cascade on delete cascade,
+        poids FLOAT not null,
+        datedepot DATE default now(),
+        collecte BOOLEAN default false
+    );
+
+    --- \i fill.sql;
+
+    INSERT INTO CollectionPoint(adresse, capaciteMax) VALUES ('21 Rue DuChemin', 500);
+    INSERT INTO CollectionPoint(adresse, capaciteMax) VALUES ('18 Avenue De L impasse', 300);
+    INSERT INTO CollectionPoint(adresse, capaciteMax) VALUES ('47 Route De La Ruelle', 600);
+    INSERT INTO CollectionPoint(adresse, capaciteMax) VALUES ('32 Chemin Avenue', 200);
+    INSERT INTO CollectionPoint(adresse, capaciteMax) VALUES ('2 Canal Concombre', 50);
+
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('batteries', 5.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('textile', 3.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('électronique', 6.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('ampoules', 4.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('bois', 2.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('métaux', 1.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('emballages toxiques', 7.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('végétaux', 8.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('radioactifs', 4.0);
+    INSERT INTO WasteType(nom, pointsPerKilo) VALUES ('vivants', 1000.0);
+
+    INSERT INTO Accepts VALUES(1,1);
+    INSERT INTO Accepts VALUES(1,4);
+    INSERT INTO Accepts VALUES(1,5);
+    INSERT INTO Accepts VALUES(1,3);
+
+    INSERT INTO Accepts VALUES(2,7);
+    INSERT INTO Accepts VALUES(2,2);
+    INSERT INTO Accepts VALUES(2,5);
+    INSERT INTO Accepts VALUES(2,6);
+
+    INSERT INTO Accepts VALUES(3,1);
+    INSERT INTO Accepts VALUES(3,4);
+    INSERT INTO Accepts VALUES(3,5);
+    INSERT INTO Accepts VALUES(3,2);
+
+    INSERT INTO Accepts VALUES(4,9);
+    INSERT INTO Accepts VALUES(4,8);
+    INSERT INTO Accepts VALUES(4,7);
+    INSERT INTO Accepts VALUES(4,3);
+
+    INSERT INTO Accepts VALUES(5,4);
+    INSERT INTO Accepts VALUES(5,5);
+    INSERT INTO Accepts VALUES(5,7);
+    INSERT INTO Accepts VALUES(5,1);
+
+    INSERT INTO Users(login, password, role) 
+    VALUES('paulpaulpaul', encode(digest('paulpaulpaul', 'sha256'), 'hex'), 'ADMIN');
+
+    INSERT INTO Users(login, password, role) 
+    VALUES('podmanpodman', encode(digest('podmanpodman', 'sha256'), 'hex'), 'USER');
+
+    INSERT INTO Users(login, password, role) 
+    VALUES('podman-compose', encode(digest('podman-compose', 'sha256'), 'hex'), 'USER');
+
+    INSERT INTO Users(login, password, role) 
+    VALUES('temoin', encode(digest('temointemoin', 'sha256'), 'hex'), 'USER');
+
+
+    -- Dépôts existants — collecte=false (pas encore ramassés)
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 1, 1, 2.5, '2024-03-10', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 1, 4, 1.8, '2024-03-12', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 1, 5, 3.2, '2024-03-15', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 1, 3, 0.9, '2024-03-18', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 2, 7, 5.1, '2024-04-02', false);
+
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 2, 2, 2.3, '2024-04-05', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 2, 5, 4.7, '2024-04-08', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 2, 6, 1.2, '2024-04-11', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 3, 1, 3.5, '2024-05-01', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 3, 4, 2.1, '2024-05-06', false);
+
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 3, 5, 1.6, '2024-05-10', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 3, 2, 4.3, '2024-05-14', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 4, 9, 0.7, '2024-06-03', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 4, 8, 6.2, '2024-06-07', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 4, 7, 2.9, '2024-06-11', false);
+
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 4, 3, 1.4, '2024-06-15', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 5, 4, 3.8, '2024-07-02', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 5, 5, 2.2, '2024-07-05', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 5, 7, 4.5, '2024-07-09', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 5, 1, 1.9, '2024-07-13', false);
+
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 1, 1, 5.3, '2024-08-01', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 2, 2, 0.8, '2024-08-05', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 3, 1, 2.4, '2024-08-09', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 4, 8, 3.6, '2024-08-13', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 5, 4, 1.1, '2024-08-17', false);
+
+    -- Point 4 (capaciteMax=200) : +155 kg → total 169.8 kg → 84.9% → overloaded
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 4, 3, 155.0, '2025-01-10', false);
+
+
+    -- Point 5 (capaciteMax=50) : +35 kg + 2 kg → total 50.5 kg → 101% → full (nécessaire pour le test 403)
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(2, 5, 4, 35.0, '2025-01-15', false);
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(1, 5, 4, 2.0, '2025-01-16', false);
+
+    -- Point 1 : dépôt déjà collecté (collecte=true) — ne compte pas dans le taux de remplissage
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 1, 1, 50.0, '2024-02-20', true);
+
+    -- on rajoute aussi un poids énorme en collecté à un poids non surchargé, pour être sur que ça compte pas (le point 1 ne doit donc pas être retourné)
+    INSERT INTO Deposit(userId, pointId, wasteTypeId, poids, datedepot, collecte) VALUES(3, 1, 1, 10000.0, '2024-02-25', true);
+
