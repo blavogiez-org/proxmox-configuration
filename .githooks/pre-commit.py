@@ -15,8 +15,13 @@ uncommited_files = subprocess.getoutput("git diff --cached --name-only --diff-fi
 secret_files = [filepath for filepath in uncommited_files if re.match(secrets_regex, filepath)]
 
 for secret_file in secret_files:
-    encryption_status = subprocess.getoutput(f"sops filestatus {secret_file}")
-    is_encrypted = json.loads(encryption_status)["encrypted"]
+    try:
+        encryption_status = subprocess.getoutput(f"sops filestatus {secret_file}")
+        is_encrypted = json.loads(encryption_status)["encrypted"]
+    except Exception:
+        print(f"couldn't get status for {secret_file}, exiting")
+        sys.exit(1)
+
     if(is_encrypted==False):
         print(f"{secret_file} not encrypted, proceed to its encryption")
         # in place
