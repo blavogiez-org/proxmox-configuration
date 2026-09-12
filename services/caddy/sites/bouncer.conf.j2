@@ -2,9 +2,11 @@
 
 # bouncer qui montre l'ip de la requête (sympa pour voir l'ip utilisée pour debug le vpn)
 https://bouncer.priv.{{ domain }} {
+    import security_headers
     respond "IP de la requête : {remote_host}" 200
 }
 
 https://bouncer.{{ domain }} {
-    respond "IP de la requête : {remote_host}" 200
+    import security_headers
+    respond "IP de la requête : {header.CF-Connecting-IP}" 200
 }
