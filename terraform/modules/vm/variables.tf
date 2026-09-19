@@ -56,6 +56,11 @@ variable "memory" {
   default = 2048
 }
 
+variable "floating" {
+  type    = number
+  default = 512
+}
+
 variable "disk_size" {
   type    = number
   default = 20

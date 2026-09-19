@@ -82,6 +82,7 @@ module "k8s-control-plane-1" {
 
   cpu       = 8
   memory    = 16384
+  floating  = 16384
   disk_size = 80
 
   bridge = "pubvnet1"
@@ -106,6 +107,7 @@ module "k8s-control-plane-2" {
 
   cpu       = 8
   memory    = 16384
+  floating  = 16384
   disk_size = 80
 
   bridge = "pubvnet1"
@@ -130,6 +132,7 @@ module "k8s-worker-1" {
 
   cpu       = 8
   memory    = 16384
+  floating  = 16384
   disk_size = 80
 
   bridge = "pubvnet1"
@@ -154,6 +157,7 @@ module "k8s-worker-2" {
 
   cpu       = 8
   memory    = 16384
+  floating  = 16384
   disk_size = 80
 
   bridge = "pubvnet1"
@@ -178,6 +182,7 @@ module "k8s-worker-3" {
 
   cpu       = 8
   memory    = 16384
+  floating  = 16384
   disk_size = 80
 
   bridge = "pubvnet1"
@@ -202,6 +207,7 @@ module "k8s-control-plane-3" {
 
   cpu       = 8
   memory    = 16384
+  floating  = 16384
   disk_size = 80
 
   bridge = "pubvnet1"

@@ -10,7 +10,7 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   memory {
     dedicated = var.memory
-    floating  = 512
+    floating  = var.floating
   }
 
   clone {
@@ -28,7 +28,7 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   agent {
     enabled = true
-    timeout = "600s"
+    timeout = "30s"
   }
 
   network_device {
