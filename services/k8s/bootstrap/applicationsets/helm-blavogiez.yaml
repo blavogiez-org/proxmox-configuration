@@ -22,6 +22,10 @@ spec:
             repoURL: https://bjw-s-labs.github.io/helm-charts
             chart: app-template
             targetRevision: 3.7.2
+          - name: syncthing
+            repoURL: https://bjw-s-labs.github.io/helm-charts
+            chart: app-template
+            targetRevision: 3.7.2
   template: 
     metadata: 
       name: '{{ .name }}'
