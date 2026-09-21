@@ -1,0 +1,85 @@
+defaultPodOptions:
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+controllers:
+  syncthing:
+    strategy: Recreate
+    containers:
+      main:
+        image:
+          repository: syncthing/syncthing
+          tag: latest
+
+service:
+  syncthing:
+    controller: syncthing
+    ports:
+      http:
+        port: 8384
+  sync:
+    controller: syncthing
+    type: NodePort
+    ports:
+      transfer-tcp:
+        port: 22000
+        nodePort: 32000
+        protocol: TCP
+      transfer-udp:
+        port: 22000
+        nodePort: 32000
+        protocol: UDP
+
+persistence:
+  data:
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 20Gi
+    advancedMounts:
+      syncthing:
+        main:
+          - path: /var/syncthing
+
+route:
+  syncthing:
+    enabled: true
+    kind: HTTPRoute
+    parentRefs:
+      - name: traefik-gateway
+        namespace: traefik
+    hostnames:
+      - syncthing.priv.blavogiez.fr
+    rules:
+      - matches:
+          - path:
+              type: PathPrefix
+              value: /
+        backendRefs:
+          - name: syncthing
+            port: 8384
+
+networkpolicies:
+  allow-egress:
+    enabled: true
+    podSelector: {}
+    policyTypes:
+      - Egress
+    rules:
+      egress:
+        - {}
+  allow-sync-ingress:
+    enabled: true
+    podSelector: {}
+    policyTypes:
+      - Ingress
+    rules:
+      ingress:
+        - ports:
+            - protocol: TCP
+              port: 22000
+            - protocol: UDP
+              port: 22000
