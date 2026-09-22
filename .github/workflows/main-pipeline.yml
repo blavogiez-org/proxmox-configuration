@@ -98,7 +98,7 @@ jobs:
           matrix: true
 
   ansible:
-    if: ${{ (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso') && needs.services-to-deploy.outputs.services != '[]' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/perso') && needs.services-to-deploy.outputs.services != '[]' && needs.services-to-deploy.outputs.services != '[""]' }}
     # donc need indirectement Checkov tflint hadolint
     needs: [ services-to-deploy ]
     runs-on: self-hosted
@@ -109,6 +109,7 @@ jobs:
         # itération sur tous les services qui ont changé dans le dernier commit (ou tous si le workflow est lancé à la main). ca déploie que ce qui a changé, ça accélère grandement
         service: ${{ fromJSON(needs.services-to-deploy.outputs.services) }}
         exclude:
+          - service: ""
           - service: authentik
           - service: base-vm
           - service: kanboard
