@@ -13,19 +13,23 @@ spec:
             repoURL: https://bjw-s-labs.github.io/helm-charts
             chart: app-template
             targetRevision: 3.7.2
+            security: restricted
           - name: openlatex
             repoURL: ghcr.io/openlatex
             chart: openlatex-compile
             targetRevision: 0.2.0
+            security: baseline
           # cf https://github.com/blavogiez/ecodrop-api-rest-Semestre4
           - name: ecodrop
             repoURL: https://bjw-s-labs.github.io/helm-charts
             chart: app-template
             targetRevision: 3.7.2
+            security: baseline
           - name: syncthing
             repoURL: https://bjw-s-labs.github.io/helm-charts
             chart: app-template
             targetRevision: 3.7.2
+            security: restricted
   template: 
     metadata: 
       name: '{{ .name }}'
@@ -33,11 +37,20 @@ spec:
     spec: 
       project: default
       sources:
+        - repoURL: https://github.com/blavogiez-org/proxmox-configuration.git
+          targetRevision: perso
+          path: services/k8s/apps/cluster/pod-security-namespace-template
+          helm:
+            parameters:
+              - name: namespace
+                value: 'blavogiez-{{ .name }}'
+              - name: security
+                value: '{{ .security }}'
         - repoURL: '{{ .repoURL }}'
           chart: '{{ .chart }}' 
           targetRevision: '{{ .targetRevision }}'
           helm:
-            # values spécifiques + network policies injectées par défaut pour n'importe quel app avec argo (app qui a donc son propre namespace, et ça évite d'avoir un seul namespace avec uniquement ces network polciies)
+            # values spécifiques + network policies (deny all) injectées par défaut pour n'importe quel app avec argo (app qui a donc son propre namespace, et ça évite d'avoir un seul namespace avec uniquement ces network polciies)
             valueFiles:
               - $gitRepo/services/k8s/apps/cluster/default-network-policies/values.yaml
               - $gitRepo/services/k8s/apps/{{ .name }}/values.yaml

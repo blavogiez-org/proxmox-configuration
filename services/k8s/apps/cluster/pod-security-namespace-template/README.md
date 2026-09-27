@@ -1,0 +1,1 @@
+# Template de namespace avec pod security policy appelé selon les besoins dans l'applicationset

@@ -7,12 +7,19 @@ defaultPodOptions:
     runAsNonRoot: true
     fsGroup: 10000
     fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
 
 controllers:
   vaultwarden:
     strategy: Recreate
     containers:
       main:
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
         image:
           repository: vaultwarden/server
           tag: latest

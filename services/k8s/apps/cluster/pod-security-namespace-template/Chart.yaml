@@ -1,0 +1,4 @@
+apiVersion: v2
+name: pod-security-namespace-template
+version: 0.1.0
+type: application
