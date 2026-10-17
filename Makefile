@@ -23,7 +23,7 @@ lint-kube-conform:
 	docker run --rm -v "$${PWD}:/repo" -w /repo ghcr.io/yannh/kubeconform:latest \
 		-schema-location default \
 		-schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
-		-ignore-filename-pattern '.*values\.yaml' \
+		-ignore-filename-pattern '.*(values|Chart)\.yaml' \
 		-summary services/k8s
 
 
