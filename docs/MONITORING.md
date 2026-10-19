@@ -10,7 +10,18 @@ Cette documentation explique comment la configuration est faite et comment diagn
 |---|---|---|
 | Proxmox / LXC / VM | Proxmox via Prometheus `10347` | `mittelab/proxmox-via-prometheus-dashboard` |
 | LXC logs | Custom homelab LXC logs | `ici` |
-| Linux hosts | Node Exporter Full `1860` | `rfmoz/grafana-dashboards` |
+| Linux hosts / nodes k8s | Node Exporter Full `1860` (provisionné) | `rfmoz/grafana-dashboards` |
+| Logs pods k8s | Loki Kubernetes Logs `15141` (provisionné) | grafana.com, `${DS_LOKI}` remplacé par `Loki` et `allValue` de `stream` en `.*` (pas de label `stream` avec `loki.source.kubernetes`) |
+
+## dashboard partagé
+
+Le dashboard `Monitoring` (uid `ressources-public`) est partagé via les shared dashboards de Grafana (Partager -> Partager en externe).
+Grafana exécute lui-même les requêtes des panels côté serveur, donc la route n'expose que `/public-dashboards/*`, `/api/public/*` et `/public/*` (jamais le login ni l'api admin).
+
+Pour l'instant c'est en privé (vpn) le temps de tester : `https://grafana-expose.priv.blavogiez.fr/public-dashboards/<token>`
+
+Le partage vit dans le volume grafana (pas dans git) : si le volume saute, faut le recréer depuis l'ui.
+
 
 ## Installation Alloy
 
