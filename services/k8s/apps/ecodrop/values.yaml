@@ -1,6 +1,9 @@
 # projet scolaire, cf https://github.com/blavogiez/ecodrop-api-rest-Semestre4
 # api rest sur le thème d'une déchetterie, qui permet du CRUD avec les bons codes de retour http 
 # c'est une api sans vraiment d'utilité, la persistence de données est inutile, un endpoint permet le reset
+defaultPodOptions:
+  runtimeClassName: gvisor
+
 controllers:
   ecodrop:
     strategy: Recreate

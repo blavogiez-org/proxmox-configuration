@@ -95,6 +95,7 @@ jobs:
           path: services
           dir_names: true
           dir_names_max_depth: 1
+          dir_names_exclude_current_dir: true
           matrix: true
 
   ansible:
@@ -148,7 +149,10 @@ jobs:
       #https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations
       # avec la matrix tous les services définis vont faire N déplooiements ansible
       - name: "Déploiement de ${{ matrix.service }}"
+        if: matrix.service != ''
         env:
           SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
         run: |
+          echo "${{ matrix.service }} on deploie ça"
           make deploy-compose-ci SERVICE=${{ matrix.service }}
+

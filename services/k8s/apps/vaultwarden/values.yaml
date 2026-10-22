@@ -1,6 +1,7 @@
 # utilisation de https://bjw-s-labs.github.io/helm-charts 
 # c'est un template de helm chart fait pour décrire n'importe quelle application.
 defaultPodOptions:
+  runtimeClassName: gvisor
   securityContext:
     runAsUser: 10000
     runAsGroup: 10000
